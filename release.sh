@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+readonly CURRENT_VERSION=$(cat core/banner.go | grep Version | cut -d '"' -f 2)
+declare -a TO_UPDATE=(
+    core/banner.go
+)
+
+read -p "[?] Did you remember to update CHANGELOG.md? "
+read -p "[?] Did you remember to update README.md with new features/changes? "
+
+echo -n "[*] Current version is $CURRENT_VERSION. Enter new version: "
+read NEW_VERSION
+echo "[*] Pushing and tagging version $NEW_VERSION in 5 seconds..."
+sleep 5
+
+for file in "${TO_UPDATE[@]}"
+do
+  echo "[*] Patching $file ..."
+  sed -i "s/$CURRENT_VERSION/$NEW_VERSION/g" $file
+  git add $file
+done
+
+git commit -m "Releasing $NEW_VERSION"
+git push
+
+git tag -a $NEW_VERSION -m "Release $NEW_VERSION"
+git push origin $NEW_VERSION
+
+echo
+echo "[*] All done, $NEW_VERSION released."
+
+

@@ -6,7 +6,19 @@
 <br />
 
 # Gitrob: Putting the Open Source in OSINT
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/mattyjones/Gitrob) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mattyjones/Gitrob) ![GitHub](https://img.shields.io/github/license/mattyjones/Gitrob) ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/mattyjones/Gitrob) ![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/mattyjones/Gitrob) ![Code Climate issues](https://img.shields.io/codeclimate/issues/mattyjones/Gitrob) ![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/mattyjones/Gitrob) ![Coveralls github](https://img.shields.io/coveralls/GitHub/mattyjones/Gitrob) ![CircleCI](https://img.shields.io/circleci/build/github/mattyjones/Gitrob)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/mattyjones/gitrob)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/mattyjones/gitrob)
+![GitHub](https://img.shields.io/github/license/mattyjones/gitrob)
+
+![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/mattyjones/gitrob)
+![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/mattyjones/gitrob)
+![Code Climate issues](https://img.shields.io/codeclimate/issues/mattyjones/gitrob)
+
+![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/mattyjones/gitrob)
+
+![Coveralls github](https://img.shields.io/coveralls/GitHub/mattyjones/gitrob)
+
+![CircleCI](https://img.shields.io/circleci/build/github/mattyjones/gitrob)
 
 Gitrob is a tool to help find potentially sensitive files pushed to public repositories on Github. Gitrob will clone repositories belonging to a user or organization down to a configurable depth and iterate through the commit history and flag files that match signatures for potentially sensitive files. The findings will be presented through a web interface for easy browsing and analysis.
 

@@ -8,7 +8,7 @@ notifications:
   email: true
 
 before_script:
-  - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/
+  - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/)
   - go get github.com/golang/lint/golint
   - go get github.com/fzipp/gocyclo
   - go get

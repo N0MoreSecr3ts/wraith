@@ -6,7 +6,8 @@
 *.dylib
 gitrob
 gitrob.exe
-
+bin/
+.idea/
 vendor/
 build/
 

@@ -5,11 +5,12 @@ go:
   - 1.14.x
 
 before_script:
-  - go get github.com/golang/lint/golint
-  - go get github.com/fzipp/gocyclo
+  - go get golang.org/x/lint
   - go get
 
 script:
+  - go vet ./...
+  - golint ./...
   - go test -v ./... -race -coverprofile=coverage.txt -covermode=atomic
 
 after_success:

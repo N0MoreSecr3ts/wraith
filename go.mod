@@ -24,7 +24,7 @@ require (
 	github.com/pelletier/go-buffruneio v0.3.0
 	github.com/sergi/go-diff v1.1.0
 	github.com/src-d/gcfg v1.4.0
-	github.com/stretchr/testify v1.5.1 // indirect
+	github.com/stretchr/testify v1.5.1
 	github.com/ugorji/go v1.1.7
 	github.com/xanzy/ssh-agent v0.2.1
 	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37

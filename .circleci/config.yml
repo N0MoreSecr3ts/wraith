@@ -6,7 +6,9 @@ jobs:
   build:
     docker:
       # specify the version
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.12
+      - image: circleci/golang:1.13
+      - image: circleci/golang:1.14
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -23,5 +25,5 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run: go get -v -t -d ./...
-      - run: go test -race -coverprofile=coverage.txt -covermode=atomic
+      - run: go test core/*.go -race -coverprofile=coverage.txt -covermode=atomic
       - run: bash <(curl -s https://codecov.io/bash)

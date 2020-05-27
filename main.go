@@ -23,7 +23,7 @@ func GatherTargets(sess *core.Session) {
 		target, err := core.GetUserOrOrganization(login, sess.GithubClient)
 		if err != nil {
 			sess.Out.Error(" Error retrieving information on %s: %s\n", login, err)
-			continue
+			os.Exit(2)
 		}
 		sess.Out.Debug("%s (ID: %d) type: %s\n", *target.Login, *target.ID, *target.Type)
 		sess.AddTarget(target)

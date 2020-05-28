@@ -6,24 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.0.2] - 2020-05-27
+### Fixed
+- fix issue where if a token was not found or invalid it would panic
+- fix issue where is a user or org was not found it would panic
+
+## [0.0.1] - 2020-05-20
 ### Added
-- Dependency management with dep
+- initial release for the new project
 
-### Changed
-- Skip expensive signature checking for image extensions and files in `node_modules` and other package directories
-
-## 2.0.0-beta - 2018-06-08
-### Added
-- Total rewrite of Gitrob in [Golang](https://golang.org/)
-- Find interesting files in history down to a default (and configurable) depth of 500 commits
-- Hexdump view for binary files
-- Saving and loading of session files for easy sharing
-
-### Removed
-- All the stupid Rubygems with native extensions
-- PostgreSQL dependency
-- Messy assessment comparison feature
-- User overview
-- Repository overview
-
-[Unreleased]: https://github.com/michenriksen/gitrob/compare/v2.0.0-beta...HEAD
+[Unreleased]: https://github.com/mattyjones/gitrob/compare/0.0.2...HEAD
+[0.0.2]: https://github.com/mattyjones/gitrob/releases/tag/0.0.2
+[0.0.1]: https://github.com/mattyjones/gitrob/releases/tag/0.0.1

@@ -56,6 +56,7 @@ type Session struct {
 	Targets           []*GithubOwner
 	Repositories      []*GithubRepository
 	Findings          []*Finding
+	RulesVersion string
 }
 
 func (s *Session) Start() {

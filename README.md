@@ -17,6 +17,7 @@ Wraith is a tool to help find potentially sensitive information pushed to reposi
 - Scan the following sources:
   - Gitlab repositories
   - Github.com repositories
+  - Local git repos
 - Exclude files, paths, and extensions
 - Web interface for real-time results
 - Configurable commit depth

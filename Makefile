@@ -4,12 +4,9 @@
 # MIT License
 # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
 #
-# version 0.1.23
+# version 0.1.24
 #
  SHELL = /bin/bash
-
-# TODO: document Makefile
-
 
 .PHONY: all build clean coverage help install package pretty test
 
@@ -23,38 +20,17 @@ endif
 # Ex: windows, darwin, linux
 #
 ifndef target_os
-	#target_os = linux
-	ifeq ($(OS),Windows_NT)
-		target_os = windows
-		ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
-			target_arch = amd64
-		else
-			ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-				target_arch = amd64
-			endif
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Linux)
+		target_os = linux
+	endif
+	ifeq ($(UNAME_S),Darwin)
+		target_os = darwin
+	endif
+	UNAME_P := $(shell uname -p)
 
-			#ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-			#    target_arch = 386
-			#endif
-		endif
-	else
-		UNAME_S := $(shell uname -s)
-		ifeq ($(UNAME_S),Linux)
-			target_os = linux
-		endif
-
-		ifeq ($(UNAME_S),Darwin)
-			target_os = darwin
-		endif
-		UNAME_P := $(shell uname -p)
-
-		ifeq ($(UNAME_P),x86_64)
-			target_arch = amd64
-		endif
-
-		#ifneq ($(filter %86,$(UNAME_P)),)
-		#    target_arch = 386
-		#endif
+	ifeq ($(UNAME_P),x86_64)
+		target_arch = amd64
 	endif
 endif
 
@@ -62,17 +38,13 @@ ifeq ($(target_os),windows)
 	target_ext = .exe
 endif
 
-# Set the target arch
-# Ex: amd64, x86_64
-#
 ifndef target_arch
-target_arch = amd64
+	target_arch = amd64
 endif
 
 
 all: pretty clean build
 
-# TODO: need to add pretty back in when I figure out how
 build: prep
 	@GOOS=$(target_os) GOARCH=$(target_arch) go build -o ./bin/$(pkg)-$(target_os)
 
@@ -80,7 +52,7 @@ release: prep
 	@GOOS=$(target_os) GOARCH=$(target_arch) go build -ldflags="-s -w" -o ./bin/$(pkg)$(target_ext)
 
 clean:
-	@rm -rf ./bin ./rules
+	@rm -rf ./bin
 
 # TODO: write help command for Makefile
 # TODO: documentation
@@ -91,17 +63,16 @@ install: pretty
 
 package: test clean build
 
+# TODO set a flag to allow the updating of the packages at build time
 prep:
-	@go get -u
+	@go get
+
 
 pretty:
-	@golint *.go
-	@golint core/*.go
-	@gofmt -w *.go	
-	@gofmt -w core/*.go
-	@go vet *.go
-	@go vet core/*.go
+	@golint ./...
+	@go fmt ./...
+	@go vet ./...
 
 test: pretty
-	@cd ./$(pkg) && go test -cover
+	@cd ./...$(pkg) && go test -cover
 

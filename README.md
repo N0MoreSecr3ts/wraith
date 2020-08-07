@@ -1,98 +1,111 @@
 <p align="center">
-  <img src="https://github.com/michenriksen/gitrob/raw/master/static/images/gopher_full.png" alt="Gitrob" width="200" />
+  <img src="./static/images/gopher_full.png" alt="Gitrob" width="200" />
 </p>
-<br />
-<br />
-<br />
 
 # Gitrob: Putting the Open Source in OSINT
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/mattyjones/gitrob)![GitHub release (latest by date)](https://img.shields.io/github/v/release/mattyjones/gitrob)![GitHub](https://img.shields.io/github/license/mattyjones/gitrob)
 
-![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/mattyjones/gitrob)![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/mattyjones/gitrob)![Code Climate issues](https://img.shields.io/codeclimate/issues/mattyjones/gitrob)
+Gitrob is a tool to help find potentially sensitive information pushed to repositories on GitLab or Github. Gitrob will clone repositories belonging to a user or group/organization down to a configurable depth and iterate through the commit history and flag files and/or commit content that match signatures for potentially sensitive information. The findings will be presented through a web interface for easy browsing and analysis.
 
-[![Build Status](https://travis-ci.org/mattyjones/gitrob.svg?branch=master)](https://travis-ci.org/mattyjones/gitrob)
+## Features
 
-Gitrob is a tool to help find potentially sensitive files pushed to public repositories on Github. Gitrob will clone repositories belonging to a user or organization down to a configurable depth and iterate through the commit history and flag files that match signatures for potentially sensitive files. The findings will be presented through a web interface for easy browsing and analysis.
+- Scan the following sources:
+  - Gitlab repositories
+  - Github.com repositories
+- Exclude files, paths, and extensions
+- Web interface for real-time results
+- Configurable commit depth
+- Use environment variables, a config file, or flags
+- Uses sub-commands for easier, more modular, functionality
+- Clone a repo to memory instead of disk
+
+This currently in beta, check the [roadmap][1] for planned functionality
 
 ## Usage
 
-    gitrob [options] target [target2] ... [targetN]
+For a full list of use cases and configuration options use the included help functionality.
 
-### Options
+`gitrob --help`
 
+
+## Configuration
+
+**IMPORTANT** If you are targeting a GitLab group, please give the **group ID** as the target argument.  You can find the group ID just below the group name in the GitLab UI.  Otherwise, names with suffice for the target arguments. This id can be found on the group homepage.
+
+There are multiple was to configure the tool for a scan. The easiest way is via commandline flags. To get a full list of available flags and their purpose use `gitrob <subcommand> --help`. This will pring out a list of flags and how they interact with the base scan. You can also set all flags as environment variables or use a static config file in YAML format. This config file can be used to store targets for multiple scan targets.
+
+The order of precendence with each item taking precedence over the item below it is:
+
+- explicit call to Set
+- commandline flag
+- environment variable
+- configuration file
+- key/value store
+- default value
+
+The various values are configured independently of each other so if you set all values in a config file, you can then override just the ones you want on the commandline. A sample config file looks like:
+
+```yaml
+---
+commit-depth: 0
+gitlab-targets:
+    - mattyjones1
+    - 8692959
+silent: false
+debug: false
+gitlab-api-token: <token>
+github-api-token: <token>
+github-targets:
+    - mattyjones
+    - ansible
+ignore-path: cmd/, docs/
+ignore-extension: .go,.log
+in-mem-clone: true
 ```
--bind-address string
-    Address to bind web server to (default "127.0.0.1")
--commit-depth int
-    Number of repository commits to process (default 500)
--debug
-    Print debugging information
--enterprise-upload-url string
-    Upload URL for Github Enterprise (defaults to the URL set in -enterprise-url if any)
--enterprise-url string
-    URL for Github Enterprise
--enterprise-user string
-    Username for Github Enterprise (defaults to first target)
--github-access-token string
-    GitHub access token to use for API requests
--include-forks
-    Include forked repositories in scan
--load string
-    Load session file
--no-expand-orgs
-    Don't add members to targets when processing organizations
--no-server
-    Disables web server
--port int
-    Port to run web server on (default 9393)
--save string
-    Save session to file
--silent
-    Suppress all output except for errors
--threads int
-    Number of concurrent threads (default number of logical CPUs)
--gather-all
-    Specify whether to pull all repositories from the domain
-```
 
-### Saving session to a file
+## Examples
 
-By default, gitrob will store its state for an assessment in memory. This means that the results of an assessment is lost when Gitrob is closed. You can save the session to a file by using the `-save` option:
+Scan a GitLab group assuming your access token has been added to the environment variable or a config file.  Look for file signature matches only:
 
-    gitrob -save ~/gitrob-session.json acmecorp
+    gitrob scanGitlab <gitlab_group_id>
 
-Gitrob will save all the gathered information to the specified file path as a special JSON document. The file can be loaded again for browsing at another point in time, shared with other analysts or parsed for custom integrations with other tools and systems.
+Scan a multiple GitLab groups assuming your access token has been added to the environment variable or a config file.  Clone repositories into memory for faster analysis.  Set the scan mode to 2 to scan each file match for a content match before creating a result.:
 
-### Loading session from a file
+    gitrob scanGitlab -in-mem-clone -mode 2  "<gitlab_group_id_1> <gitlab_group_id_2>"
 
-A session stored in a file can be loaded with the `-load` option:
+Scan a GitLab groups assuming your access token has been added to the environment variable or a config file. Clone repositories into memory for faster analysis.  Set the scan mode to 3 to scan each commit for content matches only.:
 
-    gitrob -load ~/gitrob-session.json
+    gitrob scanGitlab -in-mem-clone -mode 3 "<gitlab_group_id>"
+
+Scan a Github user setting your Github access token as a parameter.  Clone repositories into memory for faster analysis.
+
+    gitrob scangithub -github-access-token <token> -in-mem-clone "<github_user_name>"
+
+### Editing File and Content Regular Expressions
+
+Regular expressions are included in the [filesignatures.json](./rules/filesignatures.json) and [contentsignatures.json](./rules/contentsignatures.json) files respectively.  Edit these files to adjust your scope and fine-tune your results.
 
 Gitrob will start its web interface and serve the results for analysis.
 
-### Use with Github Enterprise
-
-To configure Gitrob for Github Enterprise, the following switches can be used:
-
-- `enterprise-url`: Must be specified; this is the URL where the path `/api/v3/` exists. This is usually the URL where the Github web interface can be found. Example: `-enterprise-url=https://github.yourcompany.com`
-- `enterprise-upload-url:` Optional, defaults to `enterprise-url`; full path to the upload URL if different from the main Github Enterprise URL. Example: `-enterprise-upload-url=https://github.yourcompany.com/api/v3/upload`
-- `enterprise-user`: Optional, defaults to the first target. Example: `-enterprise-user=your.username`
-
 ## Installation
 
-A [precompiled version is available](https://github.com/michenriksen/gitrob/releases) for each release, alternatively you can use the latest version of the source code from this repository in order to build your own binary.
+At this stage the only option is to build from source from this repository.
 
-Make sure you have a correctly configured **Go >= 1.11** environment and that `$GOPATH/bin` is in your `$PATH`
+To install from source, make sure you have a correctly configured **Go >= 1.14** environment and that `$GOPATH/bin` is in your `$PATH`.
 
-    $ go get github.com/michenriksen/gitrob
+    $ git clone git@gitlab.com:mattyjones1/gitrob.git
+    $ cd ~/go/src/gitrob
+    $ make build
+    $ ./bin/gitrob-<ARCH> <sub-command>
+    
+In the future there will be binary releases of the code
 
-This command will download gitrob, install its dependencies, compile it and move the `gitrob` executable to `$GOPATH/bin`.
+## Access Tokens
 
-### Github access token
+Gitrob will need either a GitLab or Github access token in order to interact with the appropriate API.  You can create a [GitLab personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html), or [a Github personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) and save it in an environment variable in your `.bashrc` or similar shell configuration file:
 
-Gitrob will need a Github access token in order to interact with the Github API.  [Create a personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) and save it in an environment variable in your `.bashrc` or similar shell configuration file:
+    export GITROB_GITLAB_ACCESS_TOKEN=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+    export GITROB_GITHUB_ACCESS_TOKEN=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
 
-    export GITROB_ACCESS_TOKEN=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+Alternatively you can specify the access token with the `-gitlab-access-token` or `-github-access-token` option on the command line, but watch out for your command history! A configuration file can also be used, an example is provided above.
 
-Alternatively you can specify the access token with the `-github-access-token` option, but watch out for your command history!
+[1]: docs/development/roadmap.md

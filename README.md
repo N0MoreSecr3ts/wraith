@@ -7,7 +7,7 @@
 
 ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/mattyjones/gitrob)![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/mattyjones/gitrob)![Code Climate issues](https://img.shields.io/codeclimate/issues/mattyjones/gitrob)
 
-[![Build Status](https://travis-ci.org/mattyjones/gitrob.svg?branch=master)](https://travis-ci.org/mattyjones/gitrob)
+[![Build Status](https://travis-ci.org/mattyjones/wraith.svg?branch=master)](https://travis-ci.org/mattyjones/wraith)
 
 
 Wraith is a tool to help find potentially sensitive information pushed to repositories on GitLab or Github. Wraith will clone repositories belonging to a user or group/organization down to a configurable depth and iterate through the commit history and flag files and/or commit content that match signatures for potentially sensitive information. The findings will be presented through a web interface for easy browsing and analysis.

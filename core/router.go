@@ -11,7 +11,7 @@ import (
 	"github.com/gin-contrib/secure"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"gitrob/common"
+	"wraith/common"
 )
 
 // Set various internal values used by the web interface

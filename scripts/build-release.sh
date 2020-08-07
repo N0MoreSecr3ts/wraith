@@ -17,8 +17,8 @@ create_exe_archive() {
   OUTPUT=$RELEASE_FOLDER/$1
 
   echo "[*] Creating archive $OUTPUT ..."
-  zip -j "$OUTPUT" ./bin/gitrob.exe ./rules/test_rules.yml ./README.md > /dev/null
-  rm -rf ./bin/gitrob ./bin/gitrob.exe
+  zip -j "$OUTPUT" ./bin/wraith.exe ./rules/test_rules.yml ./README.md > /dev/null
+  rm -rf ./bin/wraith ./bin/wraith.exe
 }
 
 create_archive() {
@@ -27,8 +27,8 @@ create_archive() {
   OUTPUT=$RELEASE_FOLDER/$1
 
   echo "[*] Creating archive $OUTPUT ..."
-  zip -j "$OUTPUT" ./bin/gitrob ./rules/test_rules.yml ./README.md > /dev/null
-  rm -rf ./bin/gitrob ./bin/gitrob.exe
+  zip -j "$OUTPUT" ./bin/wraith ./rules/test_rules.yml ./README.md > /dev/null
+  rm -rf ./bin/wraith ./bin/wraith.exe
 }
 
 build_linux_amd64() {
@@ -59,20 +59,20 @@ mkdir -p $RELEASE_FOLDER
 if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys" ]]; then
     build_linux_amd64
     #
-    chmod +x ./bin/gitrob
-    ./bin/gitrob updateRules
-    cp $HOME/.gitrob/rules/test_rules.yml $RULES_FOLDER/test_rules.yml
+    chmod +x ./bin/wraith
+    ./bin/wraith updateRules
+    cp $HOME/.wraith/rules/test_rules.yml $RULES_FOLDER/test_rules.yml
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
     build_macos_amd64
-    chmod +x ./bin/gitrob
-    ./bin/gitrob updateRules
-    cp $HOME/.gitrob/rules/test_rules.yml $RULES_FOLDER/test_rules.yml
+    chmod +x ./bin/wraith
+    ./bin/wraith updateRules
+    cp $HOME/.wraith/rules/test_rules.yml $RULES_FOLDER/test_rules.yml
 fi
 
-build_linux_amd64 && create_archive gitrob_linux_amd64.zip
-build_macos_amd64 && create_archive gitrob_macos_amd64.zip
-build_windows_amd64 && create_exe_archive gitrob_windows_amd64.zip
+build_linux_amd64 && create_archive wraith_linux_amd64.zip
+build_macos_amd64 && create_archive wraith_macos_amd64.zip
+build_windows_amd64 && create_exe_archive wraith_windows_amd64.zip
 shasum -a 256 $RELEASE_FOLDER/* > $RELEASE_FOLDER/checksums.txt
 
 echo

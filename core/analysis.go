@@ -4,11 +4,6 @@ package core
 import (
 	"crypto/sha1"
 	"fmt"
-	"gitrob/common"
-	"gitrob/github"
-	"gitrob/gitlab"
-	"gitrob/localRepo"
-	"gitrob/matching"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"os"
@@ -17,6 +12,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"wraith/common"
+	"wraith/github"
+	"wraith/gitlab"
+	"wraith/localRepo"
+	"wraith/matching"
 )
 
 // PrintSessionStats will print the performance and sessions stats to stdout at the conclusion of a session scan

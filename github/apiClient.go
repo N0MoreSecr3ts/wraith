@@ -8,8 +8,8 @@ import (
 	"regexp"
 
 	"github.com/google/go-github/github"
-	"gitrob/common"
 	"golang.org/x/oauth2"
+	"wraith/common"
 )
 
 // Client holds a github api client instance

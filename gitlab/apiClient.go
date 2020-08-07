@@ -4,11 +4,11 @@ package gitlab
 import (
 	"fmt"
 	"github.com/xanzy/go-gitlab"
-	"gitrob/common"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"wraith/common"
 )
 
 // Client holds a gitlab api client instance

@@ -4,8 +4,8 @@ package matching
 import (
 	"crypto/sha1"
 	"fmt"
-	"gitrob/common"
 	"io"
+	"wraith/common"
 )
 
 // Finding is a secret that has been discovered within a target by a discovery method

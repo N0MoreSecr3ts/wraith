@@ -2,8 +2,8 @@ package common_test
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
-	"gitrob/common"
 	"testing"
+	"wraith/common"
 )
 
 func TestCleanUrlSpaces(t *testing.T) {

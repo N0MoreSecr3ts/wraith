@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitrob/common"
 	"io/ioutil"
+	"wraith/common"
 )
 
 // Signatures holds a list of all signatures used during the session

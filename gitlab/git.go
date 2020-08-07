@@ -3,12 +3,12 @@ package gitlab
 
 import (
 	"fmt"
-	"gitrob/common"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 	"io/ioutil"
+	"wraith/common"
 )
 
 // CloneRepository will crete either an in memory clone of a given repository or clone to a temp dir.
@@ -30,7 +30,7 @@ func CloneRepository(cloneConfig *common.CloneConfiguration) (*git.Repository, s
 	var err error
 	var dir string
 	if !*cloneConfig.InMemClone {
-		dir, err = ioutil.TempDir("", "gitrob")
+		dir, err = ioutil.TempDir("", "wraith")
 		if err != nil {
 			return nil, "", err
 		}

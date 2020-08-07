@@ -5,13 +5,13 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"gitrob/version"
 	"os"
+	"wraith/version"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gitrob",
+	Use:   "wraith",
 	Short: "A tool to scan for secrets in various digital hiding spots",
 	Long:  "A tool to scan for secrets in various digital hiding spots - v" + version.AppVersion(), // TODO write a better long description
 }

@@ -133,7 +133,7 @@ var StatsView = Backbone.View.extend({
     },
     updateProgress: function () {
         var status = this.statusToHuman();
-        $("title").text("Gitrob: " + status);
+        $("title").text("Wraith: " + status);
         $("#progress_bar").text(status).css("width", this.model.get("Progress") + "%");
         if (this.model.isFinished()) {
             $("#progress_bar").removeClass("progress-bar-animated progress-bar-striped").css("width", "100%");

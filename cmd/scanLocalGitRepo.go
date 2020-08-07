@@ -5,11 +5,11 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"gitrob/common"
-	"gitrob/core"
-	"gitrob/version"
 	"os"
 	"time"
+	"wraith/common"
+	"wraith/core"
+	"wraith/version"
 
 	"github.com/spf13/cobra"
 )
@@ -29,14 +29,14 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		scanType := "localGit"
-		sess, err := core.NewSession(viperScanGithub, scanType)
+		sess, err := core.NewSession(viperScanLocalGitRepo, scanType)
 
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		sess.Out.Info("%s\n\n", common.ASCIIBanner)
+		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", common.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
@@ -74,7 +74,7 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanLocalGitRepoCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanLocalGitRepoCmd.Flags().String("repo-dirs", "", "local disk parent dir containing git repos")
-	scanLocalGitRepoCmd.Flags().String("rules-file", "$HOME/.gitrob/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanLocalGitRepoCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
 
 	//scanLocalGitRepoCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
 	//scanLocalGitRepoCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
@@ -89,7 +89,7 @@ func init() {
 	viperScanLocalGitRepo.BindPFlag("in-mem-clone", scanLocalGitRepoCmd.Flags().Lookup("in-mem-clone"))
 	viperScanLocalGitRepo.BindPFlag("no-expand-orgs", scanLocalGitRepoCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
-	viperScanLocalGitRepo.BindPFlag("repo-dirs", scanLocalGitRepoCmd.Flags().Lookup("repo-dir"))
+	viperScanLocalGitRepo.BindPFlag("repo-dirs", scanLocalGitRepoCmd.Flags().Lookup("repo-dirs"))
 	viperScanLocalGitRepo.BindPFlag("rules-file", scanLocalGitRepoCmd.Flags().Lookup("rules-file"))
 	viperScanLocalGitRepo.BindPFlag("silent", scanLocalGitRepoCmd.Flags().Lookup("silent"))
 

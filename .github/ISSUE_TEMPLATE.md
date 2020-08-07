@@ -24,6 +24,6 @@ Make sure to add **all the information needed to understand the bug** so that so
 
 ## Specifications
 
-  - Gitrob version:
+  - Wraith version:
   - Operating system:
   - Go version:

@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "gitrob/cmd"
+import "wraith/cmd"
 
 func main() {
 	cmd.Execute()

@@ -6,18 +6,18 @@ import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
-	"gitrob/matching"
-	"gitrob/version"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
+	"wraith/matching"
+	"wraith/version"
 
-	"gitrob/common"
-	gh "gitrob/github"
-	gl "gitrob/gitlab"
+	"wraith/common"
+	gh "wraith/github"
+	gl "wraith/gitlab"
 
 	"github.com/gin-gonic/gin"
 )
@@ -56,7 +56,7 @@ var DefaultValues = map[string]interface{}{
 	"bind-address":     "127.0.0.1",
 	"bind-port":        9393,
 	"commit-depth":     0,
-	"config-file":      "$HOME/.gitrob/config.yaml",
+	"config-file":      "$HOME/.wraith/config.yaml",
 	"debug":            false,
 	"github-targets":   "",
 	"github-api-token": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXVZabcd",
@@ -78,9 +78,9 @@ var DefaultValues = map[string]interface{}{
 	//"json":                    false,
 	//"low-priority":            false,
 	//"match-level":             3,
-	//"report-database":         "$HOME/.gitrob/report/current.db",
+	//"report-database":         "$HOME/.wraith/report/current.db",
 	//"rules-file":              "",
-	//"rules-path":              "$HOME/.gitrob/rules",
+	//"rules-path":              "$HOME/.wraith/rules",
 	//"rules-url":               "",
 	//"scan-dir":                "",
 	//"scan-file":               "",
@@ -138,7 +138,7 @@ func SetConfig() *viper.Viper {
 		os.Exit(1)
 	}
 
-	v.AddConfigPath(home + "/.gitrob/")
+	v.AddConfigPath(home + "/.wraith/")
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
 
@@ -179,6 +179,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	//s.HideSecrets = v.GetBool("hide-secrets")
 	//s.JSONOutput = v.GetBool("json")
 	//s.MatchLevel = v.GetInt("match-level")
+	fmt.Println(s.RepoDirs)
 
 	// add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {

@@ -590,8 +590,8 @@
     },
     {
       "Part": "filename",
-      "MatchOn": "^\\.?gitrobrc$",
-      "Description": "Well, this is awkward... Gitrob configuration file",
+      "MatchOn": "^\\.?wraithrc$",
+      "Description": "Well, this is awkward... wraith configuration file",
       "Comment": ""
     },
     {

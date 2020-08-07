@@ -4,8 +4,8 @@
 *.dll
 *.so
 *.dylib
-gitrob*
-gitrob.exe
+wraith*
+wraith.exe
 coverage.txt
 
 bin/
@@ -15,8 +15,8 @@ bin/
 .vscode
 .idea
 __debug_bin
-go_build_gitrob_
-gitrob-script.sh
+go_build_wraith_
+wraith-script.sh
 
 # Test binary, build with `go test -c`
 *.test

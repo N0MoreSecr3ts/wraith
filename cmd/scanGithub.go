@@ -5,11 +5,11 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"gitrob/common"
-	"gitrob/core"
-	"gitrob/version"
 	"os"
 	"time"
+	"wraith/common"
+	"wraith/core"
+	"wraith/version"
 
 	"github.com/spf13/cobra"
 )
@@ -31,7 +31,7 @@ var scanGithubCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		sess.Out.Info("%s\n\n", common.ASCIIBanner)
+		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", common.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
@@ -70,7 +70,7 @@ func init() {
 	scanGithubCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanGithubCmd.Flags().String("github-api-token", "", "API token for access to github, see doc for necessary scope")
 	scanGithubCmd.Flags().String("github-targets", "", "A space separated list of github.com users or orgs to scan")
-	scanGithubCmd.Flags().String("rules-file", "$HOME/.gitrob/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanGithubCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
 
 	//scanGithubCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
 	//scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")

@@ -5,7 +5,7 @@
 # Wraith: Putting the Open Source in OSINT
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/mattyjones/wraith)![GitHub release (latest by date)](https://img.shields.io/github/v/release/mattyjones/wraith)![GitHub](https://img.shields.io/github/license/mattyjones/wraith)
 
-![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/mattyjones/wraith)![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/mattyjones/wraith)![Code Climate issues](https://img.shields.io/codeclimate/issues/mattyjones/wraith)
+![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/mattyjones/gitrob)![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/mattyjones/gitrob)![Code Climate issues](https://img.shields.io/codeclimate/issues/mattyjones/gitrob)
 
 [![Build Status](https://travis-ci.org/mattyjones/wraith.svg?branch=master)](https://travis-ci.org/mattyjones/wraith)
 

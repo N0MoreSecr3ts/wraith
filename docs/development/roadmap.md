@@ -25,7 +25,7 @@
 - [ ] Scan Bitbucket On-Prem User Repos
 
 
-- [ ] Scan Local Files
+- [ ] Scan Local Files **Next**
 - [X] ~~Scan Local Git Repos~~
 
 
@@ -64,7 +64,7 @@
 - [ ] Only scan selected branches or tags
 - [ ] Exclude public or private repos
 - [X] ~~Ability to set commit depth of scan~~
-- [ ] Confidence level for regexes
+- [ ] Confidence level for regexes (signature uplift)
 - [X] ~~Should clone to memory, not disk~~
 - [X] ~~Exclude  paths~~
 - [ ] Exclude Users or Repos in an org scan
@@ -78,19 +78,19 @@
 - [ ] Web Frontend For Configuration
 - [X] ~~Web Frontend For Output~~
 - [ ] Specific YAML Configuration File
-- [ ] Signatures in a seperate repo (after on new sigs)
-- [ ] Signatures in either yaml or json format (after new sigs)
-- [ ] Update Signatures command (after they are moved to a new repo)
+- [ ] Signatures in a seperate repo (signature uplift)
+- [ ] Signatures in either yaml or json format (signature uplift)
+- [ ] Update Signatures command (signature uplift)
 - [ ] Fully Instrumented with Performance Stats
 - [ ] Finding should have an ID (Hash)
 - [X] ~~Ability to configure via environment variables~~
-- [ ] Ability to version signatures (after they are moved to a new repo)
+- [ ] Ability to version signatures (signature uplift)
 - [X] ~~When running silent, no webserver is started~~
 
 
 ## Bugs
 - [ ] DB Code is smelly
-- [ ] Regex's are not performant (after they are moved to a new repo)
+- [ ] Regex's are not performant (signature uplift)
 - [ ] Code organization is horrible
 - [ ] Consistent search on all platforms
 - [X] ~~Web interface line in stdio is borked~~
@@ -99,23 +99,32 @@
 - [X] ~~Slient does not print you need to hit Ctrl-C to stop the webserver~~
 - [ ] need to update the go [git library][2] used
 - [ ] web interface cannot handle local files
-- [ ] web interface is gitlab specific by default
+- [ ] web interface is gitlab specific by default **Next**
+- [ ] why is the web interface using to old index.html **Next**
+
 
 ## TODO
+- [ ] Copy existing tests to the new codebase **Next**
+- [ ] Make a single function to create a temp dir
+- [ ] Need to list the flag defaults on the help screen
+- [ ] If no arg's are given for a command, then list the help screen
 - [ ] Thread the scanning of commits
+- [ ] Check all urls point to the right repos **Next**
+- [ ] Update Code Climinate for Wraith
+- [ ] Write a new README **Next**
 - [ ] Make sure we clean up the temp directories
-- [ ] Pre-compiled binaries
+- [X] ~~Pre-compiled binaries~~
 - [X] ~~Use YAML arrays~~
 - [ ] Implement MJ Stats (waiting on new matching)
 - [ ] Break out global vs command specific variables
 - [ ] Combine all shell scripts into Makefile
-- [ ] Split rules into a seperate repo (after new sigs)
-- [ ] Combine the rules and sigs into a single yaml file
+- [ ] Split rules into a seperate repo (signature uplift)
+- [ ] Combine the rules and sigs into a single yaml file (signature uplift)
 - [X] ~~Plug into gitlab ci pipeline~~
 - [ ] Remove the common package and integrate it with core
-- [ ] Add copyright notices
+- [X] ~~Add copyright notices~~
 - [X] ~~Remove github traces~~
-- [ ] Test all regexes (after new repo)
+- [ ] Test all regexes (signature uplift)
 - [ ] Alpha sort structs, functions, flags
 - [ ] Unit tests for all code
     - [ ] common
@@ -144,7 +153,7 @@
 - [X] ~~Update Readme.md~~
 - [ ] Security Scans
 - [ ] Sanitize user inputs
-- [ ] Contributing.md
+- [ ] Contributing.md **Next**
 - [ ] Makefile
 - [X] ~~.editorconfig~~
 - [X] ~~.gitignore~~

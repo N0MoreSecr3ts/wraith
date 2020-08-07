@@ -55,18 +55,25 @@ The various values are configured independently of each other so if you set all 
 ---
 commit-depth: 0
 gitlab-targets:
+    - codeemitter
     - mattyjones1
     - 8692959
 silent: false
-debug: false
+debug: true
 gitlab-api-token: <token>
 github-api-token: <token>
 github-targets:
     - mattyjones
-    - ansible
-ignore-path: cmd/, docs/
-ignore-extension: .go,.log
+    - phantomSecrets
+ignore-path:
+    - cmd/
+    - docs/
+ignore-extension:
+    - .go
+    - .log
 in-mem-clone: true
+repo-dirs:
+    - ../../../mattyjones/telegraf
 ```
 
 ## Examples

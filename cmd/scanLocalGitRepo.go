@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"time"
-	"wraith/common"
 	"wraith/core"
 	"wraith/version"
 
@@ -37,7 +36,7 @@ to quickly create a Cobra application.`,
 		}
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
-		sess.Out.Important("%s v%s started at %s\n", common.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
+		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
 

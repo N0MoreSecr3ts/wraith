@@ -1,5 +1,5 @@
 // Package common contains functionality not critical to the core project but still essential.
-package common
+package core
 
 import (
 	"fmt"

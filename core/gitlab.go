@@ -1,36 +1,74 @@
-// Package gitlab represents github specific functionality
-package gitlab
+package core
 
 import (
 	"fmt"
 	"github.com/xanzy/go-gitlab"
+	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
+	"gopkg.in/src-d/go-git.v4/storage/memory"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
-	"wraith/common"
 )
 
+// CloneRepository will crete either an in memory clone of a given repository or clone to a temp dir.
+func CloneGitlabRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
+
+	cloneOptions := &git.CloneOptions{
+		URL:           *cloneConfig.Url,
+		Depth:         *cloneConfig.Depth,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
+		SingleBranch:  true,
+		Tags:          git.NoTags,
+		Auth: &http.BasicAuth{
+			Username: *cloneConfig.Username,
+			Password: *cloneConfig.Token,
+		},
+	}
+
+	var repository *git.Repository
+	var err error
+	var dir string
+	if !*cloneConfig.InMemClone {
+		dir, err = ioutil.TempDir("", "wraith")
+		if err != nil {
+			return nil, "", err
+		}
+		repository, err = git.PlainClone(dir, false, cloneOptions)
+	} else {
+		repository, err = git.Clone(memory.NewStorage(), nil, cloneOptions)
+	}
+	if err != nil {
+		return nil, dir, err
+	}
+	return repository, dir, nil
+
+}
+
 // Client holds a gitlab api client instance
-type Client struct {
+type gitlabClient struct {
 	apiClient *gitlab.Client
-	logger    *common.Logger
+	logger    *Logger
 }
 
 // NewClient creates a gitlab api client instance using a token
-func (c Client) NewClient(token string, logger *common.Logger) (Client, error) {
+func (c gitlabClient) NewClient(token string, logger *Logger) (gitlabClient, error) {
 	var err error
 	c.apiClient, err = gitlab.NewClient(token)
 	if err != nil {
-		return Client{}, err
+		return gitlabClient{}, err
 	}
-	c.apiClient.UserAgent = common.UserAgent
+	c.apiClient.UserAgent = UserAgent
 	c.logger = logger
 	return c, nil
 }
 
+//TODO make this a single function
 // CheckAPIToken will ensure we have a valid github api token
-func CheckAPIToken(t string) {
+func CheckGitlabAPIToken(t string) {
 
 	// check to make sure the length is proper
 	if len(t) != 20 {
@@ -48,7 +86,7 @@ func CheckAPIToken(t string) {
 }
 
 // GetUserOrganization is used to enumerate the owner in a given org
-func (c Client) GetUserOrganization(login string) (*common.Owner, error) {
+func (c gitlabClient) GetUserOrganization(login string) (*Owner, error) {
 	emptyString := gitlab.String("")
 	org, orgErr := c.getOrganization(login)
 	if orgErr != nil {
@@ -57,10 +95,10 @@ func (c Client) GetUserOrganization(login string) (*common.Owner, error) {
 			return nil, userErr
 		}
 		id := int64(user.ID)
-		return &common.Owner{
+		return &Owner{
 			Login:     gitlab.String(user.Username),
 			ID:        &id,
-			Type:      gitlab.String(common.TargetTypeUser),
+			Type:      gitlab.String(TargetTypeUser),
 			Name:      gitlab.String(user.Name),
 			AvatarURL: gitlab.String(user.AvatarURL),
 			URL:       gitlab.String(user.WebsiteURL),
@@ -72,10 +110,10 @@ func (c Client) GetUserOrganization(login string) (*common.Owner, error) {
 		}, nil
 	} else {
 		id := int64(org.ID)
-		return &common.Owner{
+		return &Owner{
 			Login:     gitlab.String(org.Name),
 			ID:        &id,
-			Type:      gitlab.String(common.TargetTypeOrganization),
+			Type:      gitlab.String(TargetTypeOrganization),
 			Name:      gitlab.String(org.Name),
 			AvatarURL: gitlab.String(org.AvatarURL),
 			URL:       gitlab.String(org.WebURL),
@@ -89,8 +127,8 @@ func (c Client) GetUserOrganization(login string) (*common.Owner, error) {
 }
 
 // GetOrganizationMembers will gather all the members of a given organization
-func (c Client) GetOrganizationMembers(target common.Owner) ([]*common.Owner, error) {
-	var allMembers []*common.Owner
+func (c gitlabClient) GetOrganizationMembers(target Owner) ([]*Owner, error) {
+	var allMembers []*Owner
 	opt := &gitlab.ListGroupMembersOptions{}
 	sID := strconv.FormatInt(*target.ID, 10) //safely downcast an int64 to an int
 	for {
@@ -101,10 +139,10 @@ func (c Client) GetOrganizationMembers(target common.Owner) ([]*common.Owner, er
 		for _, member := range members {
 			id := int64(member.ID)
 			allMembers = append(allMembers,
-				&common.Owner{
+				&Owner{
 					Login: gitlab.String(member.Username),
 					ID:    &id,
-					Type:  gitlab.String(common.TargetTypeUser)})
+					Type:  gitlab.String(TargetTypeUser)})
 		}
 		if resp.NextPage == 0 {
 			break
@@ -115,10 +153,10 @@ func (c Client) GetOrganizationMembers(target common.Owner) ([]*common.Owner, er
 }
 
 // GetRepositoriesFromOwner is used gather all the repos associated with the org owner or other user
-func (c Client) GetRepositoriesFromOwner(target common.Owner) ([]*common.Repository, error) {
-	var allProjects []*common.Repository
+func (c gitlabClient) GetRepositoriesFromOwner(target Owner) ([]*Repository, error) {
+	var allProjects []*Repository
 	id := int(*target.ID)
-	if *target.Type == common.TargetTypeUser {
+	if *target.Type == TargetTypeUser {
 		userProjects, err := c.getUserProjects(id)
 		if err != nil {
 			return nil, err
@@ -139,7 +177,7 @@ func (c Client) GetRepositoriesFromOwner(target common.Owner) ([]*common.Reposit
 }
 
 // getUser will get the necessary info from a given user
-func (c Client) getUser(login string) (*gitlab.User, error) {
+func (c gitlabClient) getUser(login string) (*gitlab.User, error) {
 	users, _, err := c.apiClient.Users.ListUsers(&gitlab.ListUsersOptions{Username: gitlab.String(login)})
 	if err != nil {
 		return nil, err
@@ -147,15 +185,15 @@ func (c Client) getUser(login string) (*gitlab.User, error) {
 	if len(users) == 0 {
 		return nil, fmt.Errorf("No GitLab %s or %s %s was found.  If you are targeting a GitLab group, be sure to"+
 			" use an ID in place of a name.",
-			strings.ToLower(common.TargetTypeUser),
-			strings.ToLower(common.TargetTypeOrganization),
+			strings.ToLower(TargetTypeUser),
+			strings.ToLower(TargetTypeOrganization),
 			login)
 	}
 	return users[0], err
 }
 
 // getOrganization will get the necessary info from an org
-func (c Client) getOrganization(login string) (*gitlab.Group, error) {
+func (c gitlabClient) getOrganization(login string) (*gitlab.Group, error) {
 	id, err := strconv.Atoi(login)
 	if err != nil {
 		return nil, err
@@ -168,8 +206,8 @@ func (c Client) getOrganization(login string) (*gitlab.Group, error) {
 }
 
 // getUserProjects will gather the projects associated with a given user
-func (c Client) getUserProjects(id int) ([]*common.Repository, error) {
-	var allUserProjects []*common.Repository
+func (c gitlabClient) getUserProjects(id int) ([]*Repository, error) {
+	var allUserProjects []*Repository
 	listUserProjectsOps := &gitlab.ListProjectsOptions{}
 	for {
 		projects, response, err := c.apiClient.Projects.ListUserProjects(id, listUserProjectsOps)
@@ -180,7 +218,7 @@ func (c Client) getUserProjects(id int) ([]*common.Repository, error) {
 			//don't capture forks
 			if project.ForkedFromProject == nil {
 				id := int64(project.ID)
-				p := common.Repository{
+				p := Repository{
 					Owner:         gitlab.String(project.Owner.Username),
 					ID:            &id,
 					Name:          gitlab.String(project.Name),
@@ -203,8 +241,8 @@ func (c Client) getUserProjects(id int) ([]*common.Repository, error) {
 }
 
 // getGroupProjects will gather the projects associated with a given group
-func (c Client) getGroupProjects(target common.Owner) ([]*common.Repository, error) {
-	var allGroupProjects []*common.Repository
+func (c gitlabClient) getGroupProjects(target Owner) ([]*Repository, error) {
+	var allGroupProjects []*Repository
 	listGroupProjectsOps := &gitlab.ListGroupProjectsOptions{}
 	id := strconv.FormatInt(*target.ID, 10)
 	for {
@@ -216,7 +254,7 @@ func (c Client) getGroupProjects(target common.Owner) ([]*common.Repository, err
 			//don't capture forks
 			if project.ForkedFromProject == nil {
 				id := int64(project.ID)
-				p := common.Repository{
+				p := Repository{
 					Owner:         gitlab.String(project.Namespace.FullPath),
 					ID:            &id,
 					Name:          gitlab.String(project.Name),

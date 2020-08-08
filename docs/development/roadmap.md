@@ -98,19 +98,23 @@
 - [X] ~~Silent still displays the gitlab logo~~
 - [X] ~~Slient does not print you need to hit Ctrl-C to stop the webserver~~
 - [ ] need to update the go [git library][2] used
-- [ ] web interface cannot handle local files
-- [ ] web interface is gitlab specific by default **Next**
-- [ ] why is the web interface using to old index.html **Next**
+- [ ] web interface cannot handle local files (requires mucking with bindata.go)
+- [ ] web interface is gitlab specific by default (requires mucking with bindata.go)
+- [ ] why is the web interface using to old index.html (requires mucking with bindata.go)
+- [ ] gitlab scans are failing
 
 
 ## TODO
-- [ ] Copy existing tests to the new codebase **Next**
+- [ ] Look at the clone configs
+- [ ] Create new ascii art
+- [ ] Rebuild the web interface
+- [ ] Copy existing tests to the new codebase (need to reorg the existing codebase first)
 - [ ] Make a single function to create a temp dir
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen
 - [ ] Thread the scanning of commits
-- [ ] Check all urls point to the right repos **Next**
-- [ ] Update Code Climinate for Wraith
+- [ ] Check all urls point to the right repos (requires mucking with bindata.go)
+- [ ] Update Code Climate for Wraith
 - [ ] Write a new README **Next**
 - [ ] Make sure we clean up the temp directories
 - [X] ~~Pre-compiled binaries~~
@@ -121,7 +125,7 @@
 - [ ] Split rules into a seperate repo (signature uplift)
 - [ ] Combine the rules and sigs into a single yaml file (signature uplift)
 - [X] ~~Plug into gitlab ci pipeline~~
-- [ ] Remove the common package and integrate it with core
+- [X] ~~Remove the common package and integrate it with core~~
 - [X] ~~Add copyright notices~~
 - [X] ~~Remove github traces~~
 - [ ] Test all regexes (signature uplift)
@@ -158,8 +162,8 @@
 - [X] ~~.editorconfig~~
 - [X] ~~.gitignore~~
 - [ ] Mascot (waiting on Mandy)
-- [X] Name (wraith)
-- [X] Gitlab group
+- [X] ~~Name (wraith)~~
+- [X] ~~Gitlab group~~
 - [ ] go doc strings
     - [ ] common
     - [ ] config

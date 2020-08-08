@@ -1,9 +1,9 @@
-package common_test
+package core_test
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
-	"wraith/common"
+	"wraith/core"
 )
 
 func TestPluralize(t *testing.T) {
@@ -15,7 +15,7 @@ func TestPluralize(t *testing.T) {
 			w2 := "tests"
 
 			Convey("If the count is 0", func() {
-				w := common.Pluralize(0, w1, w2)
+				w := core.Pluralize(0, w1, w2)
 
 				Convey("The word should be 'tests'", func() {
 					So(w, ShouldEqual, w2)
@@ -26,7 +26,7 @@ func TestPluralize(t *testing.T) {
 			})
 
 			Convey("If the count is 1", func() {
-				w := common.Pluralize(1, w1, w2)
+				w := core.Pluralize(1, w1, w2)
 
 				Convey("The word should be 'test'", func() {
 					So(w, ShouldEqual, w1)
@@ -37,7 +37,7 @@ func TestPluralize(t *testing.T) {
 			})
 
 			Convey("If the count is -1", func() {
-				w := common.Pluralize(-1, w1, w2)
+				w := core.Pluralize(-1, w1, w2)
 
 				Convey("The word should be 'tests'", func() {
 					So(w, ShouldEqual, w2)
@@ -48,7 +48,7 @@ func TestPluralize(t *testing.T) {
 			})
 
 			Convey("If the count is -0", func() {
-				w := common.Pluralize(-0, w1, w2)
+				w := core.Pluralize(-0, w1, w2)
 
 				Convey("The word should be 'tests'", func() {
 					So(w, ShouldEqual, w2)
@@ -68,7 +68,7 @@ func TestTruncateString(t *testing.T) {
 
 		Convey("When the string is 'This is too long' and the max length is 10", func() {
 			l := 10
-			str := common.TruncateString(s, l)
+			str := core.TruncateString(s, l)
 
 			Convey("The new string should be 'This is to'", func() {
 				So(str, ShouldEqual, "This is to...")

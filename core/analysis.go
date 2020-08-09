@@ -323,14 +323,6 @@ func findSecrets(sess *Session, repo *Repository, commit *object.Commit, changes
 func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Repository, string, error) {
 	sess.Out.Debug("[THREAD #%d][%s] Cloning repository...\n", threadId, *repo.CloneURL)
 
-	//cloneConfig := CloneConfiguration{
-	//	Url:        repo.CloneURL,
-	//	Branch:     repo.DefaultBranch,
-	//	Depth:      &sess.CommitDepth,
-	//	Token:      &sess.GitlabAccessToken, // TODO Is this need since we already have a client?
-	//	InMemClone: &sess.InMemClone,
-	//}
-
 	var clone *git.Repository
 	var path string
 	var err error
@@ -354,7 +346,6 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 			InMemClone: &sess.InMemClone,
 			Username:   &userName,
 		}
-
 		clone, path, err = CloneRepository(&cloneConfig)
 	case "localGit":
 		cloneConfig := CloneConfiguration{

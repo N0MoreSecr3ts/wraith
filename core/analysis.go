@@ -335,7 +335,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 			Depth:      &sess.CommitDepth,
 			InMemClone: &sess.InMemClone,
 		}
-		clone, path, err = CloneRepository(&cloneConfig)
+		clone, path, err = CloneGithubRepository(&cloneConfig)
 	case "gitlab":
 		userName := "oauth2"
 		cloneConfig := CloneConfiguration{
@@ -346,7 +346,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 			InMemClone: &sess.InMemClone,
 			Username:   &userName,
 		}
-		clone, path, err = CloneRepository(&cloneConfig)
+		clone, path, err = CloneGitlabRepository(&cloneConfig)
 	case "localGit":
 		cloneConfig := CloneConfiguration{
 			Url:        repo.CloneURL,
@@ -354,7 +354,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 			Depth:      &sess.CommitDepth,
 			InMemClone: &sess.InMemClone,
 		}
-		clone, path, err = CloneRepository(&cloneConfig)
+		clone, path, err = CloneLocalRepository(&cloneConfig)
 
 	}
 	if err != nil {

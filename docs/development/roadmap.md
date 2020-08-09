@@ -101,7 +101,7 @@
 - [ ] web interface cannot handle local files (requires mucking with bindata.go)
 - [ ] web interface is gitlab specific by default (requires mucking with bindata.go)
 - [ ] why is the web interface using to old index.html (requires mucking with bindata.go)
-- [ ] gitlab scans are failing
+- [X] ~~gitlab scans are failing~~
 
 
 ## TODO

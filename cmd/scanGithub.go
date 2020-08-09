@@ -32,7 +32,8 @@ var scanGithubCmd = &cobra.Command{
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
-		sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
+		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
+		//sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
 
 		// TODO need to replace these with MJ methods

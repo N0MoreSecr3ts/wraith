@@ -61,7 +61,7 @@ var DefaultValues = map[string]interface{}{
 	"ignore-path":      "",
 	"in-mem-clone":     false,
 	"max-file-size":    50,
-	"repo-dirs":        "",
+	"local-dirs":        "",
 	"scan-forks":       true,
 	"scan-tests":       false,
 	"scan-type":        "",
@@ -72,15 +72,15 @@ var DefaultValues = map[string]interface{}{
 	//"display-changelog":       false,
 	//"json":                    false,
 	//"low-priority":            false,
-	//"match-level":             3,
+	"match-level": 3,
 	//"report-database":         "$HOME/.wraith/report/current.db",
-	//"rules-file":              "",
-	//"rules-path":              "$HOME/.wraith/rules",
+	"rules-file":              "default_rules.yml", //TODO implement this
+	"rules-path":              "$HOME/.wraith/rules", // TODO implement this
 	//"rules-url":               "",
 	//"scan-dir":                "",
 	//"scan-file":               "",
 	//"hide-secrets":            false,
-	//"test-rules":              false,
+	//"test-rules":              false, // TODO implement this as a bool
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -102,13 +102,13 @@ type Session struct {
 	MaxFileSize       int64
 	NoExpandOrgs      bool
 	Out               *Logger `json:"-"`
-	RepoDirs          []string
+	LocalDirs          []string
 	Repositories      []*Repository
 	Router            *gin.Engine `json:"-"`
 	ScanFork          bool
 	ScanTests         bool
 	ScanType          string
-	Signatures        Signatures `json:"-"`
+	Signatures        []*Signature
 	Silent            bool
 	SkippableExt      []string
 	SkippablePath     []string
@@ -116,6 +116,7 @@ type Session struct {
 	Targets           []*Owner
 	Threads           int
 	Version           string
+	MatchLevel        int
 }
 
 // setConfig will set the defaults, and load a config file and environment variables if they are present
@@ -159,7 +160,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InMemClone = v.GetBool("in-mem-clone")
 	s.MaxFileSize = v.GetInt64("max-file-size") //TODO Need to implement
 	s.Mode = v.GetInt("mode")
-	s.RepoDirs = v.GetStringSlice("repo-dirs")
+	s.LocalDirs = v.GetStringSlice("local-dirs")
 	s.ScanFork = v.GetBool("scan-forks")  //TODO Need to implement
 	s.ScanTests = v.GetBool("scan-tests") //TODO Need to implement
 	s.ScanType = scanType
@@ -173,8 +174,8 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	//s.GithubURL = v.GetString("github-url")
 	//s.HideSecrets = v.GetBool("hide-secrets")
 	//s.JSONOutput = v.GetBool("json")
-	//s.MatchLevel = v.GetInt("match-level")
-	fmt.Println(s.RepoDirs)
+	s.MatchLevel = v.GetInt("match-level") // TODO make this a flag
+	//fmt.Println(s.LocalDirs) //TODO Remove
 
 	// add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {
@@ -212,12 +213,44 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitStats()
 	s.InitLogger()
 	s.InitThreads()
-	s.InitSignatures()
+	//s.InitSignatures()
 	s.InitAPIClient()
 
 	if !s.Silent {
 		s.InitRouter()
 	}
+
+	var curSig []Signature
+	var combinedSig []Signature
+	RulesFile := v.GetString("rules-file")
+	if RulesFile != "" {
+		losRules := strings.Split(RulesFile, ",")
+
+		for _, f := range losRules {
+			fmt.Println("rules file: ", f) //TODO remove me
+			f = strings.TrimSpace(f)
+			if PathExists(f) {
+				//fmt.Println("the path exists")  //TODO remove me
+				curSig = LoadSignatures(f, s.MatchLevel, s)
+				combinedSig = append(combinedSig, curSig...)
+			}
+		}
+	} else {
+		curSig = LoadSignatures(v.GetString(".")+"default_rules.yml", s.MatchLevel, s) // TODO implement this
+		combinedSig = append(combinedSig, curSig...)
+		//fmt.Println("I am in the else statement") // TODO remove me
+	}
+
+	//for i, s := range combinedSig {
+	//	fmt.Println("in the printing loop") //TODO remove me
+	//	fmt.Println(s) //TODO remove me
+	//	fmt.Println(i) //TODO remove me
+	//}
+
+	//s.Signatures = combinedSig
+
+	Signatures = combinedSig
+//z
 }
 
 // setCommitDepth will set the commit depth to go to during a sess. This is an ugly way of doing it but for the moment it works fine.
@@ -228,15 +261,15 @@ func setCommitDepth(c int) int {
 	return c
 }
 
-// InitSignature will load any signatures files into the session runtime configuration
-func (s *Session) InitSignatures() {
-	s.Signatures = Signatures{}
-	// TODO implement MJ sig methods
-	err := s.Signatures.Load(1)
-	if err != nil {
-		s.Out.Fatal("Error loading signatures: %s\n", err)
-	}
-}
+//// InitSignature will load any signatures files into the session runtime configuration
+//func (s *Session) InitSignatures() {
+//	s.Signatures = Signatures{}
+//	// TODO implement MJ sig methods
+//	err := s.Signatures.Load(1)
+//	if err != nil {
+//		s.Out.Fatal("Error loading signatures: %s\n", err)
+//	}
+//}
 
 // Finish is called at the end of a scan session and used to generate discrete data points
 // for a given scan session including setting the status of a scan to finished.
@@ -277,17 +310,17 @@ func (s *Session) AddFinding(finding *Finding) {
 	defer s.Unlock()
 	const MaxStrLen = 100
 	s.Findings = append(s.Findings, finding)
-	s.Out.Warn(" %s: %s, %s\n", strings.ToUpper(finding.Action), "File Match: "+finding.FileSignatureDescription, "Content Match: "+finding.ContentSignatureDescription) // TODO fix line length
+	//s.Out.Warn(" %s: %s, %s\n", strings.ToUpper(finding.Action), "File Match: "+finding.FileSignatureDescription, "Content Match: "+finding.ContentSignatureDescription) // TODO fix line length
 	s.Out.Info("  Path......................: %s\n", finding.FilePath)
-	s.Out.Info("  Repo......................: %s\n", finding.CloneUrl)
+	//s.Out.Info("  Repo......................: %s\n", finding.CloneUrl)
 	s.Out.Info("  Message...................: %s\n", TruncateString(finding.CommitMessage, MaxStrLen))
 	s.Out.Info("  Author....................: %s\n", finding.CommitAuthor)
-	if finding.FileSignatureComment != "" {
-		s.Out.Info("  FileSignatureComment......: %s\n", TruncateString(finding.FileSignatureComment, MaxStrLen)) // TODO fix line length
-	}
-	if finding.ContentSignatureComment != "" {
-		s.Out.Info("  ContentSignatureComment...:%s\n", TruncateString(finding.ContentSignatureComment, MaxStrLen)) // TODO fix line length
-	}
+	//if finding.FileSignatureComment != "" {
+	//	s.Out.Info("  FileSignatureComment......: %s\n", TruncateString(finding.FileSignatureComment, MaxStrLen)) // TODO fix line length
+	//}
+	//if finding.ContentSignatureComment != "" {
+	//	s.Out.Info("  ContentSignatureComment...:%s\n", TruncateString(finding.ContentSignatureComment, MaxStrLen)) // TODO fix line length
+	//}
 	s.Out.Info("  File URL...: %s\n", finding.FileUrl)
 	s.Out.Info("  Commit URL.: %s\n", finding.CommitUrl)
 	s.Out.Info(" ------------------------------------------------\n\n")

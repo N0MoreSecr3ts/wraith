@@ -37,9 +37,12 @@ func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, st
 	var repository *git.Repository
 	var err error
 	var dir string
+
 	if !*cloneConfig.InMemClone {
-		dir, err := ioutil.TempDir("", "wraith")
+		//fmt.Println(*cloneConfig.InMemClone) // TODO remove me
+		dir, err = ioutil.TempDir("", "wraith")
 		if err != nil {
+			//fmt.Println("error: ", err) // TODO remove me
 			return nil, "", err
 		}
 		repository, err = git.PlainClone(dir, false, cloneOptions)
@@ -47,8 +50,10 @@ func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, st
 		repository, err = git.Clone(memory.NewStorage(), nil, cloneOptions)
 	}
 	if err != nil {
+		//fmt.Println(err) // TODO remove me
 		return nil, dir, err
 	}
+	//fmt.Println("dir: ", dir) // TODO remove me
 	return repository, dir, nil
 }
 

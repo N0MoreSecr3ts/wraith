@@ -8,23 +8,44 @@ import (
 )
 
 // Finding is a secret that has been discovered within a target by a discovery method
+//type Finding struct {
+//	Id                          string
+//	//FilePath                    string
+//	Action                      string
+//	FileSignatureDescription    string
+//	FileSignatureComment        string
+//	ContentSignatureDescription string
+//	ContentSignatureComment     string
+//	//RepositoryOwner             string
+//	//RepositoryName              string
+//	//CommitHash                  string
+//	//CommitMessage               string
+//	//CommitAuthor                string
+//	FileUrl                     string
+//	//CommitUrl                   string
+//	//RepositoryUrl               string
+//	CloneUrl                    string
+//}
+
 type Finding struct {
-	Id                          string
-	FilePath                    string
-	Action                      string
-	FileSignatureDescription    string
-	FileSignatureComment        string
-	ContentSignatureDescription string
-	ContentSignatureComment     string
-	RepositoryOwner             string
-	RepositoryName              string
-	CommitHash                  string
-	CommitMessage               string
-	CommitAuthor                string
-	FileUrl                     string
-	CommitUrl                   string
-	RepositoryUrl               string
-	CloneUrl                    string
+	Action          string
+	Comment         string
+	CommitAuthor    string
+	CommitHash      string
+	CommitMessage   string
+	CommitUrl       string
+	Description     string
+	FilePath        string
+	FileUrl         string
+	GroverVersion   string
+	Hash            string
+	LineNumber      string
+	RepositoryName  string
+	RepositoryOwner string
+	RepositoryUrl   string
+	Ruleid          string
+	RulesVersion    string
+	SecretID        string
 }
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
@@ -43,6 +64,9 @@ func (f *Finding) setupUrls(scanType string) {
 
 }
 
+//func (f *finding) Initialize() {
+//}
+
 // generateID will create an ID for each finding based up the SHA1 of discrete data points associated
 // with the finding
 func (f *Finding) generateID() {
@@ -54,7 +78,7 @@ func (f *Finding) generateID() {
 	io.WriteString(h, f.CommitHash)
 	io.WriteString(h, f.CommitMessage)
 	io.WriteString(h, f.CommitAuthor)
-	f.Id = fmt.Sprintf("%x", h.Sum(nil))
+	f.SecretID = fmt.Sprintf("%x", h.Sum(nil))
 }
 
 // Initialize will set the urls and create an ID for inclusion within the finding

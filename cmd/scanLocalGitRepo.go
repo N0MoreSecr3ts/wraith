@@ -37,7 +37,8 @@ to quickly create a Cobra application.`,
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
-		sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
+		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
+		//sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
 
 		// TODO need to replace these with MJ methods
@@ -72,7 +73,7 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Int("commit-depth", 0, "Set the depth for commits")
 	scanLocalGitRepoCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanLocalGitRepoCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
-	scanLocalGitRepoCmd.Flags().String("repo-dirs", "", "local disk parent dir containing git repos")
+	scanLocalGitRepoCmd.Flags().String("local-dirs", "", "local disk parent dir containing git repos")
 	scanLocalGitRepoCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
 
 	//scanLocalGitRepoCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
@@ -88,7 +89,7 @@ func init() {
 	viperScanLocalGitRepo.BindPFlag("in-mem-clone", scanLocalGitRepoCmd.Flags().Lookup("in-mem-clone"))
 	viperScanLocalGitRepo.BindPFlag("no-expand-orgs", scanLocalGitRepoCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
-	viperScanLocalGitRepo.BindPFlag("repo-dirs", scanLocalGitRepoCmd.Flags().Lookup("repo-dirs"))
+	viperScanLocalGitRepo.BindPFlag("local-dirs", scanLocalGitRepoCmd.Flags().Lookup("local-dirs"))
 	viperScanLocalGitRepo.BindPFlag("rules-file", scanLocalGitRepoCmd.Flags().Lookup("rules-file"))
 	viperScanLocalGitRepo.BindPFlag("silent", scanLocalGitRepoCmd.Flags().Lookup("silent"))
 

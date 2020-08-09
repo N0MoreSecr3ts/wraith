@@ -21,6 +21,7 @@ func PathExists(path string) bool {
 		return true
 	}
 	if os.IsNotExist(err) {
+		//fmt.Println(err) // TODO remove me
 		return false
 	}
 

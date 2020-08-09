@@ -25,7 +25,7 @@ func CloneLocalRepository(cloneConfig *CloneConfiguration) (*git.Repository, str
 	var err error
 	var dir string
 	if !*cloneConfig.InMemClone {
-		dir, err := ioutil.TempDir("", "wraith")
+		dir, err = ioutil.TempDir("", "wraith")
 		if err != nil {
 			return nil, "", err
 		}

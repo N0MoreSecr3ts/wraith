@@ -115,7 +115,7 @@
 - [ ] Thread the scanning of commits
 - [ ] Check all urls point to the right repos (requires mucking with bindata.go)
 - [ ] Update Code Climate for Wraith
-- [ ] Write a new README **Next**
+- [ ] Write a new README
 - [ ] Make sure we clean up the temp directories
 - [X] ~~Pre-compiled binaries~~
 - [X] ~~Use YAML arrays~~
@@ -157,7 +157,7 @@
 - [X] ~~Update Readme.md~~
 - [ ] Security Scans
 - [ ] Sanitize user inputs
-- [ ] Contributing.md **Next**
+- [ ] Contributing.md
 - [ ] Makefile
 - [X] ~~.editorconfig~~
 - [X] ~~.gitignore~~
@@ -184,6 +184,7 @@
 ## Notes
 - [ ] Can we Go for the web front-end
 - [ ] Language Parsers
+- [ ] Convert Repository type, etc into github ones if needed
 
 [1]: https://github.com/eth0izzle/shhgit/blob/master/core/github.go#L91
 [2]: https://pkg.go.dev/github.com/go-git/go-git/v5?tab=doc#example-Clone

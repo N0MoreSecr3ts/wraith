@@ -11,7 +11,6 @@ import (
 	"github.com/gin-contrib/secure"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"wraith/common"
 )
 
 // Set various internal values used by the web interface
@@ -103,7 +102,7 @@ func fetchFile(c *gin.Context) {
 		if IsGithub {
 			return fmt.Sprintf("%s/%s/%s/%s%s", GithubBaseUri, c.Param("owner"), c.Param("repo"), c.Param("commit"), c.Param("path"))
 		} else {
-			results := common.CleanUrlSpaces(c.Param("owner"), c.Param("repo"), c.Param("commit"), c.Param("path"))
+			results := CleanUrlSpaces(c.Param("owner"), c.Param("repo"), c.Param("commit"), c.Param("path"))
 			return fmt.Sprintf("%s/%s/%s/%s/%s%s", GitLabBaseUri, results[0], results[1], "/-/raw/", results[2], results[3])
 		}
 	}()

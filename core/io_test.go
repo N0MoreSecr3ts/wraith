@@ -1,9 +1,9 @@
-package common_test
+package core_test
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
-	"wraith/common"
+	"wraith/core"
 )
 
 func TestFileExists(t *testing.T) {
@@ -13,7 +13,7 @@ func TestFileExists(t *testing.T) {
 
 		Convey("When the file exists", func() {
 			f := "../README.md"
-			b := common.FileExists(f)
+			b := core.FileExists(f)
 
 			Convey("The function should return true", func() {
 				So(b, ShouldEqual, true)
@@ -25,7 +25,7 @@ func TestFileExists(t *testing.T) {
 
 		Convey("When the file does not exist", func() {
 			f := "../NOPE.md"
-			b := common.FileExists(f)
+			b := core.FileExists(f)
 
 			Convey("The function should return false", func() {
 				So(b, ShouldEqual, false)

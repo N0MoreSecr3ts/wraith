@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - change internal name from gitrob to wraith
+- condense number of packages to remove cyclic dependencys. Better code organization is still needed.
 
 ### Fixed
 - bug in scanLocalGitRepo configuration flags
-
+- girlab and gihub scans were not working due to the wrong clone function being called.
 ## [0.0.3] - 2020-08-06
 ### Changed
 - massive rewrite and uplift of code from codeemitter and mattyjones

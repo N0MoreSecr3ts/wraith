@@ -1,5 +1,5 @@
 // Package matching contains specific functionality elated to scanning and detecting secrets within the given input.
-package matching
+package core
 
 import "regexp"
 

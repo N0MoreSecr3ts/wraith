@@ -1,12 +1,11 @@
 // Package matching contains specific functionality elated to scanning and detecting secrets within the given input.
-package matching
+package core
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"wraith/common"
 )
 
 // Signatures holds a list of all signatures used during the session
@@ -17,7 +16,7 @@ type Signatures struct {
 
 // loadSignatures will check for a signature file to exist in a known location and load it if it is found.
 func (s *Signatures) loadSignatures(path string) error {
-	if !common.FileExists(path) {
+	if !FileExists(path) {
 		return errors.New(fmt.Sprintf("Missing signature file: %s.\n", path))
 	}
 	data, readError := ioutil.ReadFile(path)

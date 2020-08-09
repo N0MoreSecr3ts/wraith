@@ -1,9 +1,9 @@
-package common_test
+package core_test
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
-	"wraith/common"
+	"wraith/core"
 )
 
 func TestCleanUrlSpaces(t *testing.T) {
@@ -12,7 +12,7 @@ func TestCleanUrlSpaces(t *testing.T) {
 
 		Convey("When the strings have spaces", func() {
 			str := "This "
-			result := common.CleanUrlSpaces(str)
+			result := core.CleanUrlSpaces(str)
 
 			Convey("The spaces should be replaced with dashes", func() {
 				for i, _ := range result {
@@ -38,7 +38,7 @@ func TestCleanUrlSpaces(t *testing.T) {
 
 		Convey("When the strings do not have spaces", func() {
 			str := "This"
-			result := common.CleanUrlSpaces(str)
+			result := core.CleanUrlSpaces(str)
 
 			Convey("The spaces should be left alone", func() {
 				for i, _ := range result {

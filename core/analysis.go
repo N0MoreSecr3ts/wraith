@@ -12,11 +12,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"wraith/common"
-	"wraith/github"
-	"wraith/gitlab"
-	"wraith/localRepo"
-	"wraith/matching"
 )
 
 // PrintSessionStats will print the performance and sessions stats to stdout at the conclusion of a session scan
@@ -69,7 +64,7 @@ func GatherTargets(sess *Session) {
 		}
 		sess.Out.Debug("%s (ID: %d) type: %s\n", *target.Login, *target.ID, *target.Type)
 		sess.AddTarget(target)
-		if sess.NoExpandOrgs == false && *target.Type == common.TargetTypeOrganization {
+		if sess.NoExpandOrgs == false && *target.Type == TargetTypeOrganization {
 			sess.Out.Debug("Gathering members of %s (ID: %d)...\n", *target.Login, *target.ID)
 			members, err := sess.Client.GetOrganizationMembers(*target)
 			if err != nil {
@@ -90,7 +85,7 @@ func GatherLocalRepositories(sess *Session) {
 
 	for _, pth := range sess.RepoDirs {
 
-		if !common.PathExists(pth) {
+		if !PathExists(pth) {
 			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)
 			os.Exit(1)
 		}
@@ -153,7 +148,7 @@ func GatherLocalRepositories(sess *Session) {
 					projectPathParts := strings.Split(*pGitProjName, string(os.PathSeparator))
 					pProjectName := &projectPathParts[len(projectPathParts)-2]
 
-					sessR := common.Repository{
+					sessR := Repository{
 						Owner:         pGitProjName,
 						ID:            pRepoID,
 						Name:          pProjectName,
@@ -185,7 +180,7 @@ func GatherLocalRepositories(sess *Session) {
 // This is done using threads, whose count is set via commandline flag. Care much be taken to avoid rate
 // limiting associated with suspected DOS attacks.
 func GatherRepositories(sess *Session) {
-	var ch = make(chan *common.Owner, len(sess.Targets))
+	var ch = make(chan *Owner, len(sess.Targets))
 	sess.Out.Debug("Number of targets: %d\n", len(sess.Targets))
 	var wg sync.WaitGroup
 	var threadNum int
@@ -218,7 +213,7 @@ func GatherRepositories(sess *Session) {
 					sess.AddRepository(repo)
 				}
 				sess.Stats.IncrementTargets()
-				sess.Out.Info(" Retrieved %d %s from %s\n", len(repos), common.Pluralize(len(repos), "repository", "repositories"), *target.Login)
+				sess.Out.Info(" Retrieved %d %s from %s\n", len(repos), Pluralize(len(repos), "repository", "repositories"), *target.Login)
 			}
 		}()
 	}
@@ -231,16 +226,16 @@ func GatherRepositories(sess *Session) {
 }
 
 // createFinding will create a discrete finding based on a match in a given repo and given commit
-func createFinding(repo common.Repository,
+func createFinding(repo Repository,
 	commit object.Commit,
 	change *object.Change,
-	fileSignature matching.FileSignature,
-	contentSignature matching.ContentSignature,
-	scanType string) *matching.Finding {
+	fileSignature FileSignature,
+	contentSignature ContentSignature,
+	scanType string) *Finding {
 
-	finding := &matching.Finding{
-		FilePath:                    common.GetChangePath(change),
-		Action:                      common.GetChangeAction(change),
+	finding := &Finding{
+		FilePath:                    GetChangePath(change),
+		Action:                      GetChangeAction(change),
 		FileSignatureDescription:    fileSignature.GetDescription(),
 		FileSignatureComment:        fileSignature.GetComment(),
 		ContentSignatureDescription: contentSignature.GetDescription(),
@@ -259,14 +254,14 @@ func createFinding(repo common.Repository,
 
 // matchContent will attempt to match the content of a file such as a password or access token within the file
 func matchContent(sess *Session,
-	matchTarget matching.MatchTarget,
-	repo common.Repository,
+	matchTarget MatchTarget,
+	repo Repository,
 	change *object.Change,
 	commit object.Commit,
-	fileSignature matching.FileSignature,
+	fileSignature FileSignature,
 	threadId int) {
 
-	content, err := common.GetChangeContent(change)
+	content, err := GetChangeContent(change)
 	if err != nil {
 		sess.Out.Error("Error retrieving content in commit %s, change %s:  %s", commit.String(), change.String(), err)
 	}
@@ -286,11 +281,11 @@ func matchContent(sess *Session,
 }
 
 // findSecrets will attempt to find secrets in the content of a given file or match file in a given path
-func findSecrets(sess *Session, repo *common.Repository, commit *object.Commit, changes object.Changes, threadId int) {
+func findSecrets(sess *Session, repo *Repository, commit *object.Commit, changes object.Changes, threadId int) {
 	for _, change := range changes {
 
-		path := common.GetChangePath(change)
-		matchTarget := matching.NewMatchTarget(path)
+		path := GetChangePath(change)
+		matchTarget := NewMatchTarget(path)
 		if matchTarget.IsSkippable(sess.SkippablePath, sess.SkippableExt) {
 			sess.Out.Debug("[THREAD #%d][%s] Skipping %s\n", threadId, *repo.CloneURL, matchTarget.Path)
 			continue
@@ -308,7 +303,7 @@ func findSecrets(sess *Session, repo *common.Repository, commit *object.Commit, 
 				}
 				if sess.Mode == 1 {
 					finding := createFinding(*repo, *commit, change, fileSignature,
-						matching.ContentSignature{Description: "NA"}, sess.ScanType)
+						ContentSignature{Description: "NA"}, sess.ScanType)
 					sess.AddFinding(finding)
 				}
 				if sess.Mode == 2 {
@@ -318,23 +313,15 @@ func findSecrets(sess *Session, repo *common.Repository, commit *object.Commit, 
 			}
 			sess.Stats.IncrementFiles()
 		} else {
-			matchContent(sess, matchTarget, *repo, change, *commit, matching.FileSignature{Description: "NA"}, threadId)
+			matchContent(sess, matchTarget, *repo, change, *commit, FileSignature{Description: "NA"}, threadId)
 			sess.Stats.IncrementFiles()
 		}
 	}
 }
 
 // cloneRepository will clone a given repository based upon a configured set or options a user provides
-func cloneRepository(sess *Session, repo *common.Repository, threadId int) (*git.Repository, string, error) {
+func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Repository, string, error) {
 	sess.Out.Debug("[THREAD #%d][%s] Cloning repository...\n", threadId, *repo.CloneURL)
-
-	cloneConfig := common.CloneConfiguration{
-		Url:        repo.CloneURL,
-		Branch:     repo.DefaultBranch,
-		Depth:      &sess.CommitDepth,
-		Token:      &sess.GitlabAccessToken, // TODO Is this need since we already have a client?
-		InMemClone: &sess.InMemClone,
-	}
 
 	var clone *git.Repository
 	var path string
@@ -342,13 +329,32 @@ func cloneRepository(sess *Session, repo *common.Repository, threadId int) (*git
 
 	switch sess.ScanType {
 	case "github":
-		clone, path, err = github.CloneRepository(&cloneConfig)
+		cloneConfig := CloneConfiguration{
+			Url:        repo.CloneURL,
+			Branch:     repo.DefaultBranch,
+			Depth:      &sess.CommitDepth,
+			InMemClone: &sess.InMemClone,
+		}
+		clone, path, err = CloneGithubRepository(&cloneConfig)
 	case "gitlab":
 		userName := "oauth2"
-		cloneConfig.Username = &userName
-		clone, path, err = gitlab.CloneRepository(&cloneConfig)
+		cloneConfig := CloneConfiguration{
+			Url:        repo.CloneURL,
+			Branch:     repo.DefaultBranch,
+			Depth:      &sess.CommitDepth,
+			Token:      &sess.GitlabAccessToken, // TODO Is this need since we already have a client?
+			InMemClone: &sess.InMemClone,
+			Username:   &userName,
+		}
+		clone, path, err = CloneGitlabRepository(&cloneConfig)
 	case "localGit":
-		clone, path, err = localRepo.CloneRepository(&cloneConfig)
+		cloneConfig := CloneConfiguration{
+			Url:        repo.CloneURL,
+			Branch:     repo.DefaultBranch,
+			Depth:      &sess.CommitDepth,
+			InMemClone: &sess.InMemClone,
+		}
+		clone, path, err = CloneLocalRepository(&cloneConfig)
 
 	}
 	if err != nil {
@@ -365,8 +371,8 @@ func cloneRepository(sess *Session, repo *common.Repository, threadId int) (*git
 
 // getRepositoryHistory will attempt to get the commit history of a given repo and if successful increment the repo
 // count and update the progress.
-func getRepositoryHistory(sess *Session, clone *git.Repository, repo *common.Repository, path string, threadId int) ([]*object.Commit, error) {
-	history, err := common.GetRepositoryHistory(clone)
+func getRepositoryHistory(sess *Session, clone *git.Repository, repo *Repository, path string, threadId int) ([]*object.Commit, error) {
+	history, err := GetRepositoryHistory(clone)
 	if err != nil {
 		sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", threadId, *repo.CloneURL, err)
 		if sess.InMemClone {
@@ -384,7 +390,7 @@ func getRepositoryHistory(sess *Session, clone *git.Repository, repo *common.Rep
 // scanning for secrets within the repo and based on that output create a finding associated with that repo
 func AnalyzeRepositories(sess *Session) {
 	sess.Stats.Status = StatusAnalyzing
-	var ch = make(chan *common.Repository, len(sess.Repositories))
+	var ch = make(chan *Repository, len(sess.Repositories))
 	var wg sync.WaitGroup
 	var threadNum int
 	if len(sess.Repositories) <= 1 {
@@ -397,7 +403,7 @@ func AnalyzeRepositories(sess *Session) {
 	wg.Add(threadNum)
 	sess.Out.Debug("Threads for repository analysis: %d\n", threadNum)
 
-	sess.Out.Important("Analyzing %d %s...\n", len(sess.Repositories), common.Pluralize(len(sess.Repositories), "repository", "repositories"))
+	sess.Out.Important("Analyzing %d %s...\n", len(sess.Repositories), Pluralize(len(sess.Repositories), "repository", "repositories"))
 
 	for i := 0; i < threadNum; i++ {
 		go func(tid int) {
@@ -422,7 +428,7 @@ func AnalyzeRepositories(sess *Session) {
 
 				for _, commit := range history {
 					sess.Out.Debug("[THREAD #%d][%s] Analyzing commit: %s\n", tid, *repo.CloneURL, commit.Hash)
-					changes, _ := common.GetChanges(commit, clone)
+					changes, _ := GetChanges(commit, clone)
 					sess.Out.Debug("[THREAD #%d][%s] %s changes in %d\n", tid, *repo.CloneURL, commit.Hash, len(changes))
 
 					findSecrets(sess, repo, commit, changes, tid)

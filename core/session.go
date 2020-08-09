@@ -12,12 +12,7 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"wraith/matching"
 	"wraith/version"
-
-	"wraith/common"
-	gh "wraith/github"
-	gl "wraith/gitlab"
 
 	"github.com/gin-gonic/gin"
 )
@@ -94,10 +89,10 @@ type Session struct {
 
 	BindAddress       string
 	BindPort          int
-	Client            common.IClient `json:"-"`
+	Client            IClient `json:"-"`
 	CommitDepth       int
 	Debug             bool
-	Findings          []*matching.Finding
+	Findings          []*Finding
 	GithubAccessToken string
 	GithubTargets     []string
 	GitlabAccessToken string
@@ -106,19 +101,19 @@ type Session struct {
 	Mode              int // TODO make this go away when MJ sig functionality is applied
 	MaxFileSize       int64
 	NoExpandOrgs      bool
-	Out               *common.Logger `json:"-"`
+	Out               *Logger `json:"-"`
 	RepoDirs          []string
-	Repositories      []*common.Repository
+	Repositories      []*Repository
 	Router            *gin.Engine `json:"-"`
 	ScanFork          bool
 	ScanTests         bool
 	ScanType          string
-	Signatures        matching.Signatures `json:"-"`
+	Signatures        Signatures `json:"-"`
 	Silent            bool
 	SkippableExt      []string
 	SkippablePath     []string
 	Stats             *Stats
-	Targets           []*common.Owner
+	Targets           []*Owner
 	Threads           int
 	Version           string
 }
@@ -184,7 +179,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	// add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {
 		e = strings.TrimSpace(e)
-		s.SkippablePath = common.AppendIfMissing(s.SkippablePath, e)
+		s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
 	}
 
 	// add any additional paths the user requested to exclude to the pre-defined slice
@@ -194,13 +189,13 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 		for _, e := range p {
 			e = strings.TrimSpace(e)
-			s.SkippablePath = common.AppendIfMissing(s.SkippablePath, e)
+			s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
 		}
 	}
 
 	// the default ignorable extensions
 	for _, e := range defaultIgnoreExtensions {
-		s.SkippableExt = common.AppendIfMissing(s.SkippableExt, e)
+		s.SkippableExt = AppendIfMissing(s.SkippableExt, e)
 	}
 
 	// add any additional extensions the user requested to ignore
@@ -210,7 +205,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 		for _, f := range e {
 			f = strings.TrimSpace(f)
-			s.SkippableExt = common.AppendIfMissing(s.SkippableExt, f)
+			s.SkippableExt = AppendIfMissing(s.SkippableExt, f)
 		}
 	}
 
@@ -235,7 +230,7 @@ func setCommitDepth(c int) int {
 
 // InitSignature will load any signatures files into the session runtime configuration
 func (s *Session) InitSignatures() {
-	s.Signatures = matching.Signatures{}
+	s.Signatures = Signatures{}
 	// TODO implement MJ sig methods
 	err := s.Signatures.Load(1)
 	if err != nil {
@@ -251,7 +246,7 @@ func (s *Session) Finish() {
 }
 
 // AddTarget will add a new target to a session to be scanned during that session
-func (s *Session) AddTarget(target *common.Owner) {
+func (s *Session) AddTarget(target *Owner) {
 	s.Lock()
 	defer s.Unlock()
 	for _, t := range s.Targets {
@@ -263,7 +258,7 @@ func (s *Session) AddTarget(target *common.Owner) {
 }
 
 // AddRepository will add a given repository to be scanned to a session
-func (s *Session) AddRepository(repository *common.Repository) {
+func (s *Session) AddRepository(repository *Repository) {
 	s.Lock()
 	defer s.Unlock()
 	for _, r := range s.Repositories {
@@ -277,7 +272,7 @@ func (s *Session) AddRepository(repository *common.Repository) {
 // TODO Need to update this to MJ methods
 // AddFinding will add a finding that has been discovered during a session to the list of findings
 // for that session
-func (s *Session) AddFinding(finding *matching.Finding) {
+func (s *Session) AddFinding(finding *Finding) {
 	s.Lock()
 	defer s.Unlock()
 	const MaxStrLen = 100
@@ -285,13 +280,13 @@ func (s *Session) AddFinding(finding *matching.Finding) {
 	s.Out.Warn(" %s: %s, %s\n", strings.ToUpper(finding.Action), "File Match: "+finding.FileSignatureDescription, "Content Match: "+finding.ContentSignatureDescription) // TODO fix line length
 	s.Out.Info("  Path......................: %s\n", finding.FilePath)
 	s.Out.Info("  Repo......................: %s\n", finding.CloneUrl)
-	s.Out.Info("  Message...................: %s\n", common.TruncateString(finding.CommitMessage, MaxStrLen))
+	s.Out.Info("  Message...................: %s\n", TruncateString(finding.CommitMessage, MaxStrLen))
 	s.Out.Info("  Author....................: %s\n", finding.CommitAuthor)
 	if finding.FileSignatureComment != "" {
-		s.Out.Info("  FileSignatureComment......: %s\n", common.TruncateString(finding.FileSignatureComment, MaxStrLen)) // TODO fix line length
+		s.Out.Info("  FileSignatureComment......: %s\n", TruncateString(finding.FileSignatureComment, MaxStrLen)) // TODO fix line length
 	}
 	if finding.ContentSignatureComment != "" {
-		s.Out.Info("  ContentSignatureComment...:%s\n", common.TruncateString(finding.ContentSignatureComment, MaxStrLen)) // TODO fix line length
+		s.Out.Info("  ContentSignatureComment...:%s\n", TruncateString(finding.ContentSignatureComment, MaxStrLen)) // TODO fix line length
 	}
 	s.Out.Info("  File URL...: %s\n", finding.FileUrl)
 	s.Out.Info("  Commit URL.: %s\n", finding.CommitUrl)
@@ -318,7 +313,7 @@ func (s *Session) InitStats() {
 
 // InitLogger will initialize the logger for the session
 func (s *Session) InitLogger() {
-	s.Out = &common.Logger{}
+	s.Out = &Logger{}
 	s.Out.SetDebug(s.Debug)
 	s.Out.SetSilent(s.Silent)
 }
@@ -328,12 +323,12 @@ func (s *Session) InitAPIClient() {
 
 	switch s.ScanType {
 	case "github":
-		gh.CheckAPIToken(s.GithubAccessToken)
-		s.Client = gh.Client.NewClient(gh.Client{}, s.GithubAccessToken)
+		CheckGithubAPIToken(s.GithubAccessToken)
+		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken)
 	case "gitlab":
-		gl.CheckAPIToken(s.GitlabAccessToken)
+		CheckGitlabAPIToken(s.GitlabAccessToken)
 		var err error
-		s.Client, err = gl.Client.NewClient(gl.Client{}, s.GitlabAccessToken, s.Out)
+		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out)
 		if err != nil {
 			s.Out.Fatal("Error initializing GitLab client: %s", err)
 		}

@@ -1,0 +1,23 @@
+---
+commit-depth: 0
+gitlab-targets:
+  - 5034914
+  - mattyjones
+silent: false
+debug: false
+gitlab-api-token: <token>>
+github-api-token: <token>>
+github-targets:
+  - mattyjones
+  - sensu-plugins
+ignore-path:
+  - cmd/
+  - docs/
+ignore-extension:
+  - .html
+  - .css
+  - .log
+in-mem-clone: true
+repo-dirs:
+  - relative/path/to/repo
+  - absolute/path/to/repo

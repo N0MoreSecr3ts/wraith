@@ -1,11 +1,10 @@
 // Package matching contains specific functionality elated to scanning and detecting secrets within the given input.
-package matching
+package core
 
 import (
 	"crypto/sha1"
 	"fmt"
 	"io"
-	"wraith/common"
 )
 
 // Finding is a secret that has been discovered within a target by a discovery method
@@ -36,7 +35,7 @@ func (f *Finding) setupUrls(scanType string) {
 		f.FileUrl = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryUrl, f.CommitHash, f.FilePath)
 		f.CommitUrl = fmt.Sprintf("%s/commit/%s", f.RepositoryUrl, f.CommitHash)
 	case "gitlab":
-		results := common.CleanUrlSpaces(f.RepositoryOwner, f.RepositoryName)
+		results := CleanUrlSpaces(f.RepositoryOwner, f.RepositoryName)
 		f.RepositoryUrl = fmt.Sprintf("https://gitlab.com/%s/%s", results[0], results[1])
 		f.FileUrl = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryUrl, f.CommitHash, f.FilePath)
 		f.CommitUrl = fmt.Sprintf("%s/commit/%s", f.RepositoryUrl, f.CommitHash)

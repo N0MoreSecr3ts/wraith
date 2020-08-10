@@ -15,14 +15,6 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
-// CloneConfiguration holds the configurations for cloning a repo
-//type CloneConfiguration struct {
-//	InMemClone *bool
-//	Url        *string
-//	Branch     *string
-//	Depth      *int
-//}
-
 // CloneRepository will crete either an in memory clone of a given repository or clone to a temp dir.
 func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
@@ -37,9 +29,12 @@ func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, st
 	var repository *git.Repository
 	var err error
 	var dir string
+
 	if !*cloneConfig.InMemClone {
-		dir, err := ioutil.TempDir("", "wraith")
+		//fmt.Println(*cloneConfig.InMemClone) // TODO remove me
+		dir, err = ioutil.TempDir("", "wraith")
 		if err != nil {
+			//fmt.Println("error: ", err) // TODO remove me
 			return nil, "", err
 		}
 		repository, err = git.PlainClone(dir, false, cloneOptions)
@@ -47,6 +42,7 @@ func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, st
 		repository, err = git.Clone(memory.NewStorage(), nil, cloneOptions)
 	}
 	if err != nil {
+		//fmt.Println(err) // TODO remove me
 		return nil, dir, err
 	}
 	return repository, dir, nil

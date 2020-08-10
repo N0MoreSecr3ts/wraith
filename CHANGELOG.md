@@ -7,13 +7,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.4] - 2020-08-10
 ### Changed
 - change internal name from gitrob to wraith
 - condense number of packages to remove cyclic dependencys. Better code organization is still needed.
+- rules are known as signatures
+- all signatures are in a single yaml file
+- how targets are calculated and their count is displayed and referenced
+
+### Added
+- rule metadata
+- a confidence level for each signature (match level)
+- a bit flip to enable/disable a given signature
+- ability for signatures to be versioned
+- ability to specify one or more signature files
+- ability to pull signatures from a default location automatically
+- enhanced filtering of match relative to a signature
+- additional performance and metrics to the summary output
+- additional metrics to the real-time output
 
 ### Fixed
 - bug in scanLocalGitRepo configuration flags
-- girlab and gihub scans were not working due to the wrong clone function being called.
+- gitlab and gihub scans were not working due to the wrong clone function being called.
+
 ## [0.0.3] - 2020-08-06
 ### Changed
 - massive rewrite and uplift of code from codeemitter and mattyjones
@@ -27,7 +43,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - initial release for the new project
 
-[Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.3...HEAD
-[0.0.2]: https://github.com/mattyjones/wraith/releases/tag/0.0.3
+[Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.4...HEAD
+[0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.4
+[0.0.3]: https://github.com/mattyjones/wraith/releases/tag/0.0.3
 [0.0.2]: https://github.com/mattyjones/gitrob/releases/tag/0.0.2
 [0.0.1]: https://github.com/mattyjones/gitrob/releases/tag/0.0.1

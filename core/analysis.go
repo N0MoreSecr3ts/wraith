@@ -24,22 +24,21 @@ func PrintSessionStats(sess *Session) {
 	sess.Out.Info("Total Findings......: %d\n", sess.Stats.Findings)
 	sess.Out.Important("\n")
 	sess.Out.Important("--------Files--------\n")
-	sess.Out.Info("Total Files.........: %d\n", sess.Stats.Files)
-	sess.Out.Info("Files Scanned.......: %d\n", -1) // TODO implement skipping files and tests
-	sess.Out.Info("Files Ignored.......: %d\n", -1) // TODO implement skipping files and tests
+	sess.Out.Info("Total Files.........: %d\n", sess.Stats.FilesTotal)
+	sess.Out.Info("Files Scanned.......: %d\n", sess.Stats.FilesScanned)
+	sess.Out.Info("Files Ignored.......: %d\n", sess.Stats.FilesIgnored)
+	sess.Out.Info("Files Dirty.........: %d\n", sess.Stats.FilesDirty)
 	sess.Out.Important("\n")
 	sess.Out.Important("---------SCM---------\n")
-	sess.Out.Info("Orgs................: %d\n", -1) // TODO need to implement
-	sess.Out.Info("Users...............: %d\n", -1) // TODO need to implement
 	sess.Out.Info("Repos Found.........: %d\n", sess.Stats.RepositoriesTotal)
-	sess.Out.Info("Repos Cloned........: %d\n", sess.Stats.RepositoriesCloned) // TODO need to implement
-	sess.Out.Info("Repos Scanned.......: %d\n", sess.Stats.RepositoriesScanned) // TODO need to implement
+	sess.Out.Info("Repos Cloned........: %d\n", sess.Stats.RepositoriesCloned)
+	sess.Out.Info("Repos Scanned.......: %d\n", sess.Stats.RepositoriesScanned)
 	sess.Out.Info("Commits Scanned.....: %d\n", sess.Stats.Commits)
-	sess.Out.Info("Commits Dirty.......: %d\n", -1) // TODO need to implement
+	sess.Out.Info("Commits Dirty.......: %d\n", sess.Stats.CommitsDirty)
 	sess.Out.Important("\n")
 	sess.Out.Important("-------General-------\n")
 	sess.Out.Info("Wraith Version......: %s\n", sess.Version)
-	sess.Out.Info("Rules Version.......: %d\n", -1) // TODO need to implement
+	sess.Out.Info("Rules Version.......: %s\n", sess.RulesVersion)
 	sess.Out.Info("Elapsed Time........: %s\n\n", time.Since(sess.Stats.StartedAt))
 }
 
@@ -88,7 +87,6 @@ func GatherLocalRepositories(sess *Session) {
 	// It will contain directorys, that will then be added to the repo count
 	// if they contain a .git directory
 	sess.Stats.Targets = len(sess.LocalDirs)
-	//fmt.Println("targets: ",sess.Stats.Targets)//TODO remove me
 
 	for _, pth := range sess.LocalDirs {
 
@@ -226,99 +224,11 @@ func GatherRepositories(sess *Session) {
 	wg.Wait()
 }
 
-// createFinding will create a discrete finding based on a match in a given repo and given commit
-//func createFinding(repo Repository,
-//	commit object.Commit,
-//	change *object.Change,
-//	fileSignature FileSignature,
-//	contentSignature ContentSignature,
-//scanType string) *Finding {
-
-//	finding := &Finding{
-//		FilePath:                    GetChangePath(change),
-//		Action:                      GetChangeAction(change),
-//		FileSignatureDescription:    fileSignature.GetDescription(),
-//		FileSignatureComment:        fileSignature.GetComment(),
-//		ContentSignatureDescription: contentSignature.GetDescription(),
-//		ContentSignatureComment:     contentSignature.GetComment(),
-//		RepositoryOwner:             *repo.Owner,
-//		RepositoryName:              *repo.Name,
-//		CommitHash:                  commit.Hash.String(),
-//		CommitMessage:               strings.TrimSpace(commit.Message),
-//		CommitAuthor:                commit.Author.String(),
-//		CloneUrl:                    *repo.CloneURL,
-//	}
-//	finding.Initialize(scanType)
-//	return finding
+//	sess.Out.Debug("[THREAD #%d][%s] Skipping %s\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me
 //
-//}
-
-// matchContent will attempt to match the content of a file such as a password or access token within the file
-//func matchContent(sess *Session,
-//	matchTarget MatchFile,
-//	repo Repository,
-//	change *object.Change,
-//	commit object.Commit,
-//	fileSignature FileSignature,
-//	threadId int) {
+//sess.Out.Debug("[THREAD #%d][%s] Inspecting file: %s...\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me
 //
-//	content, err := GetChangeContent(change)
-//	if err != nil {
-//		sess.Out.Error("Error retrieving content in commit %s, change %s:  %s", commit.String(), change.String(), err)
-//	}
-//	matchTarget.Content = content
-//	sess.Out.Debug("[THREAD #%d][%s] Matching content in %s...\n", threadId, *repo.CloneURL, commit.Hash)
-//	for _, contentSignature := range sess.Signatures.ContentSignatures {
-//		matched, err := contentSignature.Match(matchTarget)
-//		if err != nil {
-//			sess.Out.Error("Error while performing content match with '%s': %s\n", contentSignature.Description, err)
-//		}
-//		if !matched {
-//			continue
-//		}
-//		finding := createFinding(repo, commit, change, fileSignature, contentSignature, sess.ScanType)
-//		sess.AddFinding(finding)
-//	}
-//}
-
-// findSecrets will attempt to find secrets in the content of a given file or match file in a given path
-//func findSecrets(sess *Session, repo *Repository, commit *object.Commit, changes object.Changes, threadId int) {
-//	for _, change := range changes {
-//
-//		path := GetChangePath(change)
-//		matchTarget := newMatchFile(path)
-//		if matchTarget.isSkippable(sess) {
-//			sess.Out.Debug("[THREAD #%d][%s] Skipping %s\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me
-//			continue
-//		}
-//		sess.Out.Debug("[THREAD #%d][%s] Inspecting file: %s...\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me
-//
-//		if sess.Mode != 3 {
-//			for _, fileSignature := range sess.Signatures.FileSignatures {
-//				matched, err := fileSignature.Match(matchTarget)
-//				if err != nil {
-//					sess.Out.Error(fmt.Sprintf("Error while performing file match: %s\n", err))
-//				}
-//				if !matched {
-//					continue
-//				}
-//				if sess.Mode == 1 {
-//					finding := createFinding(*repo, *commit, change, fileSignature,
-//						ContentSignature{Description: "NA"}, sess.ScanType)
-//					sess.AddFinding(finding)
-//				}
-//				if sess.Mode == 2 {
-//					matchContent(sess, matchTarget, *repo, change, *commit, fileSignature, threadId)
-//				}
-//				break
-//			}
-//			sess.Stats.IncrementFiles()
-//		} else {
-//			matchContent(sess, matchTarget, *repo, change, *commit, FileSignature{Description: "NA"}, threadId)
-//			sess.Stats.IncrementFiles()
-//		}
-//	}
-//}
+//			sess.Out.Error(fmt.Sprintf("Error while performing file match: %s\n", err))
 
 // cloneRepository will clone a given repository based upon a configured set or options a user provides
 func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Repository, string, error) {
@@ -367,7 +277,6 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 			return nil, "", err
 		default:
 			sess.Out.Error("Error cloning repository %s: %s\n", *repo.CloneURL, err)
-			//sess.Stats.IncrementRepositories()
 			//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 			return nil, "", err
 		}
@@ -395,73 +304,18 @@ func getRepositoryHistory(sess *Session, clone *git.Repository, repo *Repository
 	return history, err
 }
 
-// AnalyzeRepositories will take a given repository, clone it, pull the commit history and use that as a basis for
-// scanning for secrets within the repo and based on that output create a finding associated with that repo
-//func AnalyzeRepositories(sess *Session) {
-//	sess.Stats.Status = StatusAnalyzing
-//	var ch = make(chan *Repository, len(sess.Repositories))
-//	var wg sync.WaitGroup
-//	var threadNum int
-//	if len(sess.Repositories) <= 1 {
-//		threadNum = 1
-//	} else if len(sess.Repositories) <= sess.Threads {
-//		threadNum = len(sess.Repositories) - 1
-//	} else {
-//		threadNum = sess.Threads
-//	}
-//	wg.Add(threadNum)
-//	sess.Out.Debug("Threads for repository analysis: %d\n", threadNum)
-//
-//	sess.Out.Important("Analyzing %d %s...\n", len(sess.Repositories), Pluralize(len(sess.Repositories), "repository", "repositories"))
-//
-//	for i := 0; i < threadNum; i++ {
-//		go func(tid int) {
-//			for {
-//				sess.Out.Debug("[THREAD #%d] Requesting new repository to analyze...\n", tid)
-//				repo, ok := <-ch
-//				if !ok {
-//					sess.Out.Debug("[THREAD #%d] No more tasks, marking WaitGroup as done\n", tid)
-//					wg.Done()
-//					return
-//				}
-//
-//				clone, path, err := cloneRepository(sess, repo, tid)
-//				if err != nil {
-//					continue
-//				}
-//
-//				history, err := getRepositoryHistory(sess, clone, repo, path, tid)
-//				if err != nil {
-//					continue
-//				}
-//
-//				for _, commit := range history {
+//sess.Out.Debug("Threads for repository analysis: %d\n", threadNum)
+//sess.Out.Important("Analyzing %d %s...\n", len(sess.Repositories), Pluralize(len(sess.Repositories), "repository", "repositories"))
+//				sess.Out.Debug("[THREAD #%d] No more tasks, marking WaitGroup as done\n", tid)
+
 //					sess.Out.Debug("[THREAD #%d][%s] Analyzing commit: %s\n", tid, *repo.CloneURL, commit.Hash)
-//					changes, _ := GetChanges(commit, clone)
 //					sess.Out.Debug("[THREAD #%d][%s] %s changes in %d\n", tid, *repo.CloneURL, commit.Hash, len(changes))
 //
-//					findSecrets(sess, repo, commit, changes, tid)
-//
-//					sess.Stats.IncrementCommits()
 //					sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)
-//				}
 //
 //				sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
-//				if sess.InMemClone {
-//					os.RemoveAll(path)
-//				}
 //				sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
-//				sess.Stats.IncrementRepositories()
-//				sess.Stats.UpdateProgress(sess.Stats.Repositories, len(sess.Repositories))
-//			}
-//		}(i)
-//	}
-//	for _, repo := range sess.Repositories {
-//		ch <- repo
-//	}
-//	close(ch)
-//	wg.Wait()
-//}
+
 func AnalyzeRepositories(sess *Session) {
 	sess.Stats.Status = StatusAnalyzing
 	if len(sess.Repositories) == 0 {
@@ -471,7 +325,6 @@ func AnalyzeRepositories(sess *Session) {
 
 	var ch = make(chan *Repository, len(sess.Repositories))
 	var wg sync.WaitGroup
-	//var threadNum int
 
 	var threadNum int
 	if len(sess.Repositories) <= 1 {
@@ -489,11 +342,7 @@ func AnalyzeRepositories(sess *Session) {
 	for i := 0; i < threadNum; i++ {
 		go func(tid int) {
 			for {
-				//repo, ok := <-ch
-				//if !ok {
-				//	wg.Done()
-				//	return
-				//}
+
 				sess.Out.Debug("[THREAD #%d] Requesting new repository to analyze...\n", tid)
 				repo, ok := <-ch
 				if !ok {
@@ -510,26 +359,6 @@ func AnalyzeRepositories(sess *Session) {
 					}
 					continue
 				}
-
-				// This is to set the org for inclusion in the reports. If we are scanning a local repo or filesystem then we default to local.
-				// If we are scanning a GHE instance then we set the org based on the cloneURL
-				//var orgPath string
-
-				//if *hunt.Organizations[0].Login == "localRepo" {
-				//	orgPath = "localRepo"
-				//} else if *hunt.Organizations[0].Login == "github.com" {
-				//	orgPath = "github.com"
-				//} else {
-				//	fullPath := strings.Split(*repo.CloneURL, ":")
-				//	fullRepoPath := fullPath[1]
-				//	repoPath := strings.Split(fullRepoPath, "/")
-				//	orgPath = repoPath[0]
-				//}
-
-				// Get the hash for the last commit and add it. This is used to determine if any new commits have been made since the last time this was run
-				//ref, _ := clone.Head()
-				//lastCommit := fmt.Sprint(ref.Hash())
-				//report.addCommit(orgPath, *repo.Name, *repo.DefaultBranch, lastCommit)
 
 				// Get the commit history for the repo
 				history, err := GetRepositoryHistory(clone)
@@ -558,76 +387,60 @@ func AnalyzeRepositories(sess *Session) {
 						fPath := GetChangePath(change)
 						fullFilePath := path + "/" + fPath
 
-						//fmt.Println("path: ", path)
+						sess.Stats.IncrementFilesTotal()
 
-						// This is the total number of files that we know exist in out path. This does not care about the scan, it is simply the total number of files found
-						//sess.Stats.IncrementFilesTotal() TODO implement in stats
+						likelyTestFile := false
 
-						//likelyTestFile := false
+						if !sess.ScanTests {
+							likelyTestFile = isTestFileOrPath(fullFilePath)
+						}
 
-						//if !hunt.ScanTests {  TODO implement in scanning for tests
-						//	likelyTestFile = isTestFileOrPath(fullFilePath)
-						//}
+						// If the file is likely a test then ignore it
+						if likelyTestFile {
+							// If we are not scanning the file then by definition we are ignoring it
+							sess.Stats.IncrementFilesIgnored()
+							continue
+						}
 
 						if fi, err := os.Stat(fullFilePath); err == nil {
 							fileSize := fi.Size()
 
 							var mbFileMaxSize int64
-							mbFileMaxSize = sess.MaxFileSize * 1024 * 1024 // TODO fully implement this
+							mbFileMaxSize = sess.MaxFileSize * 1024 * 1024
 
 							// If the file is greater than the max size of a file we want to deal with then ignore it
 							if fileSize > mbFileMaxSize {
 								// If we are not scanning the file then by definition we are ignoring it
-								//sess.Stats.IncrementFilesIgnored() TODO implement in stats
+								sess.Stats.IncrementFilesIgnored()
 								continue
 							}
 						}
-
-						// If the file is likely a test then ignore it
-						//if likelyTestFile { TODO implement in stats
-						//	// If we are not scanning the file then by definition we are ignoring it
-						//	hunt.Stats.IncrementFilesIgnored()
-						//	continue
-						//}
 
 						// If the file matches a file extension or other method that precludes it from a scan
 						matchFile := newMatchFile(fullFilePath)
 						if matchFile.isSkippable(sess) {
 							// If we are not scanning the file then by definition we are ignoring it
-							//hunt.Stats.IncrementFilesIgnored()TODO implement in stats
+							sess.Stats.IncrementFilesIgnored()
 							continue
 						}
-						sess.Stats.IncrementFiles() // TODO this should be total files
-						//fmt.Println("I am the matchFile:",matchFile)
-
-						//if hunt.Debug {
-						//	fmt.Println("Scanning ", fullFilePath)
-						//} TODO implement in stats
+						sess.Stats.IncrementFilesTotal()
 
 						// We are now finally at the point where we are going to scan a file
-						//hunt.Stats.IncrementFilesScanned()TODO implement in stats
-						//idx := 1 TODO remove me
+						sess.Stats.IncrementFilesScanned()
+
 						// for each signature that is loaded scan the file as a whole and generate a map of the match and the line number the match was found on
 						for _, signature := range Signatures {
 
-							//fmt.Println("I am a sig: ", idx) TODO remove me
-							//idx++ TODO remove me
 							bMatched, matchMap := signature.ExtractMatch(matchFile)
-							//fmt.Println("I done trying be matched") // TODO remove me
 							if bMatched {
-								//fmt.Println("I am matched") // TODO remove me
+
+								sess.Stats.IncrementFilesDirty()
 
 								var content string   // this is because file matches are puking
 								var genericID string // the generic id used in the finding
 
 								// for every instance of the secret that matched the specific rule create a new finding
 								for k, v := range matchMap {
-
-									// Increment the total number of findings found
-									//sess.Stats.IncrementFindingsTotal()TODO implement in stats
-
-									// Is the secret known to us already
-									//knownSecret := false
 
 									cleanK := strings.SplitAfterN(k, "_", 2)
 									if matchMap == nil {
@@ -640,23 +453,9 @@ func AnalyzeRepositories(sess *Session) {
 									}
 
 									// destroy the secret if the flag is set
-									//if hunt.HideSecrets { TODO implement in stats
-									//	content = ""
-									//}
-
-									// if the secret, via the id, is already in the triage file we skip it
-									//for _, h := range hunt.TriageIDs {
-									//	if h == genericID {
-									//		// increment the count of findings that are previously known and already accounted for by the triage file
-									//		hunt.Stats.IncrementFindingsKnown()
-									//		knownSecret = true
-									//	}
-									//}
-
-									// if the secret is in the triage file do not report it
-									//if knownSecret {
-									//	continue
-									//}
+									if sess.HideSecrets {
+										content = ""
+									}
 
 									finding := &Finding{
 										Action:          changeAction,
@@ -671,26 +470,12 @@ func AnalyzeRepositories(sess *Session) {
 										RepositoryName:  *repo.Name,
 										RepositoryOwner: *repo.Owner,
 										Ruleid:          signature.Ruleid(),
-										//RulesVersion:    hunt.RulesVersion, TODO implement this
-										SecretID: genericID,
+										RulesVersion:    sess.RulesVersion,
+										SecretID:        genericID,
 									}
 
 									// Get a proper uid for the finding
 									finding.Initialize(sess.ScanType)
-
-									//secret := &Secret{ // TODO this is all for the db output
-									//	FilePath:    fPath,
-									//	CommitHash:  commit.Hash.String(),
-									//	Description: signature.Description(),
-									//	ID:          generateGenericID(content),
-									//	RuleID:      signature.Ruleid(),
-									//}
-									//
-									//// Generate a proper uid
-									//secret.Initialize()
-
-									// Add the secret to the report for later inclusion in the db or dump to json/csv
-									//report.addSecret(orgPath, *repo.Name, *repo.DefaultBranch, secret)
 
 									// Add it to the hunt
 									sess.AddFinding(finding)
@@ -699,34 +484,28 @@ func AnalyzeRepositories(sess *Session) {
 
 									dirtyCommit = true
 
-									// print realtime data to stdout
-									//realTimeOutput(finding, hunt)
+									//print realtime data to stdout
+									realTimeOutput(finding, sess)
 
-									//if hunt.DBOutput {
-									//	writeSecretToDB(orgPath, repo, secret, db, orgMap, repoMap, branchMap)
-									//}
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
 								if sess.InMemClone {
 									os.RemoveAll(path)
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
-								sess.Stats.IncrementRepositoriesScanned()
+								//sess.Stats.IncrementRepositoriesScanned()
 								//sess.Stats.UpdateProgress(sess.Stats.RepositoriesScanned, len(sess.Repositories))
 							}
 						}
 					}
 					// Increment the number of commits that were found t be dirty
 					if dirtyCommit {
-						//	hunt.Stats.IncrementCommitsDirty() TODO implemnt in stats
+						sess.Stats.IncrementCommitsDirty()
 					}
 				}
 
 				os.RemoveAll(path)
 				sess.Stats.IncrementRepositoriesScanned()
-				//fmt.Println(len(sess.Repositories)) // TODO remove me
-				//sess.Stats.IncrementRepositoriesScanned() TODO implement in stats
-				//db.Close()
 			}
 		}(i)
 	}

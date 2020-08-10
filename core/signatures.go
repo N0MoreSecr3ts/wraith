@@ -31,21 +31,16 @@ var losSafeFunctionSignatures = []SafeFunctionSignature{}
 
 // loadRuleSet will read in the defined signatures/rules from an external source
 func loadRuleSet(filename string) (SignatureConfig, error) {
-	//fmt.Println("I am in the load rel set") //TODO remove me
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
-		//fmt.Println(err) //TODO remove me
 		return SignatureConfig{}, err
 	}
 
 	var c SignatureConfig
 	err = yaml.Unmarshal(bytes, &c)
 	if err != nil {
-		//fmt.Println(err) //TODO remove me
 		return SignatureConfig{}, err
 	}
-
-	//fmt.Println(c.PatternSignatures) // TODO remove me
 
 	return c, nil
 }
@@ -158,9 +153,6 @@ type SignatureConfig struct {
 func (s SimpleSignature) ExtractMatch(file MatchFile) (bool, map[string]int) {
 	var haystack *string
 	var bResult = false
-	//fmt.Println(file.Filename) // TODO remove me
-	//fmt.Println(file.Extension) // TODO remove me
-	//fmt.Println(file.Path) // TODO remove me
 
 	// this is empty and could be removed but it here to streamline all the match functions
 	var results map[string]int
@@ -242,30 +234,21 @@ func (s PatternSignature) ExtractMatch(file MatchFile) (bool, map[string]int) {
 	var bResult = false             // match result
 	results := make(map[string]int) // the secret and the line number in a map
 
-	//fmt.Println("File: ",file) TODO remove me
-
 	switch s.part {
 	case PartPath:
-		//fmt.Println("path(pattern)") //TODO remove me
 		haystack = &file.Path
 		bResult = s.match.MatchString(*haystack)
 	case PartFilename:
-		//fmt.Println("filename(pattern)") //TODO remove me
 		haystack = &file.Filename
 		bResult = s.match.MatchString(*haystack)
 	case PartExtension:
-		//fmt.Println("ext(pattern)") //TODO remove me
 		haystack = &file.Extension
 		bResult = s.match.MatchString(*haystack)
 	case PartContent:
-		//fmt.Println("content(pattern)") //TODO remove me
 		haystack := &file.Path
-		//fmt.Println("this is the haystack: ", *haystack) //TODO remove me
 		if PathExists(*haystack) {
-			//fmt.Println("The path exists")
 			if _, err := os.Stat(*haystack); err == nil {
 				data, err := ioutil.ReadFile(*haystack)
-				//fmt.Println(data)
 				if err != nil {
 					sErrAppend := fmt.Sprintf("ERROR --- Unable to open file for scanning: <%s> \nError Message: <%s>", *haystack, err)
 					results[sErrAppend] = 0 // set to zero due to error, we never have a line 0 so we can always ignore that or error on it
@@ -275,9 +258,7 @@ func (s PatternSignature) ExtractMatch(file MatchFile) (bool, map[string]int) {
 				r := s.match // this is the regex that we are going to try and match against
 
 				var contextMatches []string
-				//fmt.Println("I am trying to match things 1") // TODO remove me
 				if r.Match(data) {
-					//fmt.Println("I am trying to match things 2") // TODO remove me
 					for _, curRegexMatch := range r.FindAll(data, -1) {
 						contextMatches = append(contextMatches, string(curRegexMatch))
 					}
@@ -396,21 +377,19 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 		os.Exit(2)
 	}
 
-	//rulesMetaData := RulesMetaData{ // TODO implement this
-	//	Version: c.Meta.Version,
-	//	Date:    c.Meta.Date,
-	//	Time:    c.Meta.Time,
-	//}
+	rulesMetaData := RulesMetaData{
+		Version: c.Meta.Version,
+		Date:    c.Meta.Date,
+		Time:    c.Meta.Time,
+	}
 
-	//hunt.RulesVersion = rulesMetaData.Version // TODO implement this
+	sess.RulesVersion = rulesMetaData.Version // TODO implement this
 
 	losSimpleSignatures := []SimpleSignature{}   // TODO change this variable name
 	losPatternSignatures := []PatternSignature{} // TODO change this variable name
 	for _, curSig := range c.SimpleSignatures {
 
 		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
-			//fmt.Println(mLevel) //TODO remove me
-			//fmt.Println(" I am in the enable phase") //TODO remove me
 
 			var part string
 			switch strings.ToLower(curSig.Part) {
@@ -437,10 +416,6 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Ruleid,
 			})
 		}
-
-		//for i,_ := range losSimpleSignatures {
-		//	fmt.Println(i) //TODO remove me
-		//}
 	}
 
 	for _, curSig := range c.PatternSignatures {
@@ -471,9 +446,6 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Ruleid,
 			})
 		}
-		//for i,_ := range losPatternSignatures {
-		//	fmt.Println(i) //TODO remove me
-		//}
 	}
 	for _, curSig := range c.SafeFunctionSignatures {
 		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
@@ -503,9 +475,6 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Ruleid,
 			})
 		}
-		//for _,s := range losSafeFunctionSignatures {
-		//	fmt.Println(s) //TODO remove me
-		//}
 	}
 
 	idx := len(losPatternSignatures) + len(losSimpleSignatures)
@@ -522,10 +491,6 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 		Signatures[jdx] = v
 		jdx++
 	}
-
-	//for _,s := range Signatures {
-	//	fmt.Println(s) //TODO remove me
-	//}
 
 	return Signatures
 }

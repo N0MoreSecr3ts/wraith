@@ -82,9 +82,9 @@
 - [ ] Signatures in either yaml or json format (signature uplift)
 - [ ] Update Signatures command (signature uplift)
 - [ ] Fully Instrumented with Performance Stats
-- [ ] Finding should have an ID (Hash)
+- [X] ~~Finding should have an ID (Hash)~~
 - [X] ~~Ability to configure via environment variables~~
-- [ ] Ability to version signatures (signature uplift)
+- [X] ~~Ability to version signatures (signature uplift)~~
 - [X] ~~When running silent, no webserver is started~~
 
 
@@ -102,9 +102,48 @@
 - [ ] web interface is gitlab specific by default (requires mucking with bindata.go)
 - [ ] why is the web interface using to old index.html (requires mucking with bindata.go)
 - [X] ~~gitlab scans are failing~~
+- [ ] not consistently finding secrets for all sources
+- [ ] web interface progress bar not working
+- [X] ~~web interface links are broken for local files~~
+- [ ] web interface links to the file should be more detailed and point to the commit/line in the code
+- [ ] web interface is not dynamic, I need to refresh it manually
+- [ ] no error when rules file is not found
+- [ ] in-mem-clone is not working properly
+- [ ] working with local repos is not threaded
+- [ ] there are no findings in a local search
+- [ ] there are no findings in a gitlab search
+- [ ] there are multiple generateid functions
+- [ ] need to reorg the code again
+
 
 
 ## TODO
+- [X] ~~Repositiores -> reposScanned~~
+- [X] ~~commits -> commitsScanned~~
+- [X] ~~findings -> findings total~~
+- [X] ~~files -> files scanned~~
+- [ ] Add config details to summary output
+- [ ] Implement match level for sigs
+- [ ] Create stats for signatures
+- [ ] Move sigs to a different repo
+- [ ] Implement rules in either json or yaml
+- [ ] call all rules sigs
+- [ ] implement comand to update sigs from repo
+- [X] ~~port all grover stats~~
+- [ ] tests for all regex's
+- [ ] remove all debugging statements
+- [ ] remove all dead code
+- [ ] add more debuging info
+- [ ] add additional stats to web interface
+- [ ] what errors should stop the run
+- [ ] add a flag to point to a custom rules file
+- [ ] add flag for settingthe match level
+- [ ] document the match level
+- [ ] document all stats
+- [ ] implement flag for setting the thread count manually
+- [ ] document the differance between targets and repos
+- [ ] document all code completely
+- [ ] create a developer doc with the design and code execution flow
 - [ ] Look at the clone configs
 - [ ] Create new ascii art
 - [ ] Rebuild the web interface
@@ -119,11 +158,11 @@
 - [ ] Make sure we clean up the temp directories
 - [X] ~~Pre-compiled binaries~~
 - [X] ~~Use YAML arrays~~
-- [ ] Implement MJ Stats (waiting on new matching)
+- [ ] ~Implement MJ Stats (waiting on new matching)~~
 - [ ] Break out global vs command specific variables
 - [ ] Combine all shell scripts into Makefile
 - [ ] Split rules into a seperate repo (signature uplift)
-- [ ] Combine the rules and sigs into a single yaml file (signature uplift)
+- [X] ~~Combine the rules and sigs into a single yaml file (signature uplift)~~
 - [X] ~~Plug into gitlab ci pipeline~~
 - [X] ~~Remove the common package and integrate it with core~~
 - [X] ~~Add copyright notices~~
@@ -185,6 +224,7 @@
 - [ ] Can we Go for the web front-end
 - [ ] Language Parsers
 - [ ] Convert Repository type, etc into github ones if needed
+- [ ] How do we deal with abuse msgs, and rate limiting
 
 [1]: https://github.com/eth0izzle/shhgit/blob/master/core/github.go#L91
 [2]: https://pkg.go.dev/github.com/go-git/go-git/v5?tab=doc#example-Clone

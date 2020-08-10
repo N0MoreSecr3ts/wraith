@@ -5,20 +5,6 @@ import (
 	"time"
 )
 
-//type Stats struct {
-//	sync.Mutex
-//
-//	//StartedAt    time.Time
-//	//FinishedAt   time.Time
-//	//Status       string
-//	//Progress     float64
-//	//Targets      int
-//	//Repositories int
-//	//Commits      int
-//	//Files        int
-//	//Findings     int
-//}
-
 // Stats hold various runtime statistics used for perf data as well generating various reports
 type Stats struct { // TODO alpha sort this
 	sync.Mutex
@@ -36,13 +22,14 @@ type Stats struct { // TODO alpha sort this
 	FilesScanned        int       // The number of files actually scanned
 	FilesIgnored        int       // The number of files ignored (tests, extensions, paths)
 	FilesTotal          int       // The total number of files that were processed
-	FindingsTotal       int       // The total number of findings. There can be more than one finding per file and more than one finding of the same type in a file
-	Users               int       // Github users
-	Targets             int       // The number of dirs, people, orgs, etc on the command line or config file (what do you want wraith to enumerate on)
-	Repositories        int       // This will point to Repositories Scanned
-	Commits             int       // This will point to commits scanned
-	Findings            int       // This will point to findings total
-	Files               int       // This will point to FilesScanned
+	FilesDirty          int
+	FindingsTotal       int // The total number of findings. There can be more than one finding per file and more than one finding of the same type in a file
+	Users               int // Github users
+	Targets             int // The number of dirs, people, orgs, etc on the command line or config file (what do you want wraith to enumerate on)
+	Repositories        int // This will point to Repositories Scanned
+	Commits             int // This will point to commits scanned
+	Findings            int // This will point to findings total
+	Files               int // This will point to FilesScanned
 }
 
 // IncrementFilesTotal will bump the count of files that have been discovered. This does not reflect
@@ -51,6 +38,15 @@ func (s *Stats) IncrementFilesTotal() {
 	s.Lock()
 	defer s.Unlock()
 	s.FilesTotal++
+	s.Files++
+}
+
+// IncrementFilesTotal will bump the count of files that have been discovered. This does not reflect
+// if the file was scanned/skipped. It is simply a count of files that were found.
+func (s *Stats) IncrementFilesDirty() {
+	s.Lock()
+	defer s.Unlock()
+	s.FilesDirty++
 }
 
 // IncrementFilesScanned will bump the count of files that have been scanned successfully.
@@ -73,6 +69,7 @@ func (s *Stats) IncrementFindingsTotal() {
 	s.Lock()
 	defer s.Unlock()
 	s.FindingsTotal++
+	s.Findings++
 }
 
 // IncrementRepositoriesTotal will bump the total number of repositories that have been discovered.

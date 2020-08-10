@@ -31,7 +31,6 @@ var scanGitlabCmd = &cobra.Command{
 		}
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
-		//fmt.Println(Signatures) // TODO remove me
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
@@ -42,7 +41,6 @@ var scanGitlabCmd = &cobra.Command{
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
-		// TODO need to update the stats to MJ stats and perf data
 		core.PrintSessionStats(sess)
 
 		if !sess.Silent {
@@ -73,8 +71,9 @@ func init() {
 	scanGitlabCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
 
 	//scanGitlabCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
-	//scanGitlabCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
-	//scanGitlabCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
+	scanGitlabCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
+	scanGitlabCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
+	scanGitlabCmd.Flags().Bool("hide-secrets", false, "Hide secrets from output")
 
 	viperScanGitlab.BindPFlag("bind-address", scanGitlabCmd.Flags().Lookup("bind-address"))
 	viperScanGitlab.BindPFlag("bind-port", scanGitlabCmd.Flags().Lookup("bind-port"))
@@ -91,7 +90,8 @@ func init() {
 	viperScanGitlab.BindPFlag("silent", scanGitlabCmd.Flags().Lookup("silent"))
 
 	//viperScanGitlab.BindPFlag("scan-forks", scanGitlabCmd.Flags().Lookup("scan-forks"))
-	//viperScanGitlab.BindPFlag("scan-tests", scanGitlabCmd.Flags().Lookup("scan-tests"))
-	//viperScanGitlab.BindPFlag("max-file-size", scanGitlabCmd.Flags().Lookup("max-file-size"))
+	viperScanGitlab.BindPFlag("scan-tests", scanGitlabCmd.Flags().Lookup("scan-tests"))
+	viperScanGitlab.BindPFlag("max-file-size", scanGitlabCmd.Flags().Lookup("max-file-size"))
+	viperScanGitlab.BindPFlag("hide-secrets", scanLocalGitRepoCmd.Flags().Lookup("hide-secrets"))
 
 }

@@ -8,25 +8,6 @@ import (
 )
 
 // Finding is a secret that has been discovered within a target by a discovery method
-//type Finding struct {
-//	Id                          string
-//	//FilePath                    string
-//	Action                      string
-//	FileSignatureDescription    string
-//	FileSignatureComment        string
-//	ContentSignatureDescription string
-//	ContentSignatureComment     string
-//	//RepositoryOwner             string
-//	//RepositoryName              string
-//	//CommitHash                  string
-//	//CommitMessage               string
-//	//CommitAuthor                string
-//	FileUrl                     string
-//	//CommitUrl                   string
-//	//RepositoryUrl               string
-//	CloneUrl                    string
-//}
-
 type Finding struct {
 	Action          string
 	Comment         string
@@ -63,9 +44,6 @@ func (f *Finding) setupUrls(scanType string) {
 	}
 
 }
-
-//func (f *finding) Initialize() {
-//}
 
 // generateID will create an ID for each finding based up the SHA1 of discrete data points associated
 // with the finding

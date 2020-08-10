@@ -7,9 +7,9 @@
 # Meta data used for managing the versioning of the rules
 # All times and dates are UTC to keep things simple
 Meta:
-    version: "1.0.1"
-    date: "01.25.2018"
-    time: 1548440173
+    version: "0.0.1"
+    date: "0.09.2020"
+    time: 1597029495
 
 SimpleSignatures:
     -

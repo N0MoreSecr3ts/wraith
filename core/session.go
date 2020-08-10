@@ -58,13 +58,12 @@ var DefaultValues = map[string]interface{}{
 	//"json":                    false,
 	//"low-priority":            false,
 	"match-level": 3,
-	//"report-database":         "$HOME/.wraith/report/current.db",
-	"rules-file": "default_rules.yml",   //TODO implement this
-	"rules-path": "$HOME/.wraith/rules", // TODO implement this
+	"rules-file":  "default_rules.yml",   //TODO implement this
+	"rules-path":  "$HOME/.wraith/rules", // TODO implement this
 	//"rules-url":               "",
 	//"scan-dir":                "",
 	//"scan-file":               "",
-	//"hide-secrets":            false,
+	"hide-secrets": false,
 	//"test-rules":              false, // TODO implement this as a bool
 }
 
@@ -82,6 +81,7 @@ type Session struct {
 	GithubTargets     []string
 	GitlabAccessToken string
 	GitlabTargets     []string
+	HideSecrets       bool
 	InMemClone        bool
 	Mode              int // TODO make this go away when MJ sig functionality is applied
 	MaxFileSize       int64
@@ -90,6 +90,7 @@ type Session struct {
 	LocalDirs         []string
 	Repositories      []*Repository
 	Router            *gin.Engine `json:"-"`
+	RulesVersion      string
 	ScanFork          bool
 	ScanTests         bool
 	ScanType          string
@@ -152,15 +153,14 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
 	s.Version = version.AppVersion()
+	s.HideSecrets = v.GetBool("hide-secrets")
 	//s.CSVOutput = v.GetBool("csv")
-	//s.DBFile = v.GetString("report-database")
-	//s.DBOutput = v.GetBool("db-output")
 	//s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
 	//s.GithubURL = v.GetString("github-url")
-	//s.HideSecrets = v.GetBool("hide-secrets")
 	//s.JSONOutput = v.GetBool("json")
-	s.MatchLevel = v.GetInt("match-level") // TODO make this a flag
-	//fmt.Println(s.LocalDirs) //TODO Remove
+
+	s.HideSecrets = v.GetBool("hide-secrets")
+	s.MatchLevel = v.GetInt("match-level")
 
 	// add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {
@@ -251,8 +251,6 @@ func (s *Session) AddTarget(target *Owner) {
 	}
 	s.Targets = append(s.Targets, target)
 	s.Stats.IncrementTargets()
-	fmt.Println("TARGET: ",*target.Login)
-	fmt.Println("TARGET: ",*target.ID)
 }
 
 // AddRepository will add a given repository to be scanned to a session. This counts as
@@ -270,7 +268,6 @@ func (s *Session) AddRepository(repository *Repository) {
 
 }
 
-// TODO Need to update this to MJ methods
 // AddFinding will add a finding that has been discovered during a session to the list of findings
 // for that session
 func (s *Session) AddFinding(finding *Finding) {
@@ -278,39 +275,8 @@ func (s *Session) AddFinding(finding *Finding) {
 	defer s.Unlock()
 	const MaxStrLen = 100
 	s.Findings = append(s.Findings, finding)
-	//s.Out.Warn(" %s: %s, %s\n", strings.ToUpper(finding.Action), "File Match: "+finding.FileSignatureDescription, "Content Match: "+finding.ContentSignatureDescription) // TODO fix line length
-	s.Out.Info("  Path......................: %s\n", finding.FilePath)
-	//s.Out.Info("  Repo......................: %s\n", finding.CloneUrl)
-	s.Out.Info("  Message...................: %s\n", TruncateString(finding.CommitMessage, MaxStrLen))
-	s.Out.Info("  Author....................: %s\n", finding.CommitAuthor)
-	//if finding.FileSignatureComment != "" {
-	//	s.Out.Info("  FileSignatureComment......: %s\n", TruncateString(finding.FileSignatureComment, MaxStrLen)) // TODO fix line length
-	//}
-	//if finding.ContentSignatureComment != "" {
-	//	s.Out.Info("  ContentSignatureComment...:%s\n", TruncateString(finding.ContentSignatureComment, MaxStrLen)) // TODO fix line length
-	//}
-	s.Out.Info("  File URL...: %s\n", finding.FileUrl)
-	s.Out.Info("  Commit URL.: %s\n", finding.CommitUrl)
-	s.Out.Info(" ------------------------------------------------\n\n")
-	s.Stats.IncrementFindings()
+	s.Stats.IncrementFindingsTotal()
 }
-
-//// InitStats will zero out the stats for a given session, setting them to known values
-//func (s *Session) InitStats() {
-//	if s.Stats != nil {
-//		return
-//	}
-//	s.Stats = &Stats{
-//		StartedAt:    time.Now(),
-//		Status:       StatusInitializing,
-//		Progress:     0.0,
-//		Targets:      0,
-//		Repositories: 0,
-//		Commits:      0,
-//		Files:        0,
-//		Findings:     0,
-//	}
-//}
 
 // InitStats will set the initial values for a hunt
 func (s *Session) InitStats() {

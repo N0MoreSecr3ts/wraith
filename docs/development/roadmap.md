@@ -123,6 +123,8 @@
 - [X] ~~findings -> findings total~~
 - [X] ~~files -> files scanned~~
 - [ ] Add config details to summary output
+- [ ] Add content to summary
+- [ ] cleanup issues in summary output
 - [ ] Implement match level for sigs
 - [ ] Create stats for signatures
 - [ ] Move sigs to a different repo

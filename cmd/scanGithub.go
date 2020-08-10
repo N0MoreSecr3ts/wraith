@@ -35,8 +35,6 @@ var scanGithubCmd = &cobra.Command{
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
 
-		// TODO need to replace these with MJ methods
-
 		core.GatherTargets(sess)
 		core.GatherRepositories(sess)
 		core.AnalyzeRepositories(sess)
@@ -57,43 +55,46 @@ func init() {
 	viperScanGithub = core.SetConfig()
 
 	scanGithubCmd.Flags().Bool("debug", false, "Print debugging information")
+	scanGithubCmd.Flags().Bool("hide-secrets", false, "Hide secrets from output")
 	scanGithubCmd.Flags().Bool("in-mem-clone", false, "Clone repos in memory")
-	scanGithubCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
-	scanGithubCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
 	scanGithubCmd.Flags().Bool("no-expand-orgs", false, "Don't add members to targets when processing organizations")
 	scanGithubCmd.Flags().Bool("silent", false, "No output")
 	scanGithubCmd.Flags().Int("bind-port", 9393, "The port for the webserver")
 	scanGithubCmd.Flags().Int("commit-depth", 0, "Set the depth for commits")
 	scanGithubCmd.Flags().Int("match-level", 3, "Signature match level")
+	scanGithubCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
 	scanGithubCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanGithubCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanGithubCmd.Flags().String("github-api-token", "", "API token for access to github, see doc for necessary scope")
 	scanGithubCmd.Flags().String("github-targets", "", "A space separated list of github.com users or orgs to scan")
+	scanGithubCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
+	scanGithubCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
 	scanGithubCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 
 	//scanGithubCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
-	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
-	scanGithubCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
-	scanGithubCmd.Flags().Bool("hide-secrets", false, "Hide secrets from output")
 
 	viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))
 	viperScanGithub.BindPFlag("bind-port", scanGithubCmd.Flags().Lookup("bind-port"))
-	viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))
 	viperScanGithub.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
+	viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))
 	viperScanGithub.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
 	viperScanGithub.BindPFlag("github-targets", scanGithubCmd.Flags().Lookup("github-targets"))
+	viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))
 	viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension"))
 	viperScanGithub.BindPFlag("ignore-path", scanGithubCmd.Flags().Lookup("ignore-extension"))
-	viperScanGithub.BindPFlag("match-level", scanGithubCmd.Flags().Lookup("match-level"))
 	viperScanGithub.BindPFlag("in-mem-clone", scanGithubCmd.Flags().Lookup("in-mem-clone"))
+	viperScanGithub.BindPFlag("match-level", scanGithubCmd.Flags().Lookup("match-level"))
+	viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))
 	viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))
 	viperScanGithub.BindPFlag("rules-file", scanGithubCmd.Flags().Lookup("rules-file"))
+	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
 	viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))
 
 	//viperScanGithub.BindPFlag("scan-forks", scanGithubCmd.Flags().Lookup("scan-forks"))
-	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
-	viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))
-	viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))
+
+
+
 
 }

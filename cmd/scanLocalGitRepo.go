@@ -69,6 +69,8 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Bool("silent", false, "No output")
 	scanLocalGitRepoCmd.Flags().Int("bind-port", 9393, "The port for the webserver")
 	scanLocalGitRepoCmd.Flags().Int("commit-depth", 0, "Set the depth for commits")
+	scanLocalGitRepoCmd.Flags().Int("match-level", 3, "Signature match level")
+
 	scanLocalGitRepoCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanLocalGitRepoCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanLocalGitRepoCmd.Flags().String("local-dirs", "", "local disk parent dir containing git repos")
@@ -86,6 +88,7 @@ func init() {
 	viperScanLocalGitRepo.BindPFlag("ignore-extension", scanLocalGitRepoCmd.Flags().Lookup("ignore-extension"))
 	viperScanLocalGitRepo.BindPFlag("ignore-path", scanLocalGitRepoCmd.Flags().Lookup("ignore-extension"))
 	viperScanLocalGitRepo.BindPFlag("in-mem-clone", scanLocalGitRepoCmd.Flags().Lookup("in-mem-clone"))
+	viperScanLocalGitRepo.BindPFlag("match-level", scanLocalGitRepoCmd.Flags().Lookup("match-level"))
 	viperScanLocalGitRepo.BindPFlag("no-expand-orgs", scanLocalGitRepoCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
 	viperScanLocalGitRepo.BindPFlag("local-dirs", scanLocalGitRepoCmd.Flags().Lookup("local-dirs"))

@@ -64,6 +64,7 @@ func init() {
 	scanGithubCmd.Flags().Bool("silent", false, "No output")
 	scanGithubCmd.Flags().Int("bind-port", 9393, "The port for the webserver")
 	scanGithubCmd.Flags().Int("commit-depth", 0, "Set the depth for commits")
+	scanGithubCmd.Flags().Int("match-level", 3, "Signature match level")
 	scanGithubCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanGithubCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanGithubCmd.Flags().String("github-api-token", "", "API token for access to github, see doc for necessary scope")
@@ -83,6 +84,7 @@ func init() {
 	viperScanGithub.BindPFlag("github-targets", scanGithubCmd.Flags().Lookup("github-targets"))
 	viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension"))
 	viperScanGithub.BindPFlag("ignore-path", scanGithubCmd.Flags().Lookup("ignore-extension"))
+	viperScanGithub.BindPFlag("match-level", scanGithubCmd.Flags().Lookup("match-level"))
 	viperScanGithub.BindPFlag("in-mem-clone", scanGithubCmd.Flags().Lookup("in-mem-clone"))
 	viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))
@@ -92,6 +94,6 @@ func init() {
 	//viperScanGithub.BindPFlag("scan-forks", scanGithubCmd.Flags().Lookup("scan-forks"))
 	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
 	viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))
-	viperScanGithub.BindPFlag("hide-secrets", scanLocalGitRepoCmd.Flags().Lookup("hide-secrets"))
+	viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))
 
 }

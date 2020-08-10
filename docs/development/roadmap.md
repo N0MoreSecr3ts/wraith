@@ -89,7 +89,7 @@
 
 
 ## Bugs
-- [ ] DB Code is smelly
+- [X] ~~DB Code is smelly (reomved feature)~~
 - [ ] Regex's are not performant (signature uplift)
 - [ ] Code organization is horrible
 - [ ] Consistent search on all platforms
@@ -125,7 +125,7 @@
 - [ ] Add config details to summary output
 - [ ] Add content to summary
 - [ ] cleanup issues in summary output
-- [ ] Implement match level for sigs
+- [X] ~~Implement match level for sigs~~
 - [ ] Create stats for signatures
 - [ ] Move sigs to a different repo
 - [ ] Implement rules in either json or yaml
@@ -139,7 +139,7 @@
 - [ ] add additional stats to web interface
 - [ ] what errors should stop the run
 - [ ] add a flag to point to a custom rules file
-- [ ] add flag for settingthe match level
+- [X] ~~add flag for setting the match level~~
 - [ ] document the match level
 - [ ] document all stats
 - [ ] implement flag for setting the thread count manually
@@ -160,7 +160,7 @@
 - [ ] Make sure we clean up the temp directories
 - [X] ~~Pre-compiled binaries~~
 - [X] ~~Use YAML arrays~~
-- [ ] ~Implement MJ Stats (waiting on new matching)~~
+- [X] ~~Implement MJ Stats (waiting on new matching)~~
 - [ ] Break out global vs command specific variables
 - [ ] Combine all shell scripts into Makefile
 - [ ] Split rules into a seperate repo (signature uplift)

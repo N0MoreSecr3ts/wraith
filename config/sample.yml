@@ -1,0 +1,56 @@
+---
+
+# Installation and Usage
+#
+# This can be be dropped into ~/.wraith/config.yml, it will then get picked up automatically by wraith. There
+# is an open feature that will allow you to pass in a user specific config file via a flag.
+#
+
+
+#
+# General Configuration
+#
+debug: false
+ignore-extension:
+  - .html
+  - .css
+  - .log
+ignore-path:
+  - cmd/
+  - docs/
+in-mem-clone: false
+match-level: 3
+silent: false
+
+
+#
+# Git Repositories Configuration
+#
+commit-depth: 0
+
+
+#
+# Github.com
+#
+github-api-token: <token>>
+github-targets:
+  - mattyjones
+  - sensu-plugins
+
+
+#
+# Gitlab.com
+#
+gitlab-api-token: <token>>
+gitlab-targets:
+  - 5034914
+  - mattyjones
+
+
+#
+# Local Repos
+#
+repo-dirs:
+  - relative/path/to/repo
+  - absolute/path/to/repo
+

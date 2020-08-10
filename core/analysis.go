@@ -31,14 +31,14 @@ func PrintSessionStats(sess *Session) {
 	sess.Out.Important("---------SCM---------\n")
 	sess.Out.Info("Orgs................: %d\n", -1) // TODO need to implement
 	sess.Out.Info("Users...............: %d\n", -1) // TODO need to implement
-	sess.Out.Info("Repos Found.........: %d\n", sess.Stats.Repositories)
-	sess.Out.Info("Repos Cloned........: %d\n", -1) // TODO need to implement
-	sess.Out.Info("Repos Scanned.......: %d\n", -1) // TODO need to implement
+	sess.Out.Info("Repos Found.........: %d\n", sess.Stats.RepositoriesTotal)
+	sess.Out.Info("Repos Cloned........: %d\n", sess.Stats.RepositoriesCloned) // TODO need to implement
+	sess.Out.Info("Repos Scanned.......: %d\n", sess.Stats.RepositoriesScanned) // TODO need to implement
 	sess.Out.Info("Commits Scanned.....: %d\n", sess.Stats.Commits)
 	sess.Out.Info("Commits Dirty.......: %d\n", -1) // TODO need to implement
 	sess.Out.Important("\n")
 	sess.Out.Important("-------General-------\n")
-	sess.Out.Info("Grover Version......: %s\n", sess.Version)
+	sess.Out.Info("Wraith Version......: %s\n", sess.Version)
 	sess.Out.Info("Rules Version.......: %d\n", -1) // TODO need to implement
 	sess.Out.Info("Elapsed Time........: %s\n\n", time.Since(sess.Stats.StartedAt))
 }
@@ -109,9 +109,6 @@ func GatherLocalRepositories(sess *Session) {
 
 				// If there is a .git directory then we have a repo
 				if filepath.Ext(path) == ".git" { // TODO Should we reverse this to ! to make the code cleaner
-					//sess.Stats.IncrementTargets() // TODO remove me
-					//fmt.Println("repos: ", sess.Stats.Repositories)//TODO remove me
-					//fmt.Println("repos input: ", len(sess.RepoDirs))//TODO remove me
 
 					parent, _ := filepath.Split(path)
 
@@ -148,7 +145,7 @@ func GatherLocalRepositories(sess *Session) {
 					var pRepoID *int64
 					pRepoID = &intRepoID
 
-					// Set the url to the relative path of the repo based on the execution path of grover
+					// Set the url to the relative path of the repo based on the execution path of wraith
 					pRepoURL := &parent
 
 					// This is used to id the owner, fullname, and description of the repo. It is ugly but effective. It is the relative path to the repo, for example ../foo
@@ -172,17 +169,11 @@ func GatherLocalRepositories(sess *Session) {
 
 					// Add the repo to the sess to be cloned and scanned
 					sess.AddRepository(&sessR)
-
-					//sess.Stats.IncrementRepositories() //TODO remove me
-					//sess.Stats.UpdateProgress(sess.Stats.Repositories, len(sess.Repositories))
-					//fmt.Println(len(sess.Repositories))
-					//fmt.Println("here") // TODO remove me
 				}
 			}
 			return nil
 		})
 		if err0 != nil {
-			//fmt.Println("err0", err0) // TODO remove me
 		}
 	}
 }
@@ -223,7 +214,6 @@ func GatherRepositories(sess *Session) {
 					sess.Out.Debug(" Retrieved repository: %s\n", *repo.CloneURL)
 					sess.AddRepository(repo)
 				}
-				sess.Stats.IncrementTargets() //TODO why are we incrementing here and not above within the loop
 				sess.Out.Info(" Retrieved %d %s from %s\n", len(repos), Pluralize(len(repos), "repository", "repositories"), *target.Login)
 			}
 		}()
@@ -347,7 +337,6 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 			InMemClone: &sess.InMemClone,
 		}
 		clone, path, err = CloneGithubRepository(&cloneConfig)
-		//fmt.Println("clone path: ", path) // TODO remove me
 	case "gitlab":
 		userName := "oauth2"
 		cloneConfig := CloneConfiguration{
@@ -373,18 +362,18 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 		switch err.Error() {
 		case "remote repository is empty":
 			sess.Out.Error("Repository %s is empty: %s\n", *repo.CloneURL, err)
-			sess.Stats.IncrementRepositories()
-			sess.Stats.UpdateProgress(sess.Stats.Repositories, len(sess.Repositories))
+			sess.Stats.IncrementRepositoriesCloned()
+			//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 			return nil, "", err
 		default:
 			sess.Out.Error("Error cloning repository %s: %s\n", *repo.CloneURL, err)
-			sess.Stats.IncrementRepositories()
-			sess.Stats.UpdateProgress(sess.Stats.Repositories, len(sess.Repositories))
+			//sess.Stats.IncrementRepositories()
+			//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 			return nil, "", err
 		}
 	}
-	sess.Stats.IncrementRepositories()
-	sess.Stats.UpdateProgress(sess.Stats.Repositories, len(sess.Repositories))
+	sess.Stats.IncrementRepositoriesCloned()
+	//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 	sess.Out.Debug("[THREAD #%d][%s] Cloned repository to: %s\n", threadId, *repo.CloneURL, path)
 	return clone, path, err
 }
@@ -398,8 +387,8 @@ func getRepositoryHistory(sess *Session, clone *git.Repository, repo *Repository
 		if sess.InMemClone {
 			os.RemoveAll(path)
 		}
-		sess.Stats.IncrementRepositories()
-		sess.Stats.UpdateProgress(sess.Stats.Repositories, len(sess.Repositories))
+		//sess.Stats.IncrementRepositories()
+		//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 		return nil, err
 	}
 	sess.Out.Debug("[THREAD #%d][%s] Number of commits: %d\n", threadId, *repo.CloneURL, len(history))
@@ -521,7 +510,6 @@ func AnalyzeRepositories(sess *Session) {
 					}
 					continue
 				}
-
 
 				// This is to set the org for inclusion in the reports. If we are scanning a local repo or filesystem then we default to local.
 				// If we are scanning a GHE instance then we set the org based on the cloneURL
@@ -678,7 +666,7 @@ func AnalyzeRepositories(sess *Session) {
 										CommitMessage:   strings.TrimSpace(commit.Message),
 										Description:     signature.Description(),
 										FilePath:        fPath,
-										GroverVersion:   version.AppVersion(),
+										WraithVersion:   version.AppVersion(),
 										LineNumber:      strconv.Itoa(v),
 										RepositoryName:  *repo.Name,
 										RepositoryOwner: *repo.Owner,
@@ -723,8 +711,8 @@ func AnalyzeRepositories(sess *Session) {
 									os.RemoveAll(path)
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
-								sess.Stats.IncrementRepositories()
-								sess.Stats.UpdateProgress(sess.Stats.Repositories, len(sess.Repositories))
+								sess.Stats.IncrementRepositoriesScanned()
+								//sess.Stats.UpdateProgress(sess.Stats.RepositoriesScanned, len(sess.Repositories))
 							}
 						}
 					}
@@ -735,7 +723,7 @@ func AnalyzeRepositories(sess *Session) {
 				}
 
 				os.RemoveAll(path)
-				sess.Stats.IncrementRepositories()
+				sess.Stats.IncrementRepositoriesScanned()
 				//fmt.Println(len(sess.Repositories)) // TODO remove me
 				//sess.Stats.IncrementRepositoriesScanned() TODO implement in stats
 				//db.Close()

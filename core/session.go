@@ -32,21 +32,6 @@ var defaultIgnoreExtensions = []string{".jpg", ".jpeg", ".png", ".gif", ".bmp", 
 // skippablePathIndicators is an array of directories that will be excluded from all types of scans.
 var defaultIgnorePaths = []string{"node_modules/", "vendor/bundle", "vendor/cache", "/proc/"}
 
-// Stats will store all performance and scan related data tallies
-type Stats struct {
-	sync.Mutex
-
-	StartedAt    time.Time
-	FinishedAt   time.Time
-	Status       string
-	Progress     float64
-	Targets      int
-	Repositories int
-	Commits      int
-	Files        int
-	Findings     int
-}
-
 var DefaultValues = map[string]interface{}{
 	"bind-address":     "127.0.0.1",
 	"bind-port":        9393,
@@ -61,7 +46,7 @@ var DefaultValues = map[string]interface{}{
 	"ignore-path":      "",
 	"in-mem-clone":     false,
 	"max-file-size":    50,
-	"local-dirs":        "",
+	"local-dirs":       "",
 	"scan-forks":       true,
 	"scan-tests":       false,
 	"scan-type":        "",
@@ -74,8 +59,8 @@ var DefaultValues = map[string]interface{}{
 	//"low-priority":            false,
 	"match-level": 3,
 	//"report-database":         "$HOME/.wraith/report/current.db",
-	"rules-file":              "default_rules.yml", //TODO implement this
-	"rules-path":              "$HOME/.wraith/rules", // TODO implement this
+	"rules-file": "default_rules.yml",   //TODO implement this
+	"rules-path": "$HOME/.wraith/rules", // TODO implement this
 	//"rules-url":               "",
 	//"scan-dir":                "",
 	//"scan-file":               "",
@@ -102,7 +87,7 @@ type Session struct {
 	MaxFileSize       int64
 	NoExpandOrgs      bool
 	Out               *Logger `json:"-"`
-	LocalDirs          []string
+	LocalDirs         []string
 	Repositories      []*Repository
 	Router            *gin.Engine `json:"-"`
 	ScanFork          bool
@@ -213,7 +198,6 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitStats()
 	s.InitLogger()
 	s.InitThreads()
-	//s.InitSignatures()
 	s.InitAPIClient()
 
 	if !s.Silent {
@@ -227,10 +211,8 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 		losRules := strings.Split(RulesFile, ",")
 
 		for _, f := range losRules {
-			fmt.Println("rules file: ", f) //TODO remove me
 			f = strings.TrimSpace(f)
 			if PathExists(f) {
-				//fmt.Println("the path exists")  //TODO remove me
 				curSig = LoadSignatures(f, s.MatchLevel, s)
 				combinedSig = append(combinedSig, curSig...)
 			}
@@ -238,19 +220,9 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	} else {
 		curSig = LoadSignatures(v.GetString(".")+"default_rules.yml", s.MatchLevel, s) // TODO implement this
 		combinedSig = append(combinedSig, curSig...)
-		//fmt.Println("I am in the else statement") // TODO remove me
 	}
 
-	//for i, s := range combinedSig {
-	//	fmt.Println("in the printing loop") //TODO remove me
-	//	fmt.Println(s) //TODO remove me
-	//	fmt.Println(i) //TODO remove me
-	//}
-
-	//s.Signatures = combinedSig
-
 	Signatures = combinedSig
-//z
 }
 
 // setCommitDepth will set the commit depth to go to during a sess. This is an ugly way of doing it but for the moment it works fine.
@@ -260,16 +232,6 @@ func setCommitDepth(c int) int {
 	}
 	return c
 }
-
-//// InitSignature will load any signatures files into the session runtime configuration
-//func (s *Session) InitSignatures() {
-//	s.Signatures = Signatures{}
-//	// TODO implement MJ sig methods
-//	err := s.Signatures.Load(1)
-//	if err != nil {
-//		s.Out.Fatal("Error loading signatures: %s\n", err)
-//	}
-//}
 
 // Finish is called at the end of a scan session and used to generate discrete data points
 // for a given scan session including setting the status of a scan to finished.
@@ -288,9 +250,13 @@ func (s *Session) AddTarget(target *Owner) {
 		}
 	}
 	s.Targets = append(s.Targets, target)
+	s.Stats.IncrementTargets()
+	fmt.Println("TARGET: ",*target.Login)
+	fmt.Println("TARGET: ",*target.ID)
 }
 
-// AddRepository will add a given repository to be scanned to a session
+// AddRepository will add a given repository to be scanned to a session. This counts as
+// the total number of repos that have been gathered during a session.
 func (s *Session) AddRepository(repository *Repository) {
 	s.Lock()
 	defer s.Unlock()
@@ -300,6 +266,8 @@ func (s *Session) AddRepository(repository *Repository) {
 		}
 	}
 	s.Repositories = append(s.Repositories, repository)
+	s.Stats.IncrementRepositoriesTotal()
+
 }
 
 // TODO Need to update this to MJ methods
@@ -327,20 +295,42 @@ func (s *Session) AddFinding(finding *Finding) {
 	s.Stats.IncrementFindings()
 }
 
-// InitStats will zero out the stats for a given session, setting them to known values
+//// InitStats will zero out the stats for a given session, setting them to known values
+//func (s *Session) InitStats() {
+//	if s.Stats != nil {
+//		return
+//	}
+//	s.Stats = &Stats{
+//		StartedAt:    time.Now(),
+//		Status:       StatusInitializing,
+//		Progress:     0.0,
+//		Targets:      0,
+//		Repositories: 0,
+//		Commits:      0,
+//		Files:        0,
+//		Findings:     0,
+//	}
+//}
+
+// InitStats will set the initial values for a hunt
 func (s *Session) InitStats() {
 	if s.Stats != nil {
 		return
 	}
 	s.Stats = &Stats{
-		StartedAt:    time.Now(),
-		Status:       StatusInitializing,
-		Progress:     0.0,
-		Targets:      0,
-		Repositories: 0,
-		Commits:      0,
-		Files:        0,
-		Findings:     0,
+		FilesIgnored:  0,
+		FilesScanned:  0,
+		FindingsTotal: 0,
+		Organizations: 0,
+		Progress:      0.0,
+		StartedAt:     time.Now(),
+		Status:        StatusFinished,
+		Users:         0,
+		Targets:       0,
+		Repositories:  0,
+		Commits:       0,
+		Findings:      0,
+		Files:         0,
 	}
 }
 

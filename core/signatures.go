@@ -404,7 +404,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 
 	//hunt.RulesVersion = rulesMetaData.Version // TODO implement this
 
-	losSimpleSignatures := []SimpleSignature{} // TODO change this variable name
+	losSimpleSignatures := []SimpleSignature{}   // TODO change this variable name
 	losPatternSignatures := []PatternSignature{} // TODO change this variable name
 	for _, curSig := range c.SimpleSignatures {
 

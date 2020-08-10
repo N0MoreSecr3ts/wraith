@@ -37,7 +37,7 @@ type Finding struct {
 	Description     string
 	FilePath        string
 	FileUrl         string
-	GroverVersion   string
+	WraithVersion   string
 	Hash            string
 	LineNumber      string
 	RepositoryName  string

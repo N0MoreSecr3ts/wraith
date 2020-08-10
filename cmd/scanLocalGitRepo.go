@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"time"
-	"wraith/common"
 	"wraith/core"
 	"wraith/version"
 
@@ -37,8 +36,8 @@ to quickly create a Cobra application.`,
 		}
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
-		sess.Out.Important("%s v%s started at %s\n", common.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
-		sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
+		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
+		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
 
 		// TODO need to replace these with MJ methods
@@ -47,7 +46,6 @@ to quickly create a Cobra application.`,
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
-		// TODO need to update the stats to MJ stats and perf data
 		core.PrintSessionStats(sess)
 
 		if !sess.Silent {
@@ -71,14 +69,17 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Bool("silent", false, "No output")
 	scanLocalGitRepoCmd.Flags().Int("bind-port", 9393, "The port for the webserver")
 	scanLocalGitRepoCmd.Flags().Int("commit-depth", 0, "Set the depth for commits")
+	scanLocalGitRepoCmd.Flags().Int("match-level", 3, "Signature match level")
+
 	scanLocalGitRepoCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanLocalGitRepoCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
-	scanLocalGitRepoCmd.Flags().String("repo-dirs", "", "local disk parent dir containing git repos")
+	scanLocalGitRepoCmd.Flags().String("local-dirs", "", "local disk parent dir containing git repos")
 	scanLocalGitRepoCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
 
 	//scanLocalGitRepoCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
-	//scanLocalGitRepoCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
-	//scanLocalGitRepoCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
+	scanLocalGitRepoCmd.Flags().Bool("hide-secrets", false, "Hide secrets from output")
+	scanLocalGitRepoCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
+	scanLocalGitRepoCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
 
 	viperScanLocalGitRepo.BindPFlag("bind-address", scanLocalGitRepoCmd.Flags().Lookup("bind-address"))
 	viperScanLocalGitRepo.BindPFlag("bind-port", scanLocalGitRepoCmd.Flags().Lookup("bind-port"))
@@ -87,14 +88,16 @@ func init() {
 	viperScanLocalGitRepo.BindPFlag("ignore-extension", scanLocalGitRepoCmd.Flags().Lookup("ignore-extension"))
 	viperScanLocalGitRepo.BindPFlag("ignore-path", scanLocalGitRepoCmd.Flags().Lookup("ignore-extension"))
 	viperScanLocalGitRepo.BindPFlag("in-mem-clone", scanLocalGitRepoCmd.Flags().Lookup("in-mem-clone"))
+	viperScanLocalGitRepo.BindPFlag("match-level", scanLocalGitRepoCmd.Flags().Lookup("match-level"))
 	viperScanLocalGitRepo.BindPFlag("no-expand-orgs", scanLocalGitRepoCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
-	viperScanLocalGitRepo.BindPFlag("repo-dirs", scanLocalGitRepoCmd.Flags().Lookup("repo-dirs"))
+	viperScanLocalGitRepo.BindPFlag("local-dirs", scanLocalGitRepoCmd.Flags().Lookup("local-dirs"))
 	viperScanLocalGitRepo.BindPFlag("rules-file", scanLocalGitRepoCmd.Flags().Lookup("rules-file"))
 	viperScanLocalGitRepo.BindPFlag("silent", scanLocalGitRepoCmd.Flags().Lookup("silent"))
 
 	//viperScanLocalGitRepo.BindPFlag("scan-forks", scanLocalGitRepoCmd.Flags().Lookup("scan-forks"))
-	//viperScanLocalGitRepo.BindPFlag("scan-tests", scanLocalGitRepoCmd.Flags().Lookup("scan-tests"))
-	//viperScanLocalGitRepo.BindPFlag("max-file-size", scanLocalGitRepoCmd.Flags().Lookup("max-file-size"))
+	viperScanLocalGitRepo.BindPFlag("hide-secrets", scanLocalGitRepoCmd.Flags().Lookup("hide-secrets"))
+	viperScanLocalGitRepo.BindPFlag("scan-tests", scanLocalGitRepoCmd.Flags().Lookup("scan-tests"))
+	viperScanLocalGitRepo.BindPFlag("max-file-size", scanLocalGitRepoCmd.Flags().Lookup("max-file-size"))
 
 }

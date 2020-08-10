@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"time"
-	"wraith/common"
 	"wraith/core"
 	"wraith/version"
 
@@ -32,8 +31,8 @@ var scanGitlabCmd = &cobra.Command{
 		}
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
-		sess.Out.Important("%s v%s started at %s\n", common.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
-		sess.Out.Important("Loaded %d file signatures and %d content signatures.\n", len(sess.Signatures.FileSignatures), len(sess.Signatures.ContentSignatures))
+		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
+		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
 		// TODO need to replace these with MJ methods
@@ -42,11 +41,10 @@ var scanGitlabCmd = &cobra.Command{
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
-		// TODO need to update the stats to MJ stats and perf data
 		core.PrintSessionStats(sess)
 
 		if !sess.Silent {
-			sess.Out.Important("%s", common.GitLabTanuki)
+			sess.Out.Important("%s", core.GitLabTanuki)
 			sess.Out.Important("Press Ctrl+C to stop web server and exit.")
 			select {}
 		}
@@ -66,6 +64,7 @@ func init() {
 	scanGitlabCmd.Flags().Bool("silent", false, "No output")
 	scanGitlabCmd.Flags().Int("bind-port", 9393, "The port for the webserver")
 	scanGitlabCmd.Flags().Int("commit-depth", 0, "Set the depth for commits")
+	scanGitlabCmd.Flags().Int("match-level", 3, "Signature match level")
 	scanGitlabCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanGitlabCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanGitlabCmd.Flags().String("gitlab-api-token", "", "API token for access to Gitlab, see doc for necessary scope")
@@ -73,8 +72,9 @@ func init() {
 	scanGitlabCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
 
 	//scanGitlabCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
-	//scanGitlabCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
-	//scanGitlabCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
+	scanGitlabCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
+	scanGitlabCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
+	scanGitlabCmd.Flags().Bool("hide-secrets", false, "Hide secrets from output")
 
 	viperScanGitlab.BindPFlag("bind-address", scanGitlabCmd.Flags().Lookup("bind-address"))
 	viperScanGitlab.BindPFlag("bind-port", scanGitlabCmd.Flags().Lookup("bind-port"))
@@ -85,13 +85,15 @@ func init() {
 	viperScanGitlab.BindPFlag("ignore-extension", scanGitlabCmd.Flags().Lookup("ignore-extension"))
 	viperScanGitlab.BindPFlag("ignore-path", scanGitlabCmd.Flags().Lookup("ignore-extension"))
 	viperScanGitlab.BindPFlag("in-mem-clone", scanGitlabCmd.Flags().Lookup("in-mem-clone"))
+	viperScanGitlab.BindPFlag("match-level", scanGitlabCmd.Flags().Lookup("match-level"))
 	viperScanGitlab.BindPFlag("no-expand-orgs", scanGitlabCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanGitlab.BindPFlag("num-threads", scanGitlabCmd.Flags().Lookup("num-threads"))
 	viperScanGitlab.BindPFlag("rules-file", scanGitlabCmd.Flags().Lookup("rules-file"))
 	viperScanGitlab.BindPFlag("silent", scanGitlabCmd.Flags().Lookup("silent"))
 
 	//viperScanGitlab.BindPFlag("scan-forks", scanGitlabCmd.Flags().Lookup("scan-forks"))
-	//viperScanGitlab.BindPFlag("scan-tests", scanGitlabCmd.Flags().Lookup("scan-tests"))
-	//viperScanGitlab.BindPFlag("max-file-size", scanGitlabCmd.Flags().Lookup("max-file-size"))
+	viperScanGitlab.BindPFlag("scan-tests", scanGitlabCmd.Flags().Lookup("scan-tests"))
+	viperScanGitlab.BindPFlag("max-file-size", scanGitlabCmd.Flags().Lookup("max-file-size"))
+	viperScanGitlab.BindPFlag("hide-secrets", scanGitlabCmd.Flags().Lookup("hide-secrets"))
 
 }

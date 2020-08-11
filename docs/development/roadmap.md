@@ -107,7 +107,7 @@
 - [X] ~~web interface links are broken for local files~~
 - [ ] web interface links to the file should be more detailed and point to the commit/line in the code
 - [ ] web interface is not dynamic, I need to refresh it manually
-- [ ] no error when rules file is not found
+- [X] ~~no error when rules file is not found~~
 - [ ] in-mem-clone is not working properly
 - [ ] working with local repos is not threaded
 - [ ] there are no findings in a local search
@@ -128,10 +128,10 @@
 - [ ] cleanup issues in summary output
 - [X] ~~Implement match level for sigs~~
 - [ ] Create stats for signatures
-- [ ] Move sigs to a different repo
-- [ ] Implement rules in either json or yaml
-- [ ] call all rules sigs
-- [ ] implement comand to update sigs from repo
+- [X] ~~Move sigs to a different repo~~
+- [X] ~~Implement rules in either json or yaml~~
+- [X] ~~call all rules sigs~~
+- [ ] implement command to update sigs from repo
 - [X] ~~port all grover stats~~
 - [ ] tests for all regex's
 - [ ] remove all debugging statements
@@ -139,9 +139,9 @@
 - [ ] add more debuging info
 - [ ] add additional stats to web interface
 - [ ] what errors should stop the run
-- [ ] add a flag to point to a custom rules file
+- [X] ~~add a flag to point to a custom rules file~~
 - [X] ~~add flag for setting the match level~~
-- [ ] document the match level
+- [X] ~~document the match level~~
 - [ ] document all stats
 - [ ] implement flag for setting the thread count manually
 - [ ] document the differance between targets and repos
@@ -164,7 +164,7 @@
 - [X] ~~Implement MJ Stats (waiting on new matching)~~
 - [ ] Break out global vs command specific variables
 - [ ] Combine all shell scripts into Makefile
-- [ ] Split rules into a seperate repo (signature uplift)
+- [X] ~~Split rules into a seperate repo (signature uplift)~~
 - [X] ~~Combine the rules and sigs into a single yaml file (signature uplift)~~
 - [X] ~~Plug into gitlab ci pipeline~~
 - [X] ~~Remove the common package and integrate it with core~~

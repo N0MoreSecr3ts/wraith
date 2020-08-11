@@ -58,6 +58,7 @@ func init() {
 	scanGithubCmd.Flags().Bool("hide-secrets", false, "Hide secrets from output")
 	scanGithubCmd.Flags().Bool("in-mem-clone", false, "Clone repos in memory")
 	scanGithubCmd.Flags().Bool("no-expand-orgs", false, "Don't add members to targets when processing organizations")
+	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanGithubCmd.Flags().Bool("silent", false, "No output")
 	scanGithubCmd.Flags().Int("bind-port", 9393, "The port for the webserver")
 	scanGithubCmd.Flags().Int("commit-depth", 0, "Set the depth for commits")
@@ -69,8 +70,7 @@ func init() {
 	scanGithubCmd.Flags().String("github-targets", "", "A space separated list of github.com users or orgs to scan")
 	scanGithubCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
 	scanGithubCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
-	scanGithubCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
-	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
+	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
 	//scanGithubCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
 
@@ -88,8 +88,8 @@ func init() {
 	viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))
 	viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))
-	viperScanGithub.BindPFlag("rules-file", scanGithubCmd.Flags().Lookup("rules-file"))
 	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
+	viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))
 	viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))
 
 	//viperScanGithub.BindPFlag("scan-forks", scanGithubCmd.Flags().Lookup("scan-forks"))

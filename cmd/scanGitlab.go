@@ -71,7 +71,7 @@ func init() {
 	scanGitlabCmd.Flags().String("gitlab-targets", "", "A space separated list of Gitlab users, projects or groups to scan")
 	scanGitlabCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
 	scanGitlabCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
-	scanGitlabCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanGitlabCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
 	//scanGitlabCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
 
@@ -89,8 +89,8 @@ func init() {
 	viperScanGitlab.BindPFlag("max-file-size", scanGitlabCmd.Flags().Lookup("max-file-size"))
 	viperScanGitlab.BindPFlag("no-expand-orgs", scanGitlabCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanGitlab.BindPFlag("num-threads", scanGitlabCmd.Flags().Lookup("num-threads"))
-	viperScanGitlab.BindPFlag("rules-file", scanGitlabCmd.Flags().Lookup("rules-file"))
-	viperScanGitlab.BindPFlag("scan-tests", scanGitlabCmd.Flags().Lookup("scan-tests"))
+    viperScanGitlab.BindPFlag("scan-tests", scanGitlabCmd.Flags().Lookup("scan-tests"))
+	viperScanGitlab.BindPFlag("signature-file", scanGitlabCmd.Flags().Lookup("signature-file"))
 	viperScanGitlab.BindPFlag("silent", scanGitlabCmd.Flags().Lookup("silent"))
 
 	//viperScanGitlab.BindPFlag("scan-forks", scanGitlabCmd.Flags().Lookup("scan-forks"))

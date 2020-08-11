@@ -82,7 +82,7 @@ func realTimeOutput(finding *Finding, hunt *Session) {
 	if !hunt.Silent {
 
 		hunt.Out.Warn(" %s\n", strings.ToUpper(finding.Description))
-		hunt.Out.Info("  RuleID............: %s\n", finding.Ruleid)
+		hunt.Out.Info("  SignatureID............: %s\n", finding.Signatureid)
 		hunt.Out.Info("  Repo..............: %s\n", finding.RepositoryName)
 		hunt.Out.Info("  File Path.........: %s\n", finding.FilePath)
 		hunt.Out.Info("  Line Number.......: %s\n", finding.LineNumber)
@@ -91,7 +91,7 @@ func realTimeOutput(finding *Finding, hunt *Session) {
 		hunt.Out.Info("  Author............: %s\n", finding.CommitAuthor)
 		hunt.Out.Info("  SecretID..........: %v\n", finding.SecretID)
 		hunt.Out.Info("  Wraith Version....: %s\n", version.AppVersion())
-		hunt.Out.Info("  Rules Version.....: %v\n", finding.RulesVersion)
+		hunt.Out.Info("  Signatures Version.....: %v\n", finding.SignaturesVersion)
 		if len(finding.Comment) > 0 {
 			issues := "\n\t" + finding.Comment
 			hunt.Out.Info("  Issues..........: %s\n", issues)

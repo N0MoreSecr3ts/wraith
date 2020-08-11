@@ -51,20 +51,19 @@ var DefaultValues = map[string]interface{}{
 	"scan-tests":       false,
 	"scan-type":        "",
 	"silent":           false,
-	"mode":             1, // TODO remove this concept when we go to MJ sigs
 	//"csv":                     false,
 	//"db-output":               false,
 	//"display-changelog":       false,
 	//"json":                    false,
 	//"low-priority":            false,
-	"match-level": 3,
-	"rules-file":  "default_rules.yml",   //TODO implement this
-	"rules-path":  "$HOME/.wraith/rules", // TODO implement this
-	//"rules-url":               "",
+	"match-level":     3,
+	"signature-file":  "default_signatures.yml",
+	"signatures-path": "$HOME/.wraith/signatures",
+	//"signatures-url":               "",
 	//"scan-dir":                "",
 	//"scan-file":               "",
 	"hide-secrets": false,
-	//"test-rules":              false, // TODO implement this as a bool
+	//"test-signatures":              false, // TODO implement this as a bool
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -83,14 +82,13 @@ type Session struct {
 	GitlabTargets     []string
 	HideSecrets       bool
 	InMemClone        bool
-	Mode              int // TODO make this go away when MJ sig functionality is applied
 	MaxFileSize       int64
 	NoExpandOrgs      bool
 	Out               *Logger `json:"-"`
 	LocalDirs         []string
 	Repositories      []*Repository
 	Router            *gin.Engine `json:"-"`
-	RulesVersion      string
+	SignatureVersion  string
 	ScanFork          bool
 	ScanTests         bool
 	ScanType          string
@@ -145,7 +143,6 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.InMemClone = v.GetBool("in-mem-clone")
 	s.MaxFileSize = v.GetInt64("max-file-size")
-	s.Mode = v.GetInt("mode")
 	s.LocalDirs = v.GetStringSlice("local-dirs")
 	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement
 	s.ScanTests = v.GetBool("scan-tests")
@@ -205,11 +202,11 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 	var curSig []Signature
 	var combinedSig []Signature
-	RulesFile := v.GetString("rules-file")
-	if RulesFile != "" {
-		losRules := strings.Split(RulesFile, ",")
+	SignaturesFile := v.GetString("signatures-file")
+	if SignaturesFile != "" {
+		losSignatures := strings.Split(SignaturesFile, ",")
 
-		for _, f := range losRules {
+		for _, f := range losSignatures { // TODO fix the los
 			f = strings.TrimSpace(f)
 			if PathExists(f) {
 				curSig = LoadSignatures(f, s.MatchLevel, s)
@@ -217,7 +214,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 			}
 		}
 	} else {
-		curSig = LoadSignatures(v.GetString(".")+"default_rules.yml", s.MatchLevel, s) // TODO implement this
+		curSig = LoadSignatures(v.GetString(".")+"default_signatures.yml", s.MatchLevel, s) // TODO implement this
 		combinedSig = append(combinedSig, curSig...)
 	}
 

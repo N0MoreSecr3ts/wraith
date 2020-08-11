@@ -74,7 +74,7 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanLocalGitRepoCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanLocalGitRepoCmd.Flags().String("local-dirs", "", "local disk parent dir containing git repos")
-	scanLocalGitRepoCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanLocalGitRepoCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
 	//scanLocalGitRepoCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
 	scanLocalGitRepoCmd.Flags().Bool("hide-secrets", false, "Hide secrets from output")
@@ -92,7 +92,7 @@ func init() {
 	viperScanLocalGitRepo.BindPFlag("no-expand-orgs", scanLocalGitRepoCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
 	viperScanLocalGitRepo.BindPFlag("local-dirs", scanLocalGitRepoCmd.Flags().Lookup("local-dirs"))
-	viperScanLocalGitRepo.BindPFlag("rules-file", scanLocalGitRepoCmd.Flags().Lookup("rules-file"))
+	viperScanLocalGitRepo.BindPFlag("signature-file", scanLocalGitRepoCmd.Flags().Lookup("signature-file"))
 	viperScanLocalGitRepo.BindPFlag("silent", scanLocalGitRepoCmd.Flags().Lookup("silent"))
 
 	//viperScanLocalGitRepo.BindPFlag("scan-forks", scanLocalGitRepoCmd.Flags().Lookup("scan-forks"))

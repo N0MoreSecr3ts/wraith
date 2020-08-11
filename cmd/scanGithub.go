@@ -69,7 +69,7 @@ func init() {
 	scanGithubCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanGithubCmd.Flags().String("github-api-token", "", "API token for access to github, see doc for necessary scope")
 	scanGithubCmd.Flags().String("github-targets", "", "A space separated list of github.com users or orgs to scan")
-	scanGithubCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
 	//scanGithubCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
 	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
@@ -88,7 +88,7 @@ func init() {
 	viperScanGithub.BindPFlag("in-mem-clone", scanGithubCmd.Flags().Lookup("in-mem-clone"))
 	viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))
-	viperScanGithub.BindPFlag("rules-file", scanGithubCmd.Flags().Lookup("rules-file"))
+	viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))
 	viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))
 
 	//viperScanGithub.BindPFlag("scan-forks", scanGithubCmd.Flags().Lookup("scan-forks"))

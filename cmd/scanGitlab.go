@@ -69,7 +69,7 @@ func init() {
 	scanGitlabCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanGitlabCmd.Flags().String("gitlab-api-token", "", "API token for access to Gitlab, see doc for necessary scope")
 	scanGitlabCmd.Flags().String("gitlab-targets", "", "A space separated list of Gitlab users, projects or groups to scan")
-	scanGitlabCmd.Flags().String("rules-file", "$HOME/.wraith/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanGitlabCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
 	//scanGitlabCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
 	scanGitlabCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
@@ -88,7 +88,7 @@ func init() {
 	viperScanGitlab.BindPFlag("match-level", scanGitlabCmd.Flags().Lookup("match-level"))
 	viperScanGitlab.BindPFlag("no-expand-orgs", scanGitlabCmd.Flags().Lookup("no-expand-orgs"))
 	viperScanGitlab.BindPFlag("num-threads", scanGitlabCmd.Flags().Lookup("num-threads"))
-	viperScanGitlab.BindPFlag("rules-file", scanGitlabCmd.Flags().Lookup("rules-file"))
+	viperScanGitlab.BindPFlag("signature-file", scanGitlabCmd.Flags().Lookup("signature-file"))
 	viperScanGitlab.BindPFlag("silent", scanGitlabCmd.Flags().Lookup("silent"))
 
 	//viperScanGitlab.BindPFlag("scan-forks", scanGitlabCmd.Flags().Lookup("scan-forks"))

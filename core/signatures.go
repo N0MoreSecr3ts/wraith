@@ -29,8 +29,8 @@ var Signatures []Signature
 // losSafeFunctionSignatures is a collection of safe function sigs
 var losSafeFunctionSignatures = []SafeFunctionSignature{}
 
-// loadRuleSet will read in the defined signatures/rules from an external source
-func loadRuleSet(filename string) (SignatureConfig, error) {
+// loadSignatureSet will read in the defined signatures from an external source
+func loadSignatureSet(filename string) (SignatureConfig, error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return SignatureConfig{}, err
@@ -76,18 +76,18 @@ func generateGenericID(val1 string) string {
 	return encodedStr
 }
 
-// Signature is a rule that we are looking for in a file
+// Signature is an expression that we are looking for in a file
 type Signature interface {
 	Description() string
 	Enable() int
 	ExtractMatch(file MatchFile) (bool, map[string]int)
 	MatchLevel() int
 	Part() string
-	Ruleid() string
+	Signatureid() string // TODO change id -> ID
 }
 
-// RulesMetaData is used by updateRules to determine if/how to update the signatures
-type RulesMetaData struct {
+// SignaturesMetaData is used by updateSignatures to determine if/how to update the signatures
+type SignaturesMetaData struct {
 	Date    string
 	Time    int
 	Version string
@@ -102,7 +102,7 @@ type SafeFunctionSignature struct {
 	match       *regexp.Regexp
 	matchLevel  int
 	part        string
-	ruleid      string
+	signatureid string
 }
 
 // SimpleSignature holds the information about a simple signature which is used to match a path or filename
@@ -114,7 +114,7 @@ type SimpleSignature struct {
 	match       string
 	matchLevel  int
 	part        string
-	ruleid      string
+	signatureid string
 }
 
 // PatternSignature holds the information about a pattern signature which is a regex used to match content within a file
@@ -126,7 +126,7 @@ type PatternSignature struct {
 	match       *regexp.Regexp
 	matchLevel  int
 	part        string
-	ruleid      string
+	signatureid string
 }
 
 // SignatureDef maps to a signature within the yaml file
@@ -138,15 +138,15 @@ type SignatureDef struct {
 	Match       string  `yaml:"match"`
 	MatchLevel  int     `yaml:"match-level"`
 	Part        string  `yaml:"part"`
-	Ruleid      string  `yaml:"ruleid"`
+	Signatureid string  `yaml:"signatureid"`
 }
 
-// SignatureConfig holds the base file strucutre for the rules file
+// SignatureConfig holds the base file structure for the signatures file
 type SignatureConfig struct {
-	Meta                   RulesMetaData  `yaml:"Meta"`
-	PatternSignatures      []SignatureDef `yaml:"PatternSignatures"`
-	SimpleSignatures       []SignatureDef `yaml:"SimpleSignatures"`
-	SafeFunctionSignatures []SignatureDef `yaml:"SafeFunctionSignatures"`
+	Meta                   SignaturesMetaData `yaml:"Meta"`
+	PatternSignatures      []SignatureDef     `yaml:"PatternSignatures"`
+	SimpleSignatures       []SignatureDef     `yaml:"SimpleSignatures"`
+	SafeFunctionSignatures []SignatureDef     `yaml:"SafeFunctionSignatures"`
 }
 
 // ExtractMatch will attempt to match a path or file name of the given file
@@ -196,9 +196,9 @@ func (s SimpleSignature) Description() string {
 	return s.description
 }
 
-// Ruleid sets the id used to identify the rule. This id is immutable and generated from a has of the rule and is changed with every update to a rule.
-func (s SimpleSignature) Ruleid() string {
-	return s.ruleid
+// Sugnatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+func (s SimpleSignature) Signatureid() string {
+	return s.signatureid
 }
 
 // IsSafeText check against known "safe" (aka not a password) list
@@ -327,9 +327,9 @@ func (s PatternSignature) Description() string {
 	return s.description
 }
 
-// Ruleid sets the id used to identify the rule. This id is immutable and generated from a has of the rule and is changed with every update to a rule.
-func (s PatternSignature) Ruleid() string {
-	return s.ruleid
+// Signatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+func (s PatternSignature) Signatureid() string {
+	return s.signatureid
 }
 
 // Enable sets whether as signature is active or not
@@ -352,9 +352,9 @@ func (s SafeFunctionSignature) Description() string {
 	return s.description
 }
 
-// Ruleid sets the id used to identify the rule. This id is immutable and generated from a has of the rule and is changed with every update to a rule.
-func (s SafeFunctionSignature) Ruleid() string {
-	return s.ruleid
+// Signatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+func (s SafeFunctionSignature) Signatureid() string {
+	return s.signatureid
 }
 
 // ExtractMatch is a placeholder to ensure min code complexity and allow the reuse of the functions
@@ -370,20 +370,20 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 	// ensure that we have the proper home directory
 	filePath = SetHomeDir(filePath)
 
-	c, err := loadRuleSet(filePath)
+	c, err := loadSignatureSet(filePath)
 	if err != nil {
-		fmt.Println("Failed to load rule file: ", filePath)
+		fmt.Println("Failed to load signatures file: ", filePath)
 		fmt.Println(err)
 		os.Exit(2)
 	}
 
-	rulesMetaData := RulesMetaData{
+	signaturesMetaData := SignaturesMetaData{
 		Version: c.Meta.Version,
 		Date:    c.Meta.Date,
 		Time:    c.Meta.Time,
 	}
 
-	sess.RulesVersion = rulesMetaData.Version // TODO implement this
+	sess.SignatureVersion = signaturesMetaData.Version // TODO implement this
 
 	losSimpleSignatures := []SimpleSignature{}   // TODO change this variable name
 	losPatternSignatures := []PatternSignature{} // TODO change this variable name
@@ -413,7 +413,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Match,
 				curSig.MatchLevel,
 				part,
-				curSig.Ruleid,
+				curSig.Signatureid,
 			})
 		}
 	}
@@ -443,7 +443,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				match,
 				curSig.MatchLevel,
 				part,
-				curSig.Ruleid,
+				curSig.Signatureid,
 			})
 		}
 	}
@@ -472,7 +472,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				match,
 				curSig.MatchLevel,
 				part,
-				curSig.Ruleid,
+				curSig.Signatureid,
 			})
 		}
 	}

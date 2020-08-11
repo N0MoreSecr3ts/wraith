@@ -38,7 +38,7 @@ func PrintSessionStats(sess *Session) {
 	sess.Out.Important("\n")
 	sess.Out.Important("-------General-------\n")
 	sess.Out.Info("Wraith Version......: %s\n", sess.Version)
-	sess.Out.Info("Rules Version.......: %s\n", sess.RulesVersion)
+	sess.Out.Info("Signatures Version.......: %s\n", sess.SignatureVersion)
 	sess.Out.Info("Elapsed Time........: %s\n\n", time.Since(sess.Stats.StartedAt))
 }
 
@@ -439,7 +439,7 @@ func AnalyzeRepositories(sess *Session) {
 								var content string   // this is because file matches are puking
 								var genericID string // the generic id used in the finding
 
-								// for every instance of the secret that matched the specific rule create a new finding
+								// for every instance of the secret that matched the specific signatures create a new finding
 								for k, v := range matchMap {
 
 									cleanK := strings.SplitAfterN(k, "_", 2)
@@ -458,20 +458,20 @@ func AnalyzeRepositories(sess *Session) {
 									}
 
 									finding := &Finding{
-										Action:          changeAction,
-										Comment:         content,
-										CommitAuthor:    commit.Author.String(),
-										CommitHash:      commit.Hash.String(),
-										CommitMessage:   strings.TrimSpace(commit.Message),
-										Description:     signature.Description(),
-										FilePath:        fPath,
-										WraithVersion:   version.AppVersion(),
-										LineNumber:      strconv.Itoa(v),
-										RepositoryName:  *repo.Name,
-										RepositoryOwner: *repo.Owner,
-										Ruleid:          signature.Ruleid(),
-										RulesVersion:    sess.RulesVersion,
-										SecretID:        genericID,
+										Action:            changeAction,
+										Comment:           content,
+										CommitAuthor:      commit.Author.String(),
+										CommitHash:        commit.Hash.String(),
+										CommitMessage:     strings.TrimSpace(commit.Message),
+										Description:       signature.Description(),
+										FilePath:          fPath,
+										WraithVersion:     version.AppVersion(),
+										LineNumber:        strconv.Itoa(v),
+										RepositoryName:    *repo.Name,
+										RepositoryOwner:   *repo.Owner,
+										Signatureid:       signature.Signatureid(),
+										SignaturesVersion: sess.SignatureVersion,
+										SecretID:          genericID,
 									}
 
 									// Get a proper uid for the finding

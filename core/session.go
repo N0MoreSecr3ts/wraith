@@ -147,7 +147,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.MaxFileSize = v.GetInt64("max-file-size")
 	s.Mode = v.GetInt("mode")
 	s.LocalDirs = v.GetStringSlice("local-dirs")
-	s.ScanFork = v.GetBool("scan-forks")  //TODO Need to implement
+	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement
 	s.ScanTests = v.GetBool("scan-tests")
 	s.ScanType = scanType
 	s.Silent = v.GetBool("silent")

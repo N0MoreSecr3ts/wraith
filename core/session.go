@@ -204,9 +204,9 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	var combinedSig []Signature
 	SignaturesFile := v.GetString("signatures-file")
 	if SignaturesFile != "" {
-		losSignatures := strings.Split(SignaturesFile, ",")
+		Signatures := strings.Split(SignaturesFile, ",")
 
-		for _, f := range losSignatures { // TODO fix the los
+		for _, f := range Signatures {
 			f = strings.TrimSpace(f)
 			if PathExists(f) {
 				curSig = LoadSignatures(f, s.MatchLevel, s)

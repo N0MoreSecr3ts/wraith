@@ -26,8 +26,8 @@ const (
 // Signatures holds a list of all signatures used during the hunt
 var Signatures []Signature
 
-// losSafeFunctionSignatures is a collection of safe function sigs
-var losSafeFunctionSignatures = []SafeFunctionSignature{}
+// SafeFunctionSignatures is a collection of safe function sigs
+var SafeFunctionSignatures = []SafeFunctionSignature{}
 
 // loadSignatureSet will read in the defined signatures from an external source
 func loadSignatureSet(filename string) (SignatureConfig, error) {
@@ -204,7 +204,7 @@ func (s SimpleSignature) Signatureid() string {
 // IsSafeText check against known "safe" (aka not a password) list
 func IsSafeText(sMatchString *string) bool {
 	bResult := false
-	for _, safeSig := range losSafeFunctionSignatures {
+	for _, safeSig := range SafeFunctionSignatures {
 		if safeSig.match.MatchString(*sMatchString) {
 			bResult = true
 		}
@@ -385,8 +385,8 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 
 	sess.SignatureVersion = signaturesMetaData.Version // TODO implement this
 
-	losSimpleSignatures := []SimpleSignature{}   // TODO change this variable name
-	losPatternSignatures := []PatternSignature{} // TODO change this variable name
+	SimpleSignatures := []SimpleSignature{}   // TODO change this variable name
+	PatternSignatures := []PatternSignature{} // TODO change this variable name
 	for _, curSig := range c.SimpleSignatures {
 
 		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
@@ -405,7 +405,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				part = PartContent
 			}
 
-			losSimpleSignatures = append(losSimpleSignatures, SimpleSignature{
+			SimpleSignatures = append(SimpleSignatures, SimpleSignature{
 				curSig.Comment,
 				curSig.Description,
 				curSig.Enable,
@@ -435,7 +435,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 			}
 
 			match := regexp.MustCompile(curSig.Match)
-			losPatternSignatures = append(losPatternSignatures, PatternSignature{
+			PatternSignatures = append(PatternSignatures, PatternSignature{
 				curSig.Comment,
 				curSig.Description,
 				curSig.Enable,
@@ -464,7 +464,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 			}
 
 			match := regexp.MustCompile(curSig.Match)
-			losSafeFunctionSignatures = append(losSafeFunctionSignatures, SafeFunctionSignature{
+			SafeFunctionSignatures = append(SafeFunctionSignatures, SafeFunctionSignature{
 				curSig.Comment,
 				curSig.Description,
 				curSig.Enable,
@@ -477,17 +477,17 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 		}
 	}
 
-	idx := len(losPatternSignatures) + len(losSimpleSignatures)
+	idx := len(PatternSignatures) + len(SimpleSignatures)
 	//fmt.Println("idx:", idx) TODO remove me
 
 	Signatures := make([]Signature, idx)
 	jdx := 0
-	for _, v := range losSimpleSignatures {
+	for _, v := range SimpleSignatures {
 		Signatures[jdx] = v
 		jdx++
 	}
 
-	for _, v := range losPatternSignatures {
+	for _, v := range PatternSignatures {
 		Signatures[jdx] = v
 		jdx++
 	}

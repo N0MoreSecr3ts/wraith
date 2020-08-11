@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- rule -> signature throughout the code
+- change the file extension of the sample config to .yml
+
+
+### Removed
+- remove "los" throughout the code
+- remove signatures from wraith by default
 
 ## [0.0.4] - 2020-08-10
 ### Changed

@@ -60,8 +60,8 @@ var DefaultValues = map[string]interface{}{
 	"signature-file":  "default_signatures.yml",
 	"signatures-path": "$HOME/.wraith/signatures",
 	//"signatures-url":               "",
-	//"scan-dir":                "",
-	//"scan-file":               "",
+	"scan-dir":                "",
+	"scan-file":               "",
 	"hide-secrets": false,
 	//"test-signatures":              false, // TODO implement this as a bool
 }

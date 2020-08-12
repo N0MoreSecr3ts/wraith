@@ -118,6 +118,7 @@
 
 
 ## TODO
+- [ ] Remove the repo count per target during a run
 - [X] ~~Repositiores -> reposScanned~~
 - [X] ~~commits -> commitsScanned~~
 - [X] ~~findings -> findings total~~

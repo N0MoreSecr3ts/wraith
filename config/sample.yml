@@ -21,3 +21,4 @@ in-mem-clone: true
 repo-dirs:
   - relative/path/to/repo
   - absolute/path/to/repo
+  - 

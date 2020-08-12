@@ -32,7 +32,7 @@ var scanLocalGitRepoCmd = &cobra.Command{
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
-		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
+		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
 
 		core.GatherLocalRepositories(sess)
 		core.AnalyzeRepositories(sess)

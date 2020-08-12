@@ -45,7 +45,6 @@ func PrintSessionStats(sess *Session) {
 // GatherTargets will enumerate github orgs and members and add them to the running target list of a session
 func GatherTargets(sess *Session) {
 	sess.Stats.Status = StatusGathering
-	sess.Out.Important("Gathering targets...\n")
 
 	var targets []string
 

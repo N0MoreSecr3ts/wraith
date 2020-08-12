@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"os"
 	"time"
@@ -26,7 +25,7 @@ var scanGitlabCmd = &cobra.Command{
 		sess, err := core.NewSession(viperScanGitlab, scanType)
 
 		if err != nil {
-			fmt.Println(err)
+			sess.Out.Error("Failed to generate a new session: %s\n", err.Error())
 			os.Exit(1)
 		}
 

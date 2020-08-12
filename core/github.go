@@ -31,10 +31,8 @@ func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, st
 	var dir string
 
 	if !*cloneConfig.InMemClone {
-		//fmt.Println(*cloneConfig.InMemClone) // TODO remove me
 		dir, err = ioutil.TempDir("", "wraith")
 		if err != nil {
-			//fmt.Println("error: ", err) // TODO remove me
 			return nil, "", err
 		}
 		repository, err = git.PlainClone(dir, false, cloneOptions)
@@ -42,7 +40,6 @@ func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, st
 		repository, err = git.Clone(memory.NewStorage(), nil, cloneOptions)
 	}
 	if err != nil {
-		//fmt.Println(err) // TODO remove me
 		return nil, dir, err
 	}
 	return repository, dir, nil
@@ -55,18 +52,18 @@ type githubClient struct {
 
 // TODO make this a single function
 // CheckAPIToken will ensure we have a valid github api token
-func CheckGithubAPIToken(t string) {
+func CheckGithubAPIToken(t string, sess *Session) {
 
 	// check to make sure the length is proper
 	if len(t) != 40 {
-		fmt.Println("The token is invalid. Please use a valid Github token")
+		sess.Out.Error("The token is invalid. Please use a valid Github token")
 		os.Exit(2)
 	}
 
 	// match only letters and numbers and ensure you match 40
 	exp1 := regexp.MustCompile(`^[A-Za-z0-9]{40}`)
 	if !exp1.MatchString(t) {
-		fmt.Println("The token is invalid. Please use a valid Github token")
+		sess.Out.Error("The token is invalid. Please use a valid Github token")
 		os.Exit(2)
 	}
 }

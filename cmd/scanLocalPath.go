@@ -3,10 +3,8 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"os"
-	"strings"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -23,59 +21,54 @@ var scanLocalPathCmd = &cobra.Command{
 	Long:  "Scan local files and directorys",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// Ensure that both the file and a directory flags are not set
-		_ = core.CheckArgs(viperScanLocalPath.GetString("scan-dir"), viperScanLocalPath.GetString("scan-file"))
-
-		splitDir := strings.Split(viperScanLocalPath.GetString("scan-dir"), ",")
-		splitFile := strings.Split(viperScanLocalPath.GetString("scan-file"), ",")
-
-		var sDir []string
-		var sFile []string
-
-		for _, pth := range splitDir {
-			sDir = append(sDir, pth)
-		}
-
-		for _, fl := range splitFile {
-			sDir = append(sDir, fl)
-		}
-
 		scanType := "localPath"
 		sess, err := core.NewSession(viperScanLocalPath, scanType)
+
+		_ = core.CheckArgs(sess.LocalFiles, sess.LocalDirs, sess) // TODO what is up with the return statement
+
+		//var sDir []string
+		//var sFile []string
+		//
+		//for _, pth := range splitDir {
+		//	sDir = append(sDir, pth)
+		//}
+		//
+		//for _, fl := range splitFile {
+		//	sDir = append(sDir, fl)
+		//}
+
+		//scanType := "localPath"
+		//sess, err := core.NewSession(viperScanLocalPath, scanType)
 
 		// exclude the .git directory from local scans as it is not handled properly here
 		sess.SkippablePath = core.AppendIfMissing(sess.SkippablePath, ".git/")
 
 		if err != nil {
-			fmt.Println(err)
+			sess.Out.Error(err.Error())
 			os.Exit(1)
 		}
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
-		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
+		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
-		//core.GatherLocalRepositories(sess)
-		//core.AnalyzeRepositories(sess)
 
 		// Run either a file scan directly, or if it is a directory then walk the path and gather eligible files and then run a scan against each of them
-		for _, fl := range sFile {
+		for _, fl := range sess.LocalFiles {
 			if fl != "" {
-				if !core.PathExists(fl) {
+				if !core.PathExists(fl, sess) {
 					sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", fl)
-					os.Exit(1)
 				} else {
 					core.DoFileScan(fl, sess)
 				}
 			}
 		}
 
-		for _, pth := range sDir {
+		for _, pth := range sess.LocalDirs {
 			if pth != "" {
-				if !core.PathExists(pth) {
+				if !core.PathExists(pth, sess) {
 					sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)
-					os.Exit(1)
 				} else {
 					core.ScanDir(pth, sess)
 				}

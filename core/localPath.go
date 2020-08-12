@@ -2,9 +2,7 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"golang.org/x/sync/errgroup"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -15,7 +13,8 @@ import (
 )
 
 // search will walk the path or a given directory and append each viable path to an array
-func Search(ctx context.Context, root string, skippablePath []string) ([]string, error) {
+func Search(ctx context.Context, root string, skippablePath []string, sess *Session) ([]string, error) {
+	sess.Out.Important("Enumerating Paths\n")
 	g, ctx := errgroup.WithContext(ctx)
 	paths := make(chan string, 20)
 
@@ -66,6 +65,7 @@ func DoFileScan(filename string, sess *Session) {
 
 	matchFile := newMatchFile(filename)
 	if matchFile.isSkippable(sess) {
+		sess.Out.Debug("%s is listed as skippable and is being ignored\n", filename)
 		sess.Stats.IncrementFilesIgnored()
 		return
 	}
@@ -80,6 +80,7 @@ func DoFileScan(filename string, sess *Session) {
 	if likelyTestFile {
 		// We want to know how many files have been ignored
 		sess.Stats.IncrementFilesIgnored()
+		sess.Out.Debug("%s is a test file and being ignored\n", filename)
 		return
 	}
 
@@ -90,7 +91,7 @@ func DoFileScan(filename string, sess *Session) {
 
 	if sess.Debug {
 		// Print the filename of every file being scanned
-		fmt.Println("Scanning ", filename)
+		sess.Out.Debug("Analyzing %s\n", filename)
 	}
 
 	// Increment the number of files scanned
@@ -98,16 +99,13 @@ func DoFileScan(filename string, sess *Session) {
 
 	// Scan the file for know signatures
 	for _, signature := range Signatures {
-		bMatched, matchMap := signature.ExtractMatch(matchFile)
+		bMatched, matchMap := signature.ExtractMatch(matchFile, sess)
 
 		var content string   // this is because file matches are puking
 		var genericID string // the generic id used in the finding
 
 		// for every instance of the secret that matched the specific rule create a new finding
 		for k, v := range matchMap {
-
-			// Is the secret known to us already
-			knownSecret := false
 
 			// Increment the total number of findings
 			sess.Stats.IncrementFindingsTotal()
@@ -125,11 +123,6 @@ func DoFileScan(filename string, sess *Session) {
 			// destroy the secret if the flag is set
 			if sess.HideSecrets {
 				content = ""
-			}
-
-			// if the secret is in the triage file do not report it
-			if knownSecret {
-				continue
 			}
 
 			if bMatched {
@@ -168,9 +161,9 @@ func ScanDir(path string, sess *Session) {
 	defer cf()
 
 	// get an slice of of all paths
-	files, err1 := Search(ctx, path, sess.SkippablePath)
+	files, err1 := Search(ctx, path, sess.SkippablePath, sess)
 	if err1 != nil {
-		log.Println(err1)
+		sess.Out.Error("There is an error scanning %s: %s\n", path, err1.Error())
 	}
 
 	maxThreads := 100
@@ -195,14 +188,14 @@ func ScanDir(path string, sess *Session) {
 }
 
 // CheckArgs will ensure that both a directory and file are not defined at the same time
-func CheckArgs(sFile string, sDir string) bool {
-	if sFile != "" && sDir != "" {
-		fmt.Println("You cannot set both scan-file and scan-dir at the same time")
+func CheckArgs(sFile []string, sDir []string, sess *Session) bool {
+	if sFile != nil && sDir != nil {
+		sess.Out.Error("You cannot set both scan-file and scan-dir at the same time")
 		os.Exit(1)
 	}
 
-	if sFile == "" && sDir == "" {
-		fmt.Println("You must set either a directory or file to scan")
+	if sFile == nil && sDir == nil {
+		sess.Out.Error("You must set either a path or file to scan")
 		os.Exit(1)
 	}
 

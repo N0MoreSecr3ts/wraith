@@ -80,7 +80,7 @@ func generateGenericID(val1 string) string {
 type Signature interface {
 	Description() string
 	Enable() int
-	ExtractMatch(file MatchFile) (bool, map[string]int)
+	ExtractMatch(file MatchFile, sess *Session) (bool, map[string]int)
 	MatchLevel() int
 	Part() string
 	Signatureid() string // TODO change id -> ID
@@ -150,14 +150,12 @@ type SignatureConfig struct {
 }
 
 // ExtractMatch will attempt to match a path or file name of the given file
-func (s SimpleSignature) ExtractMatch(file MatchFile) (bool, map[string]int) {
+func (s SimpleSignature) ExtractMatch(file MatchFile, sess *Session) (bool, map[string]int) {
 	var haystack *string
 	var bResult = false
 
 	// this is empty and could be removed but it here to streamline all the match functions
 	var results map[string]int
-
-	//fmt.Println(s.part) // TODO remove me
 
 	switch s.part {
 	case PartPath:
@@ -228,7 +226,7 @@ func confirmEntropy(thisMatch string, iSessionEntropy float64) bool {
 }
 
 // ExtractMatch will try and find a match within the content of the file.
-func (s PatternSignature) ExtractMatch(file MatchFile) (bool, map[string]int) {
+func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session) (bool, map[string]int) {
 
 	var haystack *string            // this is a pointer to the item we want to match
 	var bResult = false             // match result
@@ -246,7 +244,7 @@ func (s PatternSignature) ExtractMatch(file MatchFile) (bool, map[string]int) {
 		bResult = s.match.MatchString(*haystack)
 	case PartContent:
 		haystack := &file.Path
-		if PathExists(*haystack) {
+		if PathExists(*haystack, sess) {
 			if _, err := os.Stat(*haystack); err == nil {
 				data, err := ioutil.ReadFile(*haystack)
 				if err != nil {
@@ -358,7 +356,7 @@ func (s SafeFunctionSignature) Signatureid() string {
 }
 
 // ExtractMatch is a placeholder to ensure min code complexity and allow the reuse of the functions
-func (s SafeFunctionSignature) ExtractMatch(file MatchFile) (bool, map[string]int) {
+func (s SafeFunctionSignature) ExtractMatch(file MatchFile, sess *Session) (bool, map[string]int) {
 	var results map[string]int
 
 	return false, results
@@ -372,8 +370,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 
 	c, err := loadSignatureSet(filePath)
 	if err != nil {
-		fmt.Println("Failed to load signatures file: ", filePath)
-		fmt.Println(err)
+		sess.Out.Error("Failed to load signatures file %s: %s\n", filePath, err.Error())
 		os.Exit(2)
 	}
 
@@ -478,7 +475,6 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 	}
 
 	idx := len(PatternSignatures) + len(SimpleSignatures)
-	//fmt.Println("idx:", idx) TODO remove me
 
 	Signatures := make([]Signature, idx)
 	jdx := 0

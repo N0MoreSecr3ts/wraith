@@ -46,24 +46,21 @@ var DefaultValues = map[string]interface{}{
 	"ignore-path":      "",
 	"in-mem-clone":     false,
 	"max-file-size":    50,
-	"local-dirs":       "",
+	"local-dirs":       nil,
+	"local-files": nil,
 	"scan-forks":       true,
 	"scan-tests":       false,
 	"scan-type":        "",
 	"silent":           false,
-	//"csv":                     false,
-	//"db-output":               false,
-	//"display-changelog":       false,
-	//"json":                    false,
-	//"low-priority":            false,
+	"csv":                     false,
+	"json":                    false,
 	"match-level":     3,
 	"signature-file":  "default_signatures.yml",
 	"signatures-path": "$HOME/.wraith/signatures",
-	//"signatures-url":               "",
+	"signatures-url":               "",//
 	"scan-dir":     "",
 	"scan-file":    "",
 	"hide-secrets": false,
-	//"test-signatures":              false, // TODO implement this as a bool
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -74,6 +71,7 @@ type Session struct {
 	BindPort          int
 	Client            IClient `json:"-"`
 	CommitDepth       int
+	CSV bool
 	Debug             bool
 	Findings          []*Finding
 	GithubAccessToken string
@@ -82,10 +80,12 @@ type Session struct {
 	GitlabTargets     []string
 	HideSecrets       bool
 	InMemClone        bool
+	JSON bool
 	MaxFileSize       int64
 	NoExpandOrgs      bool
 	Out               *Logger `json:"-"`
 	LocalDirs         []string
+	LocalFiles []string
 	Repositories      []*Repository
 	Router            *gin.Engine `json:"-"`
 	SignatureVersion  string
@@ -150,6 +150,8 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
 	s.Version = version.AppVersion()
+	v.GetStringSlice("scan-dir")
+	v.GetStringSlice("scan-file")
 	//s.CSVOutput = v.GetBool("csv")
 	//s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
 	//s.GithubURL = v.GetString("github-url")
@@ -208,7 +210,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 		for _, f := range Signatures {
 			f = strings.TrimSpace(f)
-			if PathExists(f) {
+			if PathExists(f, s) {
 				curSig = LoadSignatures(f, s.MatchLevel, s)
 				combinedSig = append(combinedSig, curSig...)
 			}
@@ -308,10 +310,10 @@ func (s *Session) InitAPIClient() {
 
 	switch s.ScanType {
 	case "github":
-		CheckGithubAPIToken(s.GithubAccessToken)
+		CheckGithubAPIToken(s.GithubAccessToken, s)
 		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken)
 	case "gitlab":
-		CheckGitlabAPIToken(s.GitlabAccessToken)
+		CheckGitlabAPIToken(s.GitlabAccessToken, s)
 		var err error
 		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out)
 		if err != nil {

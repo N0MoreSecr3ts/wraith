@@ -45,6 +45,7 @@ func PrintSessionStats(sess *Session) {
 // GatherTargets will enumerate github orgs and members and add them to the running target list of a session
 func GatherTargets(sess *Session) {
 	sess.Stats.Status = StatusGathering
+	sess.Out.Important("Gathering targets...\n")
 
 	var targets []string
 
@@ -86,10 +87,12 @@ func GatherLocalRepositories(sess *Session) {
 	// It will contain directorys, that will then be added to the repo count
 	// if they contain a .git directory
 	sess.Stats.Targets = len(sess.LocalDirs)
+	sess.Stats.Status = StatusGathering
+	sess.Out.Important("Gathering Local Repositories...\n")
 
 	for _, pth := range sess.LocalDirs {
 
-		if !PathExists(pth) {
+		if !PathExists(pth, sess) {
 			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)
 			os.Exit(1)
 		}
@@ -97,7 +100,7 @@ func GatherLocalRepositories(sess *Session) {
 		// Gather all paths in the tree
 		err0 := filepath.Walk(pth, func(path string, f os.FileInfo, err1 error) error {
 			if err1 != nil {
-				//fmt.Println(err1) // TODO use the error logging capability here
+				sess.Out.Error("Failed to enumerate the path: %s\n", err1.Error())
 				return nil
 			}
 
@@ -119,7 +122,7 @@ func GatherLocalRepositories(sess *Session) {
 
 					ref, err3 := openRepo.Head()
 					if err3 != nil {
-						//fmt.Println("err3: ", err3) //TODO remove me
+						sess.Out.Error("Failed to open the repo HEAD: %s\n", err3.Error())
 						return nil
 					}
 
@@ -421,7 +424,7 @@ func AnalyzeRepositories(sess *Session) {
 						// for each signature that is loaded scan the file as a whole and generate a map of the match and the line number the match was found on
 						for _, signature := range Signatures {
 
-							bMatched, matchMap := signature.ExtractMatch(matchFile)
+							bMatched, matchMap := signature.ExtractMatch(matchFile, sess)
 							if bMatched {
 
 								sess.Stats.IncrementFilesDirty()

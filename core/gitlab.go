@@ -68,18 +68,18 @@ func (c gitlabClient) NewClient(token string, logger *Logger) (gitlabClient, err
 
 //TODO make this a single function
 // CheckAPIToken will ensure we have a valid github api token
-func CheckGitlabAPIToken(t string) {
+func CheckGitlabAPIToken(t string, sess *Session) {
 
 	// check to make sure the length is proper
 	if len(t) != 20 {
-		fmt.Println("The token is invalid. Please use a valid Gitlab token")
+		sess.Out.Error("Gitlab token is invalid\n")
 		os.Exit(2)
 	}
 
 	// match only letters and numbers and ensure you match 40
 	exp1 := regexp.MustCompile(`^[A-Za-z0-9]{20}`)
 	if !exp1.MatchString(t) {
-		fmt.Println("The token is invalid. Please use a valid Gitlab token")
+		sess.Out.Error("Gitlab token is invalid\n")
 		os.Exit(2)
 	}
 	//return t

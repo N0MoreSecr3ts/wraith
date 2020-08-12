@@ -13,7 +13,7 @@ import (
 )
 
 // pathExists will check if a path exists or not and is used to validate user input
-func PathExists(path string) bool {
+func PathExists(path string, sess *Session) bool {
 	_, err := os.Stat(path)
 
 	if e, ok := err.(*os.PathError); ok && e.Err == syscall.ENOSPC {
@@ -24,7 +24,7 @@ func PathExists(path string) bool {
 		return true
 	}
 	if os.IsNotExist(err) {
-		//fmt.Println(err) // TODO remove me
+		sess.Out.Error("Failed to generate a new session: %s\n", err.Error())
 		return false
 	}
 

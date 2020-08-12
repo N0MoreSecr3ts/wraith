@@ -107,8 +107,8 @@ func IsMaxFileSize(filename string, sess *Session) bool {
 	fi, err := os.Stat(filename)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(2)
+		sess.Out.Error("Cannot determine file size: ",err.Error(), "\n")
+		return true
 	}
 	fileSize := fi.Size()
 	var FileMaxSize int64

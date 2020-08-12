@@ -97,11 +97,10 @@ var scanLocalPathCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(scanLocalPathCmd)
 
-	//scanLocalPathCmd.Flags().Bool("csv", false, "output csv format")
+	viperScanLocalPath = core.SetConfig()
+
 	scanLocalPathCmd.Flags().Bool("debug", false, "Print debugging information")
 	scanLocalPathCmd.Flags().Bool("hide-secrets", false, "Show secrets in any supported output")
-	//scanLocalPathCmd.Flags().Bool("json", false, "output json format")
-	//scanLocalPathCmd.Flags().Bool("load-triage", false, "load a triage file")
 	scanLocalPathCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanLocalPathCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
 	scanLocalPathCmd.Flags().Int64("max-file-size", 50, "Max file size to scan")

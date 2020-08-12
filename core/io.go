@@ -101,6 +101,25 @@ func realTimeOutput(finding *Finding, sess *Session) {
 	}
 }
 
+// IsMaxFileSize will determine if the file size is under the max limit set by maxFileSize
+func IsMaxFileSize(filename string, sess *Session) bool {
+
+	fi, err := os.Stat(filename)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(2)
+	}
+	fileSize := fi.Size()
+	var FileMaxSize int64
+	FileMaxSize = sess.MaxFileSize * 1024 * 1024
+
+	if fileSize > FileMaxSize {
+		return true
+	}
+	return false
+}
+
 // isTestFileorPath will run various regex's against a target to determine if it is a test file or contained in a test directory.
 func isTestFileOrPath(fullPath string) bool {
 	fName := filepath.Base(fullPath)

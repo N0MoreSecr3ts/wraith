@@ -83,17 +83,9 @@ func DoFileScan(filename string, sess *Session) {
 		return
 	}
 
-	if fi, err := os.Stat(filename); err == nil {
-		fileSize := fi.Size()
-
-		var mbFileMaxSize int64
-		mbFileMaxSize = sess.MaxFileSize * 1024 * 1024
-
-		// If the file is greater than the max size of a file we want to deal with then ignore it
-		if fileSize > mbFileMaxSize {
-			// If we are not scanning the file then by definition we are ignoring it
-			sess.Stats.IncrementFilesIgnored()
-		}
+	if IsMaxFileSize(filename, sess) {
+		sess.Stats.IncrementFilesIgnored()
+		return
 	}
 
 	if sess.Debug {

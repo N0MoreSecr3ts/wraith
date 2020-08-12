@@ -94,7 +94,4 @@ func init() {
 
 	//viperScanGithub.BindPFlag("scan-forks", scanGithubCmd.Flags().Lookup("scan-forks"))
 
-
-
-
 }

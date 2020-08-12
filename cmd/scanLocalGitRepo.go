@@ -19,7 +19,7 @@ var viperScanLocalGitRepo *viper.Viper
 var scanLocalGitRepoCmd = &cobra.Command{
 	Use:   "scanLocalGitRepo",
 	Short: "Scan a git repo on a local machine",
-	Long: "Scan a git repo on a local machine",
+	Long:  "Scan a git repo on a local machine",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		scanType := "localGit"

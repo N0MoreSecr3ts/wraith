@@ -25,7 +25,7 @@
 - [ ] Scan Bitbucket On-Prem User Repos
 
 
-- [ ] Scan Local Files **Next**
+- [X] ~~Scan Local Files~~
 - [X] ~~Scan Local Git Repos~~
 
 
@@ -57,30 +57,30 @@
 - [ ] Scan since a given commit
 - [X] ~~Exclude files based on extension~~
 - [ ] Exclude or include files based on mime type
-- [ ] Exclude Test Files
+- [X] ~~Exclude Test Files~~
 - [ ] Exclude Forks
 - [ ] Exclude a default path/extension default exclusion
 - [ ] Exclude specific branches or tags
 - [ ] Only scan selected branches or tags
 - [ ] Exclude public or private repos
 - [X] ~~Ability to set commit depth of scan~~
-- [ ] Confidence level for regexes (signature uplift)
+- [X] ~~Confidence level for regexes (signature uplift)~~
 - [X] ~~Should clone to memory, not disk~~
 - [X] ~~Exclude  paths~~
 - [ ] Exclude Users or Repos in an org scan
 - [X] ~~Status output of a session~~
 - [X] ~~Ability to silence the output~~
 - [ ] JSON or CSV Output
-- [ ] Max file size to scan
+- [X] ~~Max file size to scan~~
 
 ### UX Features
 - [ ] Database Backend
 - [ ] Web Frontend For Configuration
 - [X] ~~Web Frontend For Output~~
-- [ ] Specific YAML Configuration File
-- [ ] Signatures in a seperate repo (signature uplift)
-- [ ] Signatures in either yaml or json format (signature uplift)
-- [ ] Update Signatures command (signature uplift)
+- [X] ~~Specific YAML Configuration File~~
+- [X] ~~Signatures in a seperate repo (signature uplift)~~
+- [X] ~~Signatures in either yaml or json format (signature uplift)~~
+- [ ] Update Signatures command
 - [ ] Fully Instrumented with Performance Stats
 - [X] ~~Finding should have an ID (Hash)~~
 - [X] ~~Ability to configure via environment variables~~
@@ -90,8 +90,7 @@
 
 ## Bugs
 - [X] ~~DB Code is smelly (reomved feature)~~
-- [ ] Regex's are not performant (signature uplift)
-- [ ] Code organization is horrible
+- [ ] Regex's are not performant
 - [ ] Consistent search on all platforms
 - [X] ~~Web interface line in stdio is borked~~
 - [X] ~~Can only find a single target~~
@@ -102,7 +101,7 @@
 - [ ] web interface is gitlab specific by default (requires mucking with bindata.go)
 - [ ] why is the web interface using to old index.html (requires mucking with bindata.go)
 - [X] ~~gitlab scans are failing~~
-- [ ] not consistently finding secrets for all sources
+- [X] ~~not consistently finding secrets for all sources~~
 - [ ] web interface progress bar not working
 - [X] ~~web interface links are broken for local files~~
 - [ ] web interface links to the file should be more detailed and point to the commit/line in the code
@@ -110,7 +109,7 @@
 - [X] ~~no error when rules file is not found~~
 - [ ] in-mem-clone is not working properly
 - [ ] working with local repos is not threaded
-- [ ] there are no findings in a local search
+- [X] ~~there are no findings in a local git search~~
 - [ ] there are no findings in a gitlab search
 - [ ] there are multiple generateid functions
 - [ ] need to reorg the code again
@@ -118,61 +117,36 @@
 
 
 ## TODO
-- [ ] Remove the repo count per target during a run
-- [X] ~~Repositiores -> reposScanned~~
-- [X] ~~commits -> commitsScanned~~
-- [X] ~~findings -> findings total~~
-- [X] ~~files -> files scanned~~
-- [ ] Add config details to summary output
+
+### Milestone 1
+- [ ] Change empty string defaults to nil
+- [ ] Need to organize work items
+- [ ] Confirm hide secrets
+- [ ] Confirm realtime output
+- [ ] Document how to add a new command or source
+- [ ] Document the tech debt using colors and a shell script, ala aspring
+- [ ] Mark all tech debt
 - [ ] Add content to summary
 - [ ] cleanup issues in summary output
-- [X] ~~Implement match level for sigs~~
-- [ ] Create stats for signatures
-- [X] ~~Move sigs to a different repo~~
-- [X] ~~Implement rules in either json or yaml~~
-- [X] ~~call all rules sigs~~
-- [ ] implement command to update sigs from repo
-- [X] ~~port all grover stats~~
-- [ ] tests for all regex's
-- [ ] remove all debugging statements
+- [ ] remove all print debugging statements
 - [ ] remove all dead code
 - [ ] add more debuging info
-- [ ] add additional stats to web interface
-- [ ] what errors should stop the run
-- [X] ~~add a flag to point to a custom rules file~~
-- [X] ~~add flag for setting the match level~~
-- [X] ~~document the match level~~
 - [ ] document all stats
 - [ ] implement flag for setting the thread count manually
 - [ ] document the differance between targets and repos
 - [ ] document all code completely
 - [ ] create a developer doc with the design and code execution flow
+- [ ] Contributing.md
 - [ ] Look at the clone configs
-- [ ] Create new ascii art
-- [ ] Rebuild the web interface
-- [ ] Copy existing tests to the new codebase (need to reorg the existing codebase first)
+- [ ] Copy existing tests to the new codebase
 - [ ] Make a single function to create a temp dir
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen
-- [ ] Thread the scanning of commits
-- [ ] Check all urls point to the right repos (requires mucking with bindata.go)
-- [ ] Update Code Climate for Wraith
 - [ ] Write a new README
 - [ ] Make sure we clean up the temp directories
-- [X] ~~Pre-compiled binaries~~
-- [X] ~~Use YAML arrays~~
-- [X] ~~Implement MJ Stats (waiting on new matching)~~
-- [ ] Break out global vs command specific variables
-- [ ] Combine all shell scripts into Makefile
-- [X] ~~Split rules into a seperate repo (signature uplift)~~
-- [X] ~~Combine the rules and sigs into a single yaml file (signature uplift)~~
-- [X] ~~Plug into gitlab ci pipeline~~
-- [X] ~~Remove the common package and integrate it with core~~
-- [X] ~~Add copyright notices~~
-- [X] ~~Remove github traces~~
-- [ ] Test all regexes (signature uplift)
+- [ ] Update Code Climate for Wraith
 - [ ] Alpha sort structs, functions, flags
-- [ ] Unit tests for all code
+- [ ] go doc strings
     - [ ] common
     - [ ] config
     - [ ] core
@@ -181,10 +155,42 @@
     - [ ] matching
     - [ ] version
     - [ ] rules
-- [ ] Debug Info
-- [X] ~~How do we want to handle authN~~
-- [ ] Better Logging using Logrus
+- [ ] Golint needs to pass
+
+
+### Milestone 2
+- [ ] Make tech debt fail build process
+- [ ] Add config details to debug statement at the start of a run
+- [ ] Create stats for signatures
+- [ ] Structured Logging
+- [ ] Create a standard set of error codes
 - [ ] Error Handling
+    - [ ] common
+    - [ ] config
+    - [ ] core
+    - [ ] github
+    - [ ] gitlab
+    - [ ] matching
+    - [ ] version
+    - [ ] rules
+- [ ] Security Scans
+- [ ] Sanitize user inputs
+- [ ] Code should be optimized into multiple packages
+
+
+### Milestone 3
+- [ ] Move the repo count per target during a run to a debug statement
+- [ ] Create stats for signatures
+- [ ] tests for all regex's
+- [ ] add additional stats to web interface
+- [ ] Create new ascii art
+- [ ] Rebuild the web interface
+- [ ] Thread the scanning of commits
+- [ ] Check all urls point to the right repos (requires mucking with bindata.go)
+- [ ] Break out global vs command specific variables
+- [ ] Combine all shell scripts into Makefile
+- [ ] Test all regexes
+- [ ] Unit tests for all code
     - [ ] common
     - [ ] config
     - [ ] core
@@ -195,33 +201,16 @@
     - [ ] rules
 - [ ] Code Test Coverage
 - [ ] 3PP Scans
-- [X] ~~Security.txt~~
-- [X] ~~Update Readme.md~~
-- [ ] Security Scans
-- [ ] Sanitize user inputs
-- [ ] Contributing.md
-- [ ] Makefile
-- [X] ~~.editorconfig~~
-- [X] ~~.gitignore~~
-- [ ] Mascot (waiting on Mandy)
-- [X] ~~Name (wraith)~~
-- [X] ~~Gitlab group~~
-- [ ] go doc strings
-    - [ ] common
-    - [ ] config
-    - [ ] core
-    - [ ] github
-    - [ ] gitlab
-    - [ ] matching
-    - [ ] version
-    - [ ] rules
-- [X] ~~Implement cobra/viper~~
-- [X] ~~License.txt~~
 - [ ] Table driven tests
 - [ ] Need to make a flag in the Makefile to update the dependencies
 - [ ] Split out the web go code into a specific package
 - [ ] Swap to libgit2 where it makes sense for scaling
-- [ ] Golint needs to pass
+    
+## Research
+- [ ] Do we want to add files,dirs,repos,etc to an ignore list when they are not found or they error out
+- [ ] Look at using the gitignore when scanning repos
+- [ ] what errors should stop the run
+- [ ] Mascot
 
 ## Notes
 - [ ] Can we Go for the web front-end
@@ -231,3 +220,7 @@
 
 [1]: https://github.com/eth0izzle/shhgit/blob/master/core/github.go#L91
 [2]: https://pkg.go.dev/github.com/go-git/go-git/v5?tab=doc#example-Clone
+
+ 
+
+Donk3y?OrMu1EISM3aner?

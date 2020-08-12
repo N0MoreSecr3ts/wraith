@@ -50,135 +50,137 @@
 - [ ] Scan GSuite 
 - [ ] Scan Quip
 
-### Scaning Features
-**default is to include everything**
-- [ ] Entrophy Checks
-- [ ] Scan specific branches
-- [ ] Scan since a given commit
-- [X] ~~Exclude files based on extension~~
-- [ ] Exclude or include files based on mime type
-- [X] ~~Exclude Test Files~~
-- [ ] Exclude Forks
-- [ ] Exclude a default path/extension default exclusion
-- [ ] Exclude specific branches or tags
-- [ ] Only scan selected branches or tags
-- [ ] Exclude public or private repos
-- [X] ~~Ability to set commit depth of scan~~
-- [X] ~~Confidence level for regexes (signature uplift)~~
-- [X] ~~Should clone to memory, not disk~~
-- [X] ~~Exclude  paths~~
-- [ ] Exclude Users or Repos in an org scan
-- [X] ~~Status output of a session~~
-- [X] ~~Ability to silence the output~~
-- [ ] JSON or CSV Output
-- [X] ~~Max file size to scan~~
+## Milestone 1
 
-### UX Features
-- [ ] Database Backend
-- [ ] Web Frontend For Configuration
+### Bugs
+- [ ] in-mem-clone is not working properly
+- [ ] there are no findings in a gitlab search
+- [ ] there are multiple generateID functions
 - [X] ~~Web Frontend For Output~~
 - [X] ~~Specific YAML Configuration File~~
 - [X] ~~Signatures in a seperate repo (signature uplift)~~
 - [X] ~~Signatures in either yaml or json format (signature uplift)~~
-- [ ] Update Signatures command
-- [ ] Fully Instrumented with Performance Stats
 - [X] ~~Finding should have an ID (Hash)~~
 - [X] ~~Ability to configure via environment variables~~
 - [X] ~~Ability to version signatures (signature uplift)~~
 - [X] ~~When running silent, no webserver is started~~
-
-
-## Bugs
 - [X] ~~DB Code is smelly (reomved feature)~~
-- [ ] Regex's are not performant
-- [ ] Consistent search on all platforms
 - [X] ~~Web interface line in stdio is borked~~
 - [X] ~~Can only find a single target~~
 - [X] ~~Silent still displays the gitlab logo~~
 - [X] ~~Slient does not print you need to hit Ctrl-C to stop the webserver~~
-- [ ] need to update the go [git library][2] used
-- [ ] web interface cannot handle local files (requires mucking with bindata.go)
-- [ ] web interface is gitlab specific by default (requires mucking with bindata.go)
-- [ ] why is the web interface using to old index.html (requires mucking with bindata.go)
 - [X] ~~gitlab scans are failing~~
 - [X] ~~not consistently finding secrets for all sources~~
-- [ ] web interface progress bar not working
 - [X] ~~web interface links are broken for local files~~
-- [ ] web interface links to the file should be more detailed and point to the commit/line in the code
-- [ ] web interface is not dynamic, I need to refresh it manually
 - [X] ~~no error when rules file is not found~~
-- [ ] in-mem-clone is not working properly
-- [ ] working with local repos is not threaded
 - [X] ~~there are no findings in a local git search~~
-- [ ] there are no findings in a gitlab search
-- [ ] there are multiple generateid functions
-- [ ] need to reorg the code again
 
 
-
-## TODO
-
-### Milestone 1
-- [ ] Change empty string defaults to nil
-- [ ] Need to organize work items
-- [ ] Confirm hide secrets
-- [ ] Confirm realtime output
+### Documentation
 - [ ] Document how to add a new command or source
-- [ ] Document the tech debt using colors and a shell script, ala aspring
-- [ ] Mark all tech debt
-- [ ] Add content to summary
-- [ ] cleanup issues in summary output
-- [ ] remove all print debugging statements
-- [ ] remove all dead code
-- [ ] add more debuging info
-- [ ] document all stats
-- [ ] implement flag for setting the thread count manually
-- [ ] document the differance between targets and repos
-- [ ] document all code completely
-- [ ] create a developer doc with the design and code execution flow
+- [ ] Document the tech debt using colors and a shell script
+- [ ] Document all stats
+- [ ] Document the differance between targets and repos
+- [ ] Document all code completely
+- [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
-- [ ] Look at the clone configs
-- [ ] Copy existing tests to the new codebase
-- [ ] Make a single function to create a temp dir
-- [ ] Need to list the flag defaults on the help screen
-- [ ] If no arg's are given for a command, then list the help screen
 - [ ] Write a new README
-- [ ] Make sure we clean up the temp directories
-- [ ] Update Code Climate for Wraith
-- [ ] Alpha sort structs, functions, flags
-- [ ] go doc strings
+- [ ] Go doc strings
     - [ ] common
     - [ ] config
     - [ ] core
-    - [ ] github
-    - [ ] gitlab
-    - [ ] matching
     - [ ] version
-    - [ ] rules
+    
+### Testing
+- [ ] Copy existing tests to the new codebase
+- [ ] Confirm hide secrets
+- [ ] Mark all tech debt
+- [ ] Update Code Climate for Wraith
 - [ ] Golint needs to pass
+
+### Features
+- [ ] Fully Instrumented with Performance Stats
+- [ ] JSON or CSV Output
+- [ ] Exclude Forks
+- [ ] Entrophy Checks
+- [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
+- [ ] Change empty string defaults to nil
+- [ ] Add content to summary
+- [ ] Cleanup issues in summary output
+- [ ] Remove all print debugging statements
+- [ ] Remove all dead code
+- [ ] Add more debuging info
+- [ ] Implement flag for setting the thread count manually
+- [ ] Look at the clone configs
+- [ ] Make a single function to create a temp dir
+- [ ] Need to list the flag defaults on the help screen
+- [ ] If no arg's are given for a command, then list the help screen
+- [ ] Make sure we clean up the temp directories
+- [ ] Alpha sort structs, functions, flags
+- [X] ~~Exclude files based on extension~~
+- [X] ~~Exclude Test Files~~
+- [X] ~~Ability to set commit depth of scan~~
+- [X] ~~Confidence level for regexes (signature uplift)~~
+- [X] ~~Should clone to memory, not disk~~
+- [X] ~~Exclude  paths~~
+- [X] ~~Status output of a session~~
+- [X] ~~Ability to silence the output~~
+- [X] ~~Max file size to scan~~
 
 
 ### Milestone 2
+
+### Bugs
+- [ ] web interface cannot handle local files (requires mucking with bindata.go)
+- [ ] web interface is gitlab specific by default (requires mucking with bindata.go)
+- [ ] why is the web interface using to old index.html (requires mucking with bindata.go)
+- [ ] web interface progress bar not working
+- [ ] web interface links to the file should be more detailed and point to the commit/line in the code
+- [ ] web interface is not dynamic, I need to refresh it manually
+
+### Documentation
+
+### Features
+- [ ] Scan specific branches
+- [ ] Scan since a given commit
+- [ ] Update Signatures command
+
+### Testing
 - [ ] Make tech debt fail build process
 - [ ] Add config details to debug statement at the start of a run
 - [ ] Create stats for signatures
 - [ ] Structured Logging
 - [ ] Create a standard set of error codes
 - [ ] Error Handling
-    - [ ] common
     - [ ] config
     - [ ] core
-    - [ ] github
-    - [ ] gitlab
-    - [ ] matching
     - [ ] version
-    - [ ] rules
 - [ ] Security Scans
 - [ ] Sanitize user inputs
 - [ ] Code should be optimized into multiple packages
 
+## Milestone 3
 
-### Milestone 3
+### Bugs
+
+### Features
+- [ ] working with local repos is not threaded
+- [ ] Exclude or include files based on mime type
+- [ ] Exclude a default path/extension default exclusion
+- [ ] Exclude specific branches or tags
+- [ ] Only scan selected branches or tags
+- [ ] Exclude public or private repos
+- [ ] Exclude Users or Repos in an org scan
+- [ ] Database Backend
+- [ ] Web Frontend For Configuration
+
+### Testing
+
+### Documentation
+
+- [ ] Consistent search on all platforms
+- [ ] need to update the go [git library][2] used
+- [ ] Regex's are not performant
 - [ ] Move the repo count per target during a run to a debug statement
 - [ ] Create stats for signatures
 - [ ] tests for all regex's

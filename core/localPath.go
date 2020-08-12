@@ -1,6 +1,8 @@
 package core
 
 import (
+	"context"
+	"fmt"
 	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
@@ -9,8 +11,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"context"
-	"fmt"
 	"wraith/version"
 )
 
@@ -56,30 +56,30 @@ func Search(ctx context.Context, root string, skippablePath []string) ([]string,
 }
 
 // doFileScan with create a match object and then test for various criteria necessary in order to determine if it should be scanned. This includes if it should be skipped due to a default or user supplied extension, if it matches a test regex, or is in a protected directory or is itself protected. This will only run when doing scanLocalPath.
-func DoFileScan(filename string, hunt *Session) {
+func DoFileScan(filename string, sess *Session) {
 
 	// Set default values for all pre-requisites for a file scan
 	likelyTestFile := false
 
 	// This is the total number of files that we know exist in out path. This does not care about the scan, it is simply the total number of files found
-	hunt.Stats.IncrementFilesTotal()
+	sess.Stats.IncrementFilesTotal()
 
 	matchFile := newMatchFile(filename)
-	if matchFile.isSkippable(hunt) {
-		hunt.Stats.IncrementFilesIgnored()
+	if matchFile.isSkippable(sess) {
+		sess.Stats.IncrementFilesIgnored()
 		return
 	}
 
 	// If we are not scanning tests then drop all files that match common test file patterns
 	// If we do not want to scan any test files or paths we check for them and then exclude them if they are found
 	// The default is to not scan test files or common test paths
-	if !hunt.ScanTests {
+	if !sess.ScanTests {
 		likelyTestFile = isTestFileOrPath(filename)
 	}
 
 	if likelyTestFile {
 		// We want to know how many files have been ignored
-		hunt.Stats.IncrementFilesIgnored()
+		sess.Stats.IncrementFilesIgnored()
 		return
 	}
 
@@ -87,22 +87,22 @@ func DoFileScan(filename string, hunt *Session) {
 		fileSize := fi.Size()
 
 		var mbFileMaxSize int64
-		mbFileMaxSize = hunt.MaxFileSize * 1024 * 1024
+		mbFileMaxSize = sess.MaxFileSize * 1024 * 1024
 
 		// If the file is greater than the max size of a file we want to deal with then ignore it
 		if fileSize > mbFileMaxSize {
 			// If we are not scanning the file then by definition we are ignoring it
-			hunt.Stats.IncrementFilesIgnored()
+			sess.Stats.IncrementFilesIgnored()
 		}
 	}
 
-	if hunt.Debug {
+	if sess.Debug {
 		// Print the filename of every file being scanned
 		fmt.Println("Scanning ", filename)
 	}
 
 	// Increment the number of files scanned
-	hunt.Stats.IncrementFilesScanned()
+	sess.Stats.IncrementFilesScanned()
 
 	// Scan the file for know signatures
 	for _, signature := range Signatures {
@@ -118,7 +118,7 @@ func DoFileScan(filename string, hunt *Session) {
 			knownSecret := false
 
 			// Increment the total number of findings
-			hunt.Stats.IncrementFindingsTotal()
+			sess.Stats.IncrementFindingsTotal()
 
 			cleanK := strings.SplitAfterN(k, "_", 2)
 
@@ -131,7 +131,7 @@ func DoFileScan(filename string, hunt *Session) {
 			}
 
 			// destroy the secret if the flag is set
-			if hunt.HideSecrets {
+			if sess.HideSecrets {
 				content = ""
 			}
 
@@ -142,41 +142,41 @@ func DoFileScan(filename string, hunt *Session) {
 
 			if bMatched {
 				newFinding := &Finding{
-					FilePath:        filename,
-					Action:          `File Scan`,
-					Description:     signature.Description(),
-					Signatureid:          signature.Signatureid(),
-					Comment:         content,
-					RepositoryOwner: `not-a-repo`,
-					RepositoryName:  `not-a-repo`,
-					CommitHash:      ``,
-					CommitMessage:   ``,
-					CommitAuthor:    ``,
-					LineNumber:      strconv.Itoa(v),
-					SecretID:        genericID,
-					WraithVersion:   version.AppVersion(),
-					SignaturesVersion:    hunt.SignatureVersion,
+					FilePath:          filename,
+					Action:            `File Scan`,
+					Description:       signature.Description(),
+					Signatureid:       signature.Signatureid(),
+					Comment:           content,
+					RepositoryOwner:   `not-a-repo`,
+					RepositoryName:    `not-a-repo`,
+					CommitHash:        ``,
+					CommitMessage:     ``,
+					CommitAuthor:      ``,
+					LineNumber:        strconv.Itoa(v),
+					SecretID:          genericID,
+					WraithVersion:     version.AppVersion(),
+					SignaturesVersion: sess.SignatureVersion,
 				}
 
 				// Add a new finding and increment the total
-				newFinding.Initialize(hunt.ScanType)
-				hunt.AddFinding(newFinding)
+				newFinding.Initialize(sess.ScanType)
+				sess.AddFinding(newFinding)
 
 				// print the current finding to stdout
-				realTimeOutput(newFinding, hunt)
+				realTimeOutput(newFinding, sess)
 			}
 		}
 	}
 }
 
 // scanDir will scan a directory for all the files and then kick a file scan on each of them
-func ScanDir(path string, hunt *Session) {
+func ScanDir(path string, sess *Session) {
 
 	ctx, cf := context.WithTimeout(context.Background(), 3600*time.Second)
 	defer cf()
 
 	// get an slice of of all paths
-	files, err1 := Search(ctx, path, hunt.SkippablePath)
+	files, err1 := Search(ctx, path, sess.SkippablePath)
 	if err1 != nil {
 		log.Println(err1)
 	}
@@ -194,7 +194,7 @@ func ScanDir(path string, hunt *Session) {
 			defer wg.Done()
 
 			// scan the specific file if it is found to be a valid candidate
-			DoFileScan(p, hunt)
+			DoFileScan(p, sess)
 			<-sem
 		}()
 	}
@@ -216,4 +216,3 @@ func CheckArgs(sFile string, sDir string) bool {
 
 	return true
 }
-

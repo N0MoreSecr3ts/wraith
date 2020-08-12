@@ -23,7 +23,7 @@ const (
 	PartContent   = "content"   // the content of the file
 )
 
-// Signatures holds a list of all signatures used during the hunt
+// Signatures holds a list of all signatures used during the session
 var Signatures []Signature
 
 // SafeFunctionSignatures is a collection of safe function sigs
@@ -61,7 +61,7 @@ func getEntropyInt(s string) float64 {
 	return res
 }
 
-// generateGenericID will return an id with sufficient enough entropy to be usable for larger scale hunts
+// generateGenericID will return an id with sufficient enough entropy to be usable for larger scale sessionss
 func generateGenericID(val1 string) string {
 	id := sha1.New()
 
@@ -364,7 +364,7 @@ func (s SafeFunctionSignature) ExtractMatch(file MatchFile) (bool, map[string]in
 	return false, results
 }
 
-// LoadSignatures will load all known signatures for the various match types into the hunt
+// LoadSignatures will load all known signatures for the various match types into the session
 func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { // TODO we don't need to bring in session here
 
 	// ensure that we have the proper home directory

@@ -60,8 +60,8 @@ var DefaultValues = map[string]interface{}{
 	"signature-file":  "default_signatures.yml",
 	"signatures-path": "$HOME/.wraith/signatures",
 	//"signatures-url":               "",
-	"scan-dir":                "",
-	"scan-file":               "",
+	"scan-dir":     "",
+	"scan-file":    "",
 	"hide-secrets": false,
 	//"test-signatures":              false, // TODO implement this as a bool
 }
@@ -274,7 +274,7 @@ func (s *Session) AddFinding(finding *Finding) {
 	s.Stats.IncrementFindingsTotal()
 }
 
-// InitStats will set the initial values for a hunt
+// InitStats will set the initial values for a session
 func (s *Session) InitStats() {
 	if s.Stats != nil {
 		return

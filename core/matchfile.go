@@ -24,15 +24,15 @@ func newMatchFile(path string) MatchFile {
 }
 
 // isSkippable will check the matched file against a list of extensions or paths either supplied by the user or set by default
-func (f *MatchFile) isSkippable(hunt *Session) bool {
+func (f *MatchFile) isSkippable(sess *Session) bool {
 	ext := strings.ToLower(f.Extension)
 	path := strings.ToLower(f.Path)
-	for _, skippableExt := range hunt.SkippableExt {
+	for _, skippableExt := range sess.SkippableExt {
 		if ext == skippableExt {
 			return true
 		}
 	}
-	for _, skippablePath := range hunt.SkippablePath {
+	for _, skippablePath := range sess.SkippablePath {
 		if strings.Contains(path, skippablePath) {
 			return true
 		}

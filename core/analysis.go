@@ -477,7 +477,7 @@ func AnalyzeRepositories(sess *Session) {
 									// Get a proper uid for the finding
 									finding.Initialize(sess.ScanType)
 
-									// Add it to the hunt
+									// Add it to the session
 									sess.AddFinding(finding)
 									sess.Stats.IncrementCommits()
 									sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)

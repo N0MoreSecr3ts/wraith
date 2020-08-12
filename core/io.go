@@ -78,26 +78,26 @@ func SetHomeDir(h string) string {
 }
 
 // realTimeOutput will print out the current finding to stdout if all conditions are met
-func realTimeOutput(finding *Finding, hunt *Session) {
-	if !hunt.Silent {
+func realTimeOutput(finding *Finding, sess *Session) {
+	if !sess.Silent {
 
-		hunt.Out.Warn(" %s\n", strings.ToUpper(finding.Description))
-		hunt.Out.Info("  SignatureID............: %s\n", finding.Signatureid)
-		hunt.Out.Info("  Repo..............: %s\n", finding.RepositoryName)
-		hunt.Out.Info("  File Path.........: %s\n", finding.FilePath)
-		hunt.Out.Info("  Line Number.......: %s\n", finding.LineNumber)
-		hunt.Out.Info("  Message...........: %s\n", TruncateString(finding.CommitMessage, 100))
-		hunt.Out.Info("  Commit Hash.......: %s\n", TruncateString(finding.CommitHash, 100))
-		hunt.Out.Info("  Author............: %s\n", finding.CommitAuthor)
-		hunt.Out.Info("  SecretID..........: %v\n", finding.SecretID)
-		hunt.Out.Info("  Wraith Version....: %s\n", version.AppVersion())
-		hunt.Out.Info("  Signatures Version.....: %v\n", finding.SignaturesVersion)
+		sess.Out.Warn(" %s\n", strings.ToUpper(finding.Description))
+		sess.Out.Info("  SignatureID............: %s\n", finding.Signatureid)
+		sess.Out.Info("  Repo..............: %s\n", finding.RepositoryName)
+		sess.Out.Info("  File Path.........: %s\n", finding.FilePath)
+		sess.Out.Info("  Line Number.......: %s\n", finding.LineNumber)
+		sess.Out.Info("  Message...........: %s\n", TruncateString(finding.CommitMessage, 100))
+		sess.Out.Info("  Commit Hash.......: %s\n", TruncateString(finding.CommitHash, 100))
+		sess.Out.Info("  Author............: %s\n", finding.CommitAuthor)
+		sess.Out.Info("  SecretID..........: %v\n", finding.SecretID)
+		sess.Out.Info("  Wraith Version....: %s\n", version.AppVersion())
+		sess.Out.Info("  Signatures Version.....: %v\n", finding.SignaturesVersion)
 		if len(finding.Comment) > 0 {
 			issues := "\n\t" + finding.Comment
-			hunt.Out.Info("  Issues..........: %s\n", issues)
+			sess.Out.Info("  Issues..........: %s\n", issues)
 		}
 
-		hunt.Out.Info(" ------------------------------------------------\n\n")
+		sess.Out.Info(" ------------------------------------------------\n\n")
 	}
 }
 

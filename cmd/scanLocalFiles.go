@@ -3,18 +3,16 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
+	"os"
 	"strings"
-	"sync"
 	"time"
 	"wraith/core"
 	"wraith/version"
-	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
-
 
 var viperScanLocalPath *viper.Viper
 
@@ -22,7 +20,7 @@ var viperScanLocalPath *viper.Viper
 var scanLocalPathCmd = &cobra.Command{
 	Use:   "scanLocalFiles",
 	Short: "Scan local files and directorys",
-	Long: "Scan local files and directorys",
+	Long:  "Scan local files and directorys",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Ensure that both the file and a directory flags are not set

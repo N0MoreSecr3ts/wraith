@@ -72,7 +72,6 @@ func init() {
 	scanGithubCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
 	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
-	//scanGithubCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
 
 	viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))
 	viperScanGithub.BindPFlag("bind-port", scanGithubCmd.Flags().Lookup("bind-port"))
@@ -91,7 +90,5 @@ func init() {
 	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
 	viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))
 	viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))
-
-	//viperScanGithub.BindPFlag("scan-forks", scanGithubCmd.Flags().Lookup("scan-forks"))
 
 }

@@ -111,14 +111,11 @@ func init() {
 	scanLocalPathCmd.Flags().String("rules-file", "$HOME/grover/rules/default.yml", "file(s) containing secrets detection rules.")
 	scanLocalPathCmd.Flags().String("scan-dir", "", "scan a directory of files not from a git project")
 	scanLocalPathCmd.Flags().String("scan-file", "", "scan a single file")
-	//scanLocalPathCmd.Flags().String("triage-file", "$HOME/.grover/triage.yaml", "file containing secrets that have been previously triaged.")
 
-	//viperScanLocalPath.BindPFlag("csv", scanLocalPathCmd.Flags().Lookup("csv"))
+
 	viperScanLocalPath.BindPFlag("debug", scanLocalPathCmd.Flags().Lookup("debug"))
 	viperScanLocalPath.BindPFlag("hide-secrets", scanLocalPathCmd.Flags().Lookup("hide-secrets"))
-	//viperScanLocalPath.BindPFlag("json", scanLocalPathCmd.Flags().Lookup("json"))
-	//viperScanLocalPath.BindPFlag("load-triage", scanLocalPathCmd.Flags().Lookup("load-triage"))
-	viperScanLocalPath.BindPFlag("scan-tests", scanLocalPathCmd.Flags().Lookup("scan-tests"))
+		viperScanLocalPath.BindPFlag("scan-tests", scanLocalPathCmd.Flags().Lookup("scan-tests"))
 	viperScanLocalPath.BindPFlag("silent", scanLocalPathCmd.Flags().Lookup("silent"))
 	viperScanLocalPath.BindPFlag("max-file-size", scanLocalPathCmd.Flags().Lookup("max-file-size"))
 	viperScanLocalPath.BindPFlag("match-level", scanLocalPathCmd.Flags().Lookup("match-level"))
@@ -127,5 +124,5 @@ func init() {
 	viperScanLocalPath.BindPFlag("rules-file", scanLocalPathCmd.Flags().Lookup("rules-file"))
 	viperScanLocalPath.BindPFlag("scan-dir", scanLocalPathCmd.Flags().Lookup("scan-dir"))
 	viperScanLocalPath.BindPFlag("scan-file", scanLocalPathCmd.Flags().Lookup("scan-file"))
-	//viperScanLocalPath.BindPFlag("triage-file", scanLocalPathCmd.Flags().Lookup("triage-file"))
+
 }

@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"os"
 	"time"
@@ -26,14 +25,15 @@ var scanGithubCmd = &cobra.Command{
 		sess, err := core.NewSession(viperScanGithub, scanType)
 
 		if err != nil {
-			fmt.Println(err)
+			sess.Out.Error("Failed to generate a new session: %s\n", err.Error()) //YELLOW
+
 			os.Exit(1)
 		}
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
-		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
+		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
 		core.GatherTargets(sess)
 		core.GatherRepositories(sess)
@@ -72,29 +72,22 @@ func init() {
 	scanGithubCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
 	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
-	//scanGithubCmd.Flags().Bool("scan-forks", true, "Scan forked repositories")
-
-	viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))
-	viperScanGithub.BindPFlag("bind-port", scanGithubCmd.Flags().Lookup("bind-port"))
-	viperScanGithub.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
-	viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))
-	viperScanGithub.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
-	viperScanGithub.BindPFlag("github-targets", scanGithubCmd.Flags().Lookup("github-targets"))
-	viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))
-	viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension"))
-	viperScanGithub.BindPFlag("ignore-path", scanGithubCmd.Flags().Lookup("ignore-extension"))
-	viperScanGithub.BindPFlag("in-mem-clone", scanGithubCmd.Flags().Lookup("in-mem-clone"))
-	viperScanGithub.BindPFlag("match-level", scanGithubCmd.Flags().Lookup("match-level"))
-	viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))
-	viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))
-	viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))
-	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
-	viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))
-	viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))
-
-	//viperScanGithub.BindPFlag("scan-forks", scanGithubCmd.Flags().Lookup("scan-forks"))
-
-
-
+	viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))         //ORANGE
+	viperScanGithub.BindPFlag("bind-port", scanGithubCmd.Flags().Lookup("bind-port"))               //ORANGE
+	viperScanGithub.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))         //ORANGE
+	viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))                       //ORANGE
+	viperScanGithub.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token")) //ORANGE
+	viperScanGithub.BindPFlag("github-targets", scanGithubCmd.Flags().Lookup("github-targets"))     //ORANGE
+	viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))         //ORANGE
+	viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension")) //ORANGE
+	viperScanGithub.BindPFlag("ignore-path", scanGithubCmd.Flags().Lookup("ignore-extension"))      //ORANGE
+	viperScanGithub.BindPFlag("in-mem-clone", scanGithubCmd.Flags().Lookup("in-mem-clone"))         //ORANGE
+	viperScanGithub.BindPFlag("match-level", scanGithubCmd.Flags().Lookup("match-level"))           //ORANGE
+	viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))       //ORANGE
+	viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))     //ORANGE
+	viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))           //ORANGE
+	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))             //ORANGE
+	viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))     //ORANGE
+	viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))                     //ORANGE
 
 }

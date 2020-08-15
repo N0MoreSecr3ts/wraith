@@ -46,24 +46,21 @@ var DefaultValues = map[string]interface{}{
 	"ignore-path":      "",
 	"in-mem-clone":     false,
 	"max-file-size":    50,
-	"local-dirs":       "",
+	"local-dirs":       nil,
+	"local-files":      nil,
 	"scan-forks":       true,
 	"scan-tests":       false,
 	"scan-type":        "",
 	"silent":           false,
-	//"csv":                     false,
-	//"db-output":               false,
-	//"display-changelog":       false,
-	//"json":                    false,
-	//"low-priority":            false,
-	"match-level":     3,
-	"signature-file":  "default_signatures.yml",
-	"signatures-path": "$HOME/.wraith/signatures",
-	//"signatures-url":               "",
-	//"scan-dir":                "",
-	//"scan-file":               "",
-	"hide-secrets": false,
-	//"test-signatures":              false, // TODO implement this as a bool
+	"csv":              false,
+	"json":             false,
+	"match-level":      3,
+	"signature-file":   "default_signatures.yml",
+	"signatures-path":  "$HOME/.wraith/signatures",
+	"signatures-url":   "",
+	"scan-dir":         "",
+	"scan-file":        "",
+	"hide-secrets":     false,
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -74,6 +71,7 @@ type Session struct {
 	BindPort          int
 	Client            IClient `json:"-"`
 	CommitDepth       int
+	CSV               bool
 	Debug             bool
 	Findings          []*Finding
 	GithubAccessToken string
@@ -82,10 +80,12 @@ type Session struct {
 	GitlabTargets     []string
 	HideSecrets       bool
 	InMemClone        bool
+	JSON              bool
 	MaxFileSize       int64
 	NoExpandOrgs      bool
 	Out               *Logger `json:"-"`
 	LocalDirs         []string
+	LocalFiles        []string
 	Repositories      []*Repository
 	Router            *gin.Engine `json:"-"`
 	SignatureVersion  string
@@ -136,27 +136,26 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.BindAddress = v.GetString("bind-address")
 	s.BindPort = v.GetInt("bind-port")
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
+	//s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
+	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
-	s.MaxFileSize = v.GetInt64("max-file-size")
+	//s.JSONOutput = v.GetBool("json")
 	s.LocalDirs = v.GetStringSlice("local-dirs")
+	s.MaxFileSize = v.GetInt64("max-file-size")
+	s.MatchLevel = v.GetInt("match-level")
 	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement
 	s.ScanTests = v.GetBool("scan-tests")
 	s.ScanType = scanType
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
 	s.Version = version.AppVersion()
-	//s.CSVOutput = v.GetBool("csv")
-	//s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
-	//s.GithubURL = v.GetString("github-url")
-	//s.JSONOutput = v.GetBool("json")
-
-	s.HideSecrets = v.GetBool("hide-secrets")
-	s.MatchLevel = v.GetInt("match-level")
+	v.GetStringSlice("scan-dir")
+	v.GetStringSlice("scan-file")
 
 	// add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {
@@ -204,11 +203,11 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	var combinedSig []Signature
 	SignaturesFile := v.GetString("signatures-file")
 	if SignaturesFile != "" {
-		Signatures := strings.Split(SignaturesFile, ",")
+		Signatures := strings.Split(SignaturesFile, ",") // TODO make slice
 
 		for _, f := range Signatures {
 			f = strings.TrimSpace(f)
-			if PathExists(f) {
+			if PathExists(f, s) {
 				curSig = LoadSignatures(f, s.MatchLevel, s)
 				combinedSig = append(combinedSig, curSig...)
 			}
@@ -274,7 +273,7 @@ func (s *Session) AddFinding(finding *Finding) {
 	s.Stats.IncrementFindingsTotal()
 }
 
-// InitStats will set the initial values for a hunt
+// InitStats will set the initial values for a session
 func (s *Session) InitStats() {
 	if s.Stats != nil {
 		return
@@ -308,10 +307,10 @@ func (s *Session) InitAPIClient() {
 
 	switch s.ScanType {
 	case "github":
-		CheckGithubAPIToken(s.GithubAccessToken)
+		CheckGithubAPIToken(s.GithubAccessToken, s)
 		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken)
 	case "gitlab":
-		CheckGitlabAPIToken(s.GitlabAccessToken)
+		CheckGitlabAPIToken(s.GitlabAccessToken, s)
 		var err error
 		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out)
 		if err != nil {

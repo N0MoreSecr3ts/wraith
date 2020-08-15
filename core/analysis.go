@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -87,10 +86,12 @@ func GatherLocalRepositories(sess *Session) {
 	// It will contain directorys, that will then be added to the repo count
 	// if they contain a .git directory
 	sess.Stats.Targets = len(sess.LocalDirs)
+	sess.Stats.Status = StatusGathering
+	sess.Out.Important("Gathering Local Repositories...\n")
 
 	for _, pth := range sess.LocalDirs {
 
-		if !PathExists(pth) {
+		if !PathExists(pth, sess) {
 			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)
 			os.Exit(1)
 		}
@@ -98,7 +99,7 @@ func GatherLocalRepositories(sess *Session) {
 		// Gather all paths in the tree
 		err0 := filepath.Walk(pth, func(path string, f os.FileInfo, err1 error) error {
 			if err1 != nil {
-				//fmt.Println(err1) // TODO use the error logging capability here
+				sess.Out.Error("Failed to enumerate the path: %s\n", err1.Error())
 				return nil
 			}
 
@@ -120,7 +121,7 @@ func GatherLocalRepositories(sess *Session) {
 
 					ref, err3 := openRepo.Head()
 					if err3 != nil {
-						//fmt.Println("err3: ", err3) //TODO remove me
+						sess.Out.Error("Failed to open the repo HEAD: %s\n", err3.Error())
 						return nil
 					}
 
@@ -289,20 +290,21 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 
 // getRepositoryHistory will attempt to get the commit history of a given repo and if successful increment the repo
 // count and update the progress.
-func getRepositoryHistory(sess *Session, clone *git.Repository, repo *Repository, path string, threadId int) ([]*object.Commit, error) {
-	history, err := GetRepositoryHistory(clone)
-	if err != nil {
-		sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", threadId, *repo.CloneURL, err)
-		if sess.InMemClone {
-			os.RemoveAll(path)
-		}
-		//sess.Stats.IncrementRepositories()
-		//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
-		return nil, err
-	}
-	sess.Out.Debug("[THREAD #%d][%s] Number of commits: %d\n", threadId, *repo.CloneURL, len(history))
-	return history, err
-}
+//func getRepositoryHistory(sess *Session, clone *git.Repository, repo *Repository, path string, threadId int) ([]*object.Commit, error) {
+//	history, err := GetRepositoryHistory(clone)
+//	if err != nil {
+//		sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", threadId, *repo.CloneURL, err)
+//		if sess.InMemClone {
+//			err := os.RemoveAll(path)
+//			sess.Out.Error("[THREAD #%d][%s] Error removing path from memory: %s\n", threadId, *repo.CloneURL, err)
+//		} else {
+//			err := os.RemoveAll(path)
+//			sess.Out.Error("[THREAD #%d][%s] Error removing path from disk: %s\n", threadId, *repo.CloneURL, err)
+//		}
+//		return nil, err
+//	}
+//	return history, err
+//}
 
 //sess.Out.Debug("Threads for repository analysis: %d\n", threadNum)
 //sess.Out.Important("Analyzing %d %s...\n", len(sess.Repositories), Pluralize(len(sess.Repositories), "repository", "repositories"))
@@ -352,6 +354,7 @@ func AnalyzeRepositories(sess *Session) {
 				}
 
 				// Clone the repository from the remote source or if local from the path
+				// path is returning the path that the clone was done to, nothing inside that. The repo is clone directly to there
 				clone, path, err := cloneRepository(sess, repo, tid)
 				if err != nil {
 					if err.Error() != "remote repository is empty" {
@@ -363,10 +366,23 @@ func AnalyzeRepositories(sess *Session) {
 				// Get the commit history for the repo
 				history, err := GetRepositoryHistory(clone)
 				if err != nil {
-					sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", tid, *repo.FullName, err)
-					os.RemoveAll(path)
+					sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", tid, *repo.CloneURL, err)
+					if sess.InMemClone {
+						err := os.RemoveAll(path)
+						sess.Out.Error("[THREAD #%d][%s] Error removing path from memory: %s\n", tid, *repo.CloneURL, err)
+					} else {
+						err := os.RemoveAll(path)
+						sess.Out.Error("[THREAD #%d][%s] Error removing path from disk: %s\n", tid, *repo.CloneURL, err)
+					}
 					continue
 				}
+				//if err != nil {
+				//	sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", tid, *repo.FullName, err)
+				//	continue
+				//}
+				//sess.Stats.IncrementRepositories()
+				//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
+				sess.Out.Debug("[THREAD #%d][%s] Number of commits: %d\n", tid, *repo.CloneURL, len(history))
 
 				for _, commit := range history {
 					sess.Out.Debug("[THREAD #%d][%s] Analyzing commit: %s\n", tid, *repo.CloneURL, commit.Hash)
@@ -402,18 +418,10 @@ func AnalyzeRepositories(sess *Session) {
 							continue
 						}
 
-						if fi, err := os.Stat(fullFilePath); err == nil {
-							fileSize := fi.Size()
+						if IsMaxFileSize(fullFilePath, sess) {
 
-							var mbFileMaxSize int64
-							mbFileMaxSize = sess.MaxFileSize * 1024 * 1024
-
-							// If the file is greater than the max size of a file we want to deal with then ignore it
-							if fileSize > mbFileMaxSize {
-								// If we are not scanning the file then by definition we are ignoring it
-								sess.Stats.IncrementFilesIgnored()
-								continue
-							}
+							sess.Stats.IncrementFilesIgnored()
+							continue
 						}
 
 						// If the file matches a file extension or other method that precludes it from a scan
@@ -431,7 +439,7 @@ func AnalyzeRepositories(sess *Session) {
 						// for each signature that is loaded scan the file as a whole and generate a map of the match and the line number the match was found on
 						for _, signature := range Signatures {
 
-							bMatched, matchMap := signature.ExtractMatch(matchFile)
+							bMatched, matchMap := signature.ExtractMatch(matchFile, sess)
 							if bMatched {
 
 								sess.Stats.IncrementFilesDirty()
@@ -477,7 +485,7 @@ func AnalyzeRepositories(sess *Session) {
 									// Get a proper uid for the finding
 									finding.Initialize(sess.ScanType)
 
-									// Add it to the hunt
+									// Add it to the session
 									sess.AddFinding(finding)
 									sess.Stats.IncrementCommits()
 									sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)

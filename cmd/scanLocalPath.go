@@ -16,7 +16,7 @@ var viperScanLocalPath *viper.Viper
 
 // scanLocalPathCmd represents the scanLocalFiles command
 var scanLocalPathCmd = &cobra.Command{
-	Use:   "scanLocalFiles",
+	Use:   "scanLocalPath",
 	Short: "Scan local files and directorys",
 	Long:  "Scan local files and directorys",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -30,7 +30,7 @@ var scanLocalPathCmd = &cobra.Command{
 		sess.SkippablePath = core.AppendIfMissing(sess.SkippablePath, ".git/") //YELLOW
 
 		if err != nil {
-			sess.Out.Error(err.Error())//YELLOW
+			sess.Out.Error(err.Error()) //YELLOW
 			os.Exit(1)
 		}
 
@@ -38,7 +38,6 @@ var scanLocalPathCmd = &cobra.Command{
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
-
 
 		// Run either a file scan directly, or if it is a directory then walk the path and gather eligible files and then run a scan against each of them
 		for _, fl := range sess.LocalFiles {
@@ -90,17 +89,16 @@ func init() {
 	scanLocalPathCmd.Flags().String("scan-dir", "", "scan a directory of files not from a git project")
 	scanLocalPathCmd.Flags().String("scan-file", "", "scan a single file")
 
-
-	viperScanLocalPath.BindPFlag("debug", scanLocalPathCmd.Flags().Lookup("debug"))//ORANGE
-	viperScanLocalPath.BindPFlag("hide-secrets", scanLocalPathCmd.Flags().Lookup("hide-secrets"))//ORANGE
-	viperScanLocalPath.BindPFlag("scan-tests", scanLocalPathCmd.Flags().Lookup("scan-tests"))//ORANGE
-	viperScanLocalPath.BindPFlag("silent", scanLocalPathCmd.Flags().Lookup("silent"))//ORANGE
-	viperScanLocalPath.BindPFlag("max-file-size", scanLocalPathCmd.Flags().Lookup("max-file-size"))//ORANGE
-	viperScanLocalPath.BindPFlag("match-level", scanLocalPathCmd.Flags().Lookup("match-level"))//ORANGE
-	viperScanLocalPath.BindPFlag("ignore-extension", scanLocalPathCmd.Flags().Lookup("ignore-extension"))//ORANGE
-	viperScanLocalPath.BindPFlag("ignore-path", scanLocalPathCmd.Flags().Lookup("ignore-path"))//ORANGE
-	viperScanLocalPath.BindPFlag("rules-file", scanLocalPathCmd.Flags().Lookup("rules-file"))//ORANGE
-	viperScanLocalPath.BindPFlag("scan-dir", scanLocalPathCmd.Flags().Lookup("scan-dir"))//ORANGE
-	viperScanLocalPath.BindPFlag("scan-file", scanLocalPathCmd.Flags().Lookup("scan-file"))//ORANGE
+	viperScanLocalPath.BindPFlag("debug", scanLocalPathCmd.Flags().Lookup("debug"))                       //ORANGE
+	viperScanLocalPath.BindPFlag("hide-secrets", scanLocalPathCmd.Flags().Lookup("hide-secrets"))         //ORANGE
+	viperScanLocalPath.BindPFlag("scan-tests", scanLocalPathCmd.Flags().Lookup("scan-tests"))             //ORANGE
+	viperScanLocalPath.BindPFlag("silent", scanLocalPathCmd.Flags().Lookup("silent"))                     //ORANGE
+	viperScanLocalPath.BindPFlag("max-file-size", scanLocalPathCmd.Flags().Lookup("max-file-size"))       //ORANGE
+	viperScanLocalPath.BindPFlag("match-level", scanLocalPathCmd.Flags().Lookup("match-level"))           //ORANGE
+	viperScanLocalPath.BindPFlag("ignore-extension", scanLocalPathCmd.Flags().Lookup("ignore-extension")) //ORANGE
+	viperScanLocalPath.BindPFlag("ignore-path", scanLocalPathCmd.Flags().Lookup("ignore-path"))           //ORANGE
+	viperScanLocalPath.BindPFlag("rules-file", scanLocalPathCmd.Flags().Lookup("rules-file"))             //ORANGE
+	viperScanLocalPath.BindPFlag("scan-dir", scanLocalPathCmd.Flags().Lookup("scan-dir"))                 //ORANGE
+	viperScanLocalPath.BindPFlag("scan-file", scanLocalPathCmd.Flags().Lookup("scan-file"))               //ORANGE
 
 }

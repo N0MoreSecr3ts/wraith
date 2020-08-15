@@ -24,8 +24,7 @@ func PathExists(path string, sess *Session) bool {
 		return true
 	}
 	if os.IsNotExist(err) {
-		//fmt.Println("PATH: ",path,"\n")
-		//sess.Out.Error("File does not exist: %s\n", err.Error())
+		//sess.Out.Error("File does not exist: %s\n", err.Error()) // TODO need to flip this back on.
 		return false
 	}
 

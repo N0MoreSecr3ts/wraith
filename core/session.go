@@ -47,20 +47,20 @@ var DefaultValues = map[string]interface{}{
 	"in-mem-clone":     false,
 	"max-file-size":    50,
 	"local-dirs":       nil,
-	"local-files": nil,
+	"local-files":      nil,
 	"scan-forks":       true,
 	"scan-tests":       false,
 	"scan-type":        "",
 	"silent":           false,
-	"csv":                     false,
-	"json":                    false,
-	"match-level":     3,
-	"signature-file":  "default_signatures.yml",
-	"signatures-path": "$HOME/.wraith/signatures",
-	"signatures-url":               "",
-	"scan-dir":     "",
-	"scan-file":    "",
-	"hide-secrets": false,
+	"csv":              false,
+	"json":             false,
+	"match-level":      3,
+	"signature-file":   "default_signatures.yml",
+	"signatures-path":  "$HOME/.wraith/signatures",
+	"signatures-url":   "",
+	"scan-dir":         "",
+	"scan-file":        "",
+	"hide-secrets":     false,
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -71,7 +71,7 @@ type Session struct {
 	BindPort          int
 	Client            IClient `json:"-"`
 	CommitDepth       int
-	CSV bool
+	CSV               bool
 	Debug             bool
 	Findings          []*Finding
 	GithubAccessToken string
@@ -80,12 +80,12 @@ type Session struct {
 	GitlabTargets     []string
 	HideSecrets       bool
 	InMemClone        bool
-	JSON bool
+	JSON              bool
 	MaxFileSize       int64
 	NoExpandOrgs      bool
 	Out               *Logger `json:"-"`
 	LocalDirs         []string
-	LocalFiles []string
+	LocalFiles        []string
 	Repositories      []*Repository
 	Router            *gin.Engine `json:"-"`
 	SignatureVersion  string
@@ -156,7 +156,6 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.Version = version.AppVersion()
 	v.GetStringSlice("scan-dir")
 	v.GetStringSlice("scan-file")
-
 
 	// add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {

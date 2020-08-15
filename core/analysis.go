@@ -384,7 +384,7 @@ func AnalyzeRepositories(sess *Session) {
 				//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 				sess.Out.Debug("[THREAD #%d][%s] Number of commits: %d\n", tid, *repo.CloneURL, len(history))
 
-				for i, commit := range history {
+				for _, commit := range history {
 					sess.Out.Debug("[THREAD #%d][%s] Analyzing commit: %s\n", tid, *repo.CloneURL, commit.Hash)
 
 					// Increment the total number of commits scanned
@@ -397,13 +397,11 @@ func AnalyzeRepositories(sess *Session) {
 					changes, _ := GetChanges(commit, clone)
 					sess.Out.Debug("[THREAD #%d][%s] %s changes in %d\n", tid, *repo.CloneURL, commit.Hash, len(changes))
 
-					for j, change := range changes {
+					for _, change := range changes {
 
 						changeAction := GetChangeAction(change)
 						fPath := GetChangePath(change)
-						//fmt.Println("PATH: ", path) // TODO remove me
 						fullFilePath := path + "/" + fPath
-						fmt.Println("Full Path: ",fullFilePath) //TODO remove me
 
 						sess.Stats.IncrementFilesTotal()
 
@@ -419,8 +417,6 @@ func AnalyzeRepositories(sess *Session) {
 							sess.Stats.IncrementFilesIgnored()
 							continue
 						}
-						fmt.Println("Commit Index: ",i)
-						fmt.Println("Change Index: ",j)
 
 						if IsMaxFileSize(fullFilePath, sess) {
 
@@ -430,8 +426,6 @@ func AnalyzeRepositories(sess *Session) {
 
 						// If the file matches a file extension or other method that precludes it from a scan
 						matchFile := newMatchFile(fullFilePath)
-						fmt.Println("Path: ", matchFile.Path) // TODO remove me
-						//fmt.Println("Filename: ",matchFile.Filename) TODO remove me
 						if matchFile.isSkippable(sess) {
 							// If we are not scanning the file then by definition we are ignoring it
 							sess.Stats.IncrementFilesIgnored()
@@ -444,7 +438,6 @@ func AnalyzeRepositories(sess *Session) {
 
 						// for each signature that is loaded scan the file as a whole and generate a map of the match and the line number the match was found on
 						for _, signature := range Signatures {
-							//fmt.Println(signature.Description()) //TODO remove me
 
 							bMatched, matchMap := signature.ExtractMatch(matchFile, sess)
 							if bMatched {

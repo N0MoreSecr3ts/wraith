@@ -145,10 +145,8 @@ func GetChangePath(change *object.Change) string {
 	}
 
 	if action == merkletrie.Delete {
-		fmt.Println(change.From.Name)
 		return change.From.Name
 	} else {
-		fmt.Println(change.To.Name)
 		return change.To.Name
 	}
 }

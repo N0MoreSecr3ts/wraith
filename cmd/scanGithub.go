@@ -4,10 +4,10 @@ package cmd
 
 import (
 	"github.com/spf13/viper"
-	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ var scanGithubCmd = &cobra.Command{
 		sess, err := core.NewSession(viperScanGithub, scanType)
 
 		if err != nil {
-			sess.Out.Error("Failed to generate a new session: %s\n", err.Error())
+			sess.Out.Error("Failed to generate a new session: %s\n", err.Error())//YELLOW
 
 			os.Exit(1)
 		}
@@ -73,22 +73,22 @@ func init() {
 	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
 
-	viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))
-	viperScanGithub.BindPFlag("bind-port", scanGithubCmd.Flags().Lookup("bind-port"))
-	viperScanGithub.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
-	viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))
-	viperScanGithub.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
-	viperScanGithub.BindPFlag("github-targets", scanGithubCmd.Flags().Lookup("github-targets"))
-	viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))
-	viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension"))
-	viperScanGithub.BindPFlag("ignore-path", scanGithubCmd.Flags().Lookup("ignore-extension"))
-	viperScanGithub.BindPFlag("in-mem-clone", scanGithubCmd.Flags().Lookup("in-mem-clone"))
-	viperScanGithub.BindPFlag("match-level", scanGithubCmd.Flags().Lookup("match-level"))
-	viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))
-	viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))
-	viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))
-	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
-	viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))
-	viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))
+	viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))//ORANGE
+	viperScanGithub.BindPFlag("bind-port", scanGithubCmd.Flags().Lookup("bind-port"))//ORANGE
+	viperScanGithub.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))//ORANGE
+	viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))//ORANGE
+	viperScanGithub.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))//ORANGE
+	viperScanGithub.BindPFlag("github-targets", scanGithubCmd.Flags().Lookup("github-targets"))//ORANGE
+	viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))//ORANGE
+	viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension"))//ORANGE
+	viperScanGithub.BindPFlag("ignore-path", scanGithubCmd.Flags().Lookup("ignore-extension"))//ORANGE
+	viperScanGithub.BindPFlag("in-mem-clone", scanGithubCmd.Flags().Lookup("in-mem-clone"))//ORANGE
+	viperScanGithub.BindPFlag("match-level", scanGithubCmd.Flags().Lookup("match-level"))//ORANGE
+	viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))//ORANGE
+	viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))//ORANGE
+	viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))//ORANGE
+	viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))//ORANGE
+	viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))//ORANGE
+	viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))//ORANGE
 
 }

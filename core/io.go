@@ -24,7 +24,8 @@ func PathExists(path string, sess *Session) bool {
 		return true
 	}
 	if os.IsNotExist(err) {
-		sess.Out.Error("Failed to generate a new session: %s\n", err.Error())
+		//fmt.Println("PATH: ",path,"\n")
+		//sess.Out.Error("File does not exist: %s\n", err.Error())
 		return false
 	}
 
@@ -104,19 +105,24 @@ func realTimeOutput(finding *Finding, sess *Session) {
 // IsMaxFileSize will determine if the file size is under the max limit set by maxFileSize
 func IsMaxFileSize(filename string, sess *Session) bool {
 
-	fi, err := os.Stat(filename)
-
-	if err != nil {
-		sess.Out.Error("Cannot determine file size: ",err.Error(), "\n")
-		return true
-	}
-	fileSize := fi.Size()
-	var FileMaxSize int64
-	FileMaxSize = sess.MaxFileSize * 1024 * 1024
-
-	if fileSize > FileMaxSize {
-		return true
-	}
+	//fi, err := os.Stat(filename)
+	//
+	//if err != nil {
+	//	sess.Out.Error("Cannot determine file size: ",err.Error(), "\n")
+	//	return true
+	//}
+	//
+	////if err != nil {
+	////	sess.Out.Error("Cannot determine file size: ",err.Error(), "\n")
+	////	return true
+	////}
+	//fileSize := fi.Size()
+	//var FileMaxSize int64
+	//FileMaxSize = sess.MaxFileSize * 1024 * 1024
+	//
+	//if fileSize > FileMaxSize {
+	//	return true
+	//}
 	return false
 }
 

@@ -57,7 +57,7 @@ var DefaultValues = map[string]interface{}{
 	"match-level":     3,
 	"signature-file":  "default_signatures.yml",
 	"signatures-path": "$HOME/.wraith/signatures",
-	"signatures-url":               "",//
+	"signatures-url":               "",
 	"scan-dir":     "",
 	"scan-file":    "",
 	"hide-secrets": false,
@@ -136,14 +136,18 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.BindAddress = v.GetString("bind-address")
 	s.BindPort = v.GetInt("bind-port")
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
+	//s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
+	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
-	s.MaxFileSize = v.GetInt64("max-file-size")
+	//s.JSONOutput = v.GetBool("json")
 	s.LocalDirs = v.GetStringSlice("local-dirs")
+	s.MaxFileSize = v.GetInt64("max-file-size")
+	s.MatchLevel = v.GetInt("match-level")
 	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement
 	s.ScanTests = v.GetBool("scan-tests")
 	s.ScanType = scanType
@@ -152,13 +156,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.Version = version.AppVersion()
 	v.GetStringSlice("scan-dir")
 	v.GetStringSlice("scan-file")
-	//s.CSVOutput = v.GetBool("csv")
-	//s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
-	//s.GithubURL = v.GetString("github-url")
-	//s.JSONOutput = v.GetBool("json")
 
-	s.HideSecrets = v.GetBool("hide-secrets")
-	s.MatchLevel = v.GetInt("match-level")
 
 	// add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {
@@ -206,7 +204,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	var combinedSig []Signature
 	SignaturesFile := v.GetString("signatures-file")
 	if SignaturesFile != "" {
-		Signatures := strings.Split(SignaturesFile, ",")
+		Signatures := strings.Split(SignaturesFile, ",") // TODO make slice
 
 		for _, f := range Signatures {
 			f = strings.TrimSpace(f)

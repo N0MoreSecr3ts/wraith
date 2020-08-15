@@ -243,7 +243,10 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session) (bool, map
 		haystack = &file.Extension
 		bResult = s.match.MatchString(*haystack)
 	case PartContent:
+		//fmt.Println("I am here at the content") // TODO remove me
 		haystack := &file.Path
+		fmt.Println(&file.Path)
+		fmt.Println("extracting a content match")
 		if PathExists(*haystack, sess) {
 			if _, err := os.Stat(*haystack); err == nil {
 				data, err := ioutil.ReadFile(*haystack)
@@ -380,7 +383,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 		Time:    c.Meta.Time,
 	}
 
-	sess.SignatureVersion = signaturesMetaData.Version // TODO implement this
+	sess.SignatureVersion = signaturesMetaData.Version
 
 	SimpleSignatures := []SimpleSignature{}   // TODO change this variable name
 	PatternSignatures := []PatternSignature{} // TODO change this variable name
@@ -487,6 +490,8 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 		Signatures[jdx] = v
 		jdx++
 	}
+
+	// TODO are we loading the safe ones somewhere
 
 	return Signatures
 }

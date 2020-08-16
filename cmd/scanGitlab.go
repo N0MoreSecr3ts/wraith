@@ -4,11 +4,11 @@ package cmd
 
 import (
 	"github.com/spf13/viper"
-	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
 
+	"fmt"
 	"github.com/spf13/cobra"
 )
 
@@ -22,12 +22,7 @@ var scanGitlabCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		scanType := "gitlab"
-		sess, err := core.NewSession(viperScanGitlab, scanType)
-
-		if err != nil {
-			sess.Out.Error("Failed to generate a new session: %s\n", err.Error()) //YELLOW
-			os.Exit(1)
-		}
+		sess := core.NewSession(viperScanGitlab, scanType)
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
@@ -72,22 +67,25 @@ func init() {
 	scanGitlabCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
 	scanGitlabCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
 
-	viperScanGitlab.BindPFlag("bind-address", scanGitlabCmd.Flags().Lookup("bind-address"))         //ORANGE
-	viperScanGitlab.BindPFlag("bind-port", scanGitlabCmd.Flags().Lookup("bind-port"))               //ORANGE
-	viperScanGitlab.BindPFlag("commit-depth", scanGitlabCmd.Flags().Lookup("commit-depth"))         //ORANGE
-	viperScanGitlab.BindPFlag("debug", scanGitlabCmd.Flags().Lookup("debug"))                       //ORANGE
-	viperScanGitlab.BindPFlag("gitlab-api-token", scanGitlabCmd.Flags().Lookup("gitlab-api-token")) //ORANGE
-	viperScanGitlab.BindPFlag("gitlab-targets", scanGitlabCmd.Flags().Lookup("gitlab-targets"))     //ORANGE
-	viperScanGitlab.BindPFlag("hide-secrets", scanGitlabCmd.Flags().Lookup("hide-secrets"))         //ORANGE
-	viperScanGitlab.BindPFlag("ignore-extension", scanGitlabCmd.Flags().Lookup("ignore-extension")) //ORANGE
-	viperScanGitlab.BindPFlag("ignore-path", scanGitlabCmd.Flags().Lookup("ignore-extension"))      //ORANGE
-	viperScanGitlab.BindPFlag("in-mem-clone", scanGitlabCmd.Flags().Lookup("in-mem-clone"))         //ORANGE
-	viperScanGitlab.BindPFlag("match-level", scanGitlabCmd.Flags().Lookup("match-level"))           //ORANGE
-	viperScanGitlab.BindPFlag("max-file-size", scanGitlabCmd.Flags().Lookup("max-file-size"))       //ORANGE
-	viperScanGitlab.BindPFlag("no-expand-orgs", scanGitlabCmd.Flags().Lookup("no-expand-orgs"))     //ORANGE
-	viperScanGitlab.BindPFlag("num-threads", scanGitlabCmd.Flags().Lookup("num-threads"))           //ORANGE
-	viperScanGitlab.BindPFlag("scan-tests", scanGitlabCmd.Flags().Lookup("scan-tests"))             //ORANGE
-	viperScanGitlab.BindPFlag("signature-file", scanGitlabCmd.Flags().Lookup("signature-file"))     //ORANGE
-	viperScanGitlab.BindPFlag("silent", scanGitlabCmd.Flags().Lookup("silent"))                     //ORANGE
+	err := viperScanGitlab.BindPFlag("bind-address", scanGitlabCmd.Flags().Lookup("bind-address"))        //ORANGE
+	err = viperScanGitlab.BindPFlag("bind-port", scanGitlabCmd.Flags().Lookup("bind-port"))               //ORANGE
+	err = viperScanGitlab.BindPFlag("commit-depth", scanGitlabCmd.Flags().Lookup("commit-depth"))         //ORANGE
+	err = viperScanGitlab.BindPFlag("debug", scanGitlabCmd.Flags().Lookup("debug"))                       //ORANGE
+	err = viperScanGitlab.BindPFlag("gitlab-api-token", scanGitlabCmd.Flags().Lookup("gitlab-api-token")) //ORANGE
+	err = viperScanGitlab.BindPFlag("gitlab-targets", scanGitlabCmd.Flags().Lookup("gitlab-targets"))     //ORANGE
+	err = viperScanGitlab.BindPFlag("hide-secrets", scanGitlabCmd.Flags().Lookup("hide-secrets"))         //ORANGE
+	err = viperScanGitlab.BindPFlag("ignore-extension", scanGitlabCmd.Flags().Lookup("ignore-extension")) //ORANGE
+	err = viperScanGitlab.BindPFlag("ignore-path", scanGitlabCmd.Flags().Lookup("ignore-extension"))      //ORANGE
+	err = viperScanGitlab.BindPFlag("in-mem-clone", scanGitlabCmd.Flags().Lookup("in-mem-clone"))         //ORANGE
+	err = viperScanGitlab.BindPFlag("match-level", scanGitlabCmd.Flags().Lookup("match-level"))           //ORANGE
+	err = viperScanGitlab.BindPFlag("max-file-size", scanGitlabCmd.Flags().Lookup("max-file-size"))       //ORANGE
+	err = viperScanGitlab.BindPFlag("no-expand-orgs", scanGitlabCmd.Flags().Lookup("no-expand-orgs"))     //ORANGE
+	err = viperScanGitlab.BindPFlag("num-threads", scanGitlabCmd.Flags().Lookup("num-threads"))           //ORANGE
+	err = viperScanGitlab.BindPFlag("scan-tests", scanGitlabCmd.Flags().Lookup("scan-tests"))             //ORANGE
+	err = viperScanGitlab.BindPFlag("signature-file", scanGitlabCmd.Flags().Lookup("signature-file"))     //ORANGE
+	err = viperScanGitlab.BindPFlag("silent", scanGitlabCmd.Flags().Lookup("silent"))                     //ORANGE
 
+	if err != nil {
+		fmt.Printf("There was an error binding a flag: %s\n", err.Error())
+	}
 }

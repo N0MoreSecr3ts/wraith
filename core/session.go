@@ -46,6 +46,7 @@ var DefaultValues = map[string]interface{}{
 	"ignore-path":      "",
 	"in-mem-clone":     false,
 	"max-file-size":    50,
+	"num-threads": 0,
 	"local-dirs":       nil,
 	"local-files":      nil,
 	"scan-forks":       true,
@@ -401,10 +402,10 @@ func (s *Stats) UpdateProgress(current int, total int) {
 }
 
 // NewSession  is the entry point for starting a new scan session
-func NewSession(v *viper.Viper, scanType string) (*Session, error) {
+func NewSession(v *viper.Viper, scanType string) *Session {
 	var session Session
 
 	session.Initialize(v, scanType)
 
-	return &session, nil
+	return &session
 }

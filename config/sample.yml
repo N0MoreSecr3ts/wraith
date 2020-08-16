@@ -1,24 +1,28 @@
 ---
 commit-depth: 0
-gitlab-targets:
-  - 5034914
-  - mattyjones
-silent: false
 debug: false
-gitlab-api-token: <token>>
 github-api-token: <token>>
 github-targets:
   - mattyjones
   - sensu-plugins
-ignore-path:
-  - cmd/
-  - docs/
+gitlab-api-token: <token>>
+gitlab-targets:
+  - 5034914
+  - mattyjones
 ignore-extension:
   - .html
   - .css
   - .log
-in-mem-clone: true
+ignore-path:
+  - static/
+  - docs/
+in-mem-clone: false
+local-dirs:
+  - ../wraith-test
+match-level: 3
+num-threads: 0
 repo-dirs:
   - relative/path/to/repo
   - absolute/path/to/repo
-  - 
+signature-file: ../wraith-signatures/signatures/default.yml
+silent: false

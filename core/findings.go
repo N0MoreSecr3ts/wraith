@@ -49,13 +49,17 @@ func (f *Finding) setupUrls(scanType string) {
 // with the finding
 func (f *Finding) generateID() {
 	h := sha1.New()
-	io.WriteString(h, f.FilePath)
-	io.WriteString(h, f.Action)
-	io.WriteString(h, f.RepositoryOwner)
-	io.WriteString(h, f.RepositoryName)
-	io.WriteString(h, f.CommitHash)
-	io.WriteString(h, f.CommitMessage)
-	io.WriteString(h, f.CommitAuthor)
+	_, err := io.WriteString(h, f.FilePath)
+	_, err = io.WriteString(h, f.Action)
+	_, err = io.WriteString(h, f.RepositoryOwner)
+	_, err = io.WriteString(h, f.RepositoryName)
+	_, err = io.WriteString(h, f.CommitHash)
+	_, err = io.WriteString(h, f.CommitMessage)
+	_, err = io.WriteString(h, f.CommitAuthor)
+
+	if err != nil {
+		fmt.Println("Not able to generate finding ID: ", err)
+	}
 	f.SecretID = fmt.Sprintf("%x", h.Sum(nil))
 }
 

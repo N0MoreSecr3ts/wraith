@@ -4,7 +4,6 @@ package core
 import (
 	"crypto/sha1"
 	"fmt"
-	"gopkg.in/src-d/go-git.v4"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -12,6 +11,8 @@ import (
 	"sync"
 	"time"
 	"wraith/version"
+
+	"gopkg.in/src-d/go-git.v4"
 )
 
 // PrintSessionStats will print the performance and sessions stats to stdout at the conclusion of a session scan
@@ -499,6 +500,9 @@ func AnalyzeRepositories(sess *Session) {
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
 								if sess.InMemClone {
 									os.RemoveAll(path)
+									if err != nil {
+										sess.Out.Error("Could not remove path from memory: %s", err.Error())
+									}
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
 								//sess.Stats.IncrementRepositoriesScanned()
@@ -513,6 +517,9 @@ func AnalyzeRepositories(sess *Session) {
 				}
 
 				os.RemoveAll(path)
+				if err != nil {
+					sess.Out.Error("Could not remove path from disk: %s", err.Error())
+				}
 				sess.Stats.IncrementRepositoriesScanned()
 			}
 		}(i)

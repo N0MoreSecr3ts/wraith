@@ -289,24 +289,6 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 	return clone, path, err
 }
 
-// getRepositoryHistory will attempt to get the commit history of a given repo and if successful increment the repo
-// count and update the progress.
-//func getRepositoryHistory(sess *Session, clone *git.Repository, repo *Repository, path string, threadId int) ([]*object.Commit, error) {
-//	history, err := GetRepositoryHistory(clone)
-//	if err != nil {
-//		sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", threadId, *repo.CloneURL, err)
-//		if sess.InMemClone {
-//			err := os.RemoveAll(path)
-//			sess.Out.Error("[THREAD #%d][%s] Error removing path from memory: %s\n", threadId, *repo.CloneURL, err)
-//		} else {
-//			err := os.RemoveAll(path)
-//			sess.Out.Error("[THREAD #%d][%s] Error removing path from disk: %s\n", threadId, *repo.CloneURL, err)
-//		}
-//		return nil, err
-//	}
-//	return history, err
-//}
-
 //sess.Out.Debug("Threads for repository analysis: %d\n", threadNum)
 //sess.Out.Important("Analyzing %d %s...\n", len(sess.Repositories), Pluralize(len(sess.Repositories), "repository", "repositories"))
 //				sess.Out.Debug("[THREAD #%d] No more tasks, marking WaitGroup as done\n", tid)

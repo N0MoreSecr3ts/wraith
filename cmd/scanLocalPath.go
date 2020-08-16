@@ -80,7 +80,7 @@ func init() {
 	scanLocalPathCmd.Flags().Int("match-level", 3, "The match level of the expressions used to find matches")
 	scanLocalPathCmd.Flags().String("ignore-extension", "", "a list of extensions to ignore during a scan")
 	scanLocalPathCmd.Flags().String("ignore-path", "", "a list of paths to ignore during a scan")
-	scanLocalPathCmd.Flags().String("rules-file", "$HOME/grover/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanLocalPathCmd.Flags().String("signature-file", "$HOME/wraith/signatures/default.yml", "file(s) containing secrets detection signatures.")
 	scanLocalPathCmd.Flags().String("scan-dir", "", "scan a directory of files not from a git project")
 	scanLocalPathCmd.Flags().String("scan-file", "", "scan a single file")
 
@@ -92,7 +92,7 @@ func init() {
 	err = viperScanLocalPath.BindPFlag("match-level", scanLocalPathCmd.Flags().Lookup("match-level"))
 	err = viperScanLocalPath.BindPFlag("ignore-extension", scanLocalPathCmd.Flags().Lookup("ignore-extension"))
 	err = viperScanLocalPath.BindPFlag("ignore-path", scanLocalPathCmd.Flags().Lookup("ignore-path"))
-	err = viperScanLocalPath.BindPFlag("rules-file", scanLocalPathCmd.Flags().Lookup("rules-file"))
+	err = viperScanLocalPath.BindPFlag("signature-file", scanLocalPathCmd.Flags().Lookup("signature-file"))
 	err = viperScanLocalPath.BindPFlag("scan-dir", scanLocalPathCmd.Flags().Lookup("scan-dir"))
 	err = viperScanLocalPath.BindPFlag("scan-file", scanLocalPathCmd.Flags().Lookup("scan-file"))
 

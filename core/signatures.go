@@ -314,8 +314,8 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 				return bResult, results
 			}
 		}
-	//default:
-	//	return bResult, results
+		//default:
+		//	return bResult, results
 	}
 	return bResult, results
 }

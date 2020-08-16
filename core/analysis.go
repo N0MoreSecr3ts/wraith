@@ -359,10 +359,6 @@ func AnalyzeRepositories(sess *Session) {
 					}
 					continue
 				}
-				//if err != nil {
-				//	sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", tid, *repo.FullName, err)
-				//	continue
-				//}
 				//sess.Stats.IncrementRepositories()
 				//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 				sess.Out.Debug("[THREAD #%d][%s] Number of commits: %d\n", tid, *repo.CloneURL, len(history))
@@ -384,6 +380,7 @@ func AnalyzeRepositories(sess *Session) {
 
 						changeAction := GetChangeAction(change)
 						fPath := GetChangePath(change)
+
 						fullFilePath := path + "/" + fPath
 
 						sess.Stats.IncrementFilesTotal()
@@ -398,12 +395,16 @@ func AnalyzeRepositories(sess *Session) {
 						if likelyTestFile {
 							// If we are not scanning the file then by definition we are ignoring it
 							sess.Stats.IncrementFilesIgnored()
+							sess.Out.Debug("%s is a test file and being ignored\n", fPath)
+
 							continue
 						}
 
 						if IsMaxFileSize(fullFilePath, sess) {
 
 							sess.Stats.IncrementFilesIgnored()
+							sess.Out.Debug("%s is too large and being ignored\n", fPath)
+
 							continue
 						}
 
@@ -412,6 +413,8 @@ func AnalyzeRepositories(sess *Session) {
 						if matchFile.isSkippable(sess) {
 							// If we are not scanning the file then by definition we are ignoring it
 							sess.Stats.IncrementFilesIgnored()
+							sess.Out.Debug("%s is skippable and being ignored\n", fPath)
+
 							continue
 						}
 						sess.Stats.IncrementFilesTotal()
@@ -422,7 +425,7 @@ func AnalyzeRepositories(sess *Session) {
 						// for each signature that is loaded scan the file as a whole and generate a map of the match and the line number the match was found on
 						for _, signature := range Signatures {
 
-							bMatched, matchMap := signature.ExtractMatch(matchFile, sess)
+							bMatched, matchMap := signature.ExtractMatch(matchFile, sess, change)
 							if bMatched {
 
 								sess.Stats.IncrementFilesDirty()
@@ -467,21 +470,31 @@ func AnalyzeRepositories(sess *Session) {
 
 									// Get a proper uid for the finding
 									finding.Initialize(sess.ScanType)
+									fNew := true
 
-									// Add it to the session
-									sess.AddFinding(finding)
-									sess.Stats.IncrementCommits()
-									sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)
+									for _,f := range sess.Findings {
+										if f.CommitHash == finding.CommitHash && f.SecretID == finding.SecretID && f.Description == finding.Description {
+											fNew = false
+											continue
+										}
+									}
 
-									dirtyCommit = true
+									if fNew {
+										// Add it to the session
+										sess.AddFinding(finding)
+										sess.Stats.IncrementCommits()
+										sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)
 
-									//print realtime data to stdout
-									realTimeOutput(finding, sess)
+										dirtyCommit = true
+
+										//print realtime data to stdout
+										realTimeOutput(finding, sess)
+									}
 
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
 								if sess.InMemClone {
-									os.RemoveAll(path)
+									err = os.RemoveAll(path)
 									if err != nil {
 										sess.Out.Error("Could not remove path from memory: %s", err.Error())
 									}
@@ -498,7 +511,7 @@ func AnalyzeRepositories(sess *Session) {
 					}
 				}
 
-				os.RemoveAll(path)
+				err = os.RemoveAll(path)
 				if err != nil {
 					sess.Out.Error("Could not remove path from disk: %s", err.Error())
 				}

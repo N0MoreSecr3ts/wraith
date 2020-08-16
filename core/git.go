@@ -89,7 +89,7 @@ func GetRepositoryHistory(repository *git.Repository) ([]*object.Commit, error) 
 	if err != nil {
 		return nil, err
 	}
-	cIter.ForEach(func(c *object.Commit) error {
+	_ = cIter.ForEach(func(c *object.Commit) error {
 		commits = append(commits, c)
 		return nil
 	})

@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/yaml.v2"
 	"io"
 	"io/ioutil"
@@ -80,7 +81,7 @@ func generateGenericID(val1 string) string {
 type Signature interface {
 	Description() string
 	Enable() int
-	ExtractMatch(file MatchFile, sess *Session) (bool, map[string]int)
+	ExtractMatch(file MatchFile, sess *Session, change *object.Change) (bool, map[string]int)
 	MatchLevel() int
 	Part() string
 	Signatureid() string // TODO change id -> ID
@@ -150,7 +151,7 @@ type SignatureConfig struct {
 }
 
 // ExtractMatch will attempt to match a path or file name of the given file
-func (s SimpleSignature) ExtractMatch(file MatchFile, sess *Session) (bool, map[string]int) {
+func (s SimpleSignature) ExtractMatch(file MatchFile, sess *Session, change *object.Change) (bool, map[string]int) {
 	var haystack *string
 	var bResult = false
 
@@ -226,7 +227,7 @@ func confirmEntropy(thisMatch string, iSessionEntropy float64) bool {
 }
 
 // ExtractMatch will try and find a match within the content of the file.
-func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session) (bool, map[string]int) {
+func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *object.Change) (bool, map[string]int) {
 
 	var haystack *string            // this is a pointer to the item we want to match
 	var bResult = false             // match result
@@ -256,34 +257,65 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session) (bool, map
 				r := s.match // this is the regex that we are going to try and match against
 
 				var contextMatches []string
+
 				if r.Match(data) {
 					for _, curRegexMatch := range r.FindAll(data, -1) {
 						contextMatches = append(contextMatches, string(curRegexMatch))
 					}
-				}
+					if len(contextMatches) > 0 {
+						bResult = true
+						for i, curMatch := range contextMatches {
+							thisMatch := string(curMatch[:])
+							thisMatch = strings.TrimSuffix(thisMatch, "\n")
 
-				if len(contextMatches) > 0 {
-					bResult = true
-					for i, curMatch := range contextMatches {
-						thisMatch := string(curMatch[:])
-						thisMatch = strings.TrimSuffix(thisMatch, "\n")
+							bResult = confirmEntropy(thisMatch, s.entropy)
 
-						bResult = confirmEntropy(thisMatch, s.entropy)
+							if bResult {
+								linesOfScannedFile := strings.Split(string(data), "\n")
+								linesOfScannedFile = linesOfScannedFile[:len(linesOfScannedFile)] // TODO Is this needed?
 
-						if bResult {
-							linesOfScannedFile := strings.Split(string(data), "\n")
-							//linesOfScannedFile = linesOfScannedFile[:len(linesOfScannedFile)] // TODO Is this needed?
-
-							num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
-							results[strconv.Itoa(i)+"_"+thisMatch] = num
+								num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
+								results[strconv.Itoa(i)+"_"+thisMatch] = num
+							}
 						}
+						//return bResult, results
 					}
-					return bResult, results
 				}
+
+				content, err := GetChangeContent(change)
+				if err != nil {
+					sess.Out.Error("Error retrieving content in commit %s, change %s:  %s", "commit.String()", change.String(), err)
+				} // TODO bring in the commit
+
+				if r.Match([]byte(content)) {
+					for _, curRegexMatch := range r.FindAll([]byte(content), -1) {
+						contextMatches = append(contextMatches, string(curRegexMatch))
+					}
+					if len(contextMatches) > 0 {
+						bResult = true
+						for i, curMatch := range contextMatches {
+							thisMatch := string(curMatch[:])
+							thisMatch = strings.TrimSuffix(thisMatch, "\n")
+
+							bResult = confirmEntropy(thisMatch, s.entropy)
+
+							if bResult {
+								linesOfScannedFile := strings.Split(content, "\n")
+								linesOfScannedFile = linesOfScannedFile[:len(linesOfScannedFile)] // TODO Is this needed?
+
+								num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
+								results[strconv.Itoa(i)+"_"+thisMatch] = num
+							}
+						}
+						//return bResult, results //Lk e nubmer is alway zero
+						//meed to depr
+					}
+				}
+				return bResult, results
 			}
 		}
-	default:
-		return bResult, results
+	//default:
+	//	return bResult, results
 	}
 	return bResult, results
 }
@@ -356,7 +388,7 @@ func (s SafeFunctionSignature) Signatureid() string {
 }
 
 // ExtractMatch is a placeholder to ensure min code complexity and allow the reuse of the functions
-func (s SafeFunctionSignature) ExtractMatch(file MatchFile, sess *Session) (bool, map[string]int) {
+func (s SafeFunctionSignature) ExtractMatch(file MatchFile, sess *Session, change *object.Change) (bool, map[string]int) {
 	var results map[string]int
 
 	return false, results

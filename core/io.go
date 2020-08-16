@@ -82,16 +82,16 @@ func realTimeOutput(finding *Finding, sess *Session) {
 	if !sess.Silent {
 
 		sess.Out.Warn(" %s\n", strings.ToUpper(finding.Description))
-		sess.Out.Info("  SignatureID............: %s\n", finding.Signatureid)
-		sess.Out.Info("  Repo..............: %s\n", finding.RepositoryName)
-		sess.Out.Info("  File Path.........: %s\n", finding.FilePath)
-		sess.Out.Info("  Line Number.......: %s\n", finding.LineNumber)
-		sess.Out.Info("  Message...........: %s\n", TruncateString(finding.CommitMessage, 100))
-		sess.Out.Info("  Commit Hash.......: %s\n", TruncateString(finding.CommitHash, 100))
-		sess.Out.Info("  Author............: %s\n", finding.CommitAuthor)
-		sess.Out.Info("  SecretID..........: %v\n", finding.SecretID)
-		sess.Out.Info("  Wraith Version....: %s\n", version.AppVersion())
-		sess.Out.Info("  Signatures Version.....: %v\n", finding.SignaturesVersion)
+		sess.Out.Info("  SignatureID..........: %s\n", finding.Signatureid)
+		sess.Out.Info("  Repo.................: %s\n", finding.RepositoryName)
+		sess.Out.Info("  File Path............: %s\n", finding.FilePath)
+		sess.Out.Info("  Line Number..........: %s\n", finding.LineNumber)
+		sess.Out.Info("  Message..............: %s\n", TruncateString(finding.CommitMessage, 100))
+		sess.Out.Info("  Commit Hash..........: %s\n", TruncateString(finding.CommitHash, 100))
+		sess.Out.Info("  Author...............: %s\n", finding.CommitAuthor)
+		sess.Out.Info("  SecretID.............: %v\n", finding.SecretID)
+		sess.Out.Info("  Wraith Version.......: %s\n", version.AppVersion())
+		sess.Out.Info("  Signatures Version...: %v\n", finding.SignaturesVersion)
 		if len(finding.Comment) > 0 {
 			issues := "\n\t" + finding.Comment
 			sess.Out.Info("  Issues..........: %s\n", issues)
@@ -104,24 +104,19 @@ func realTimeOutput(finding *Finding, sess *Session) {
 // IsMaxFileSize will determine if the file size is under the max limit set by maxFileSize
 func IsMaxFileSize(filename string, sess *Session) bool {
 
-	//fi, err := os.Stat(filename)
-	//
-	//if err != nil {
-	//	sess.Out.Error("Cannot determine file size: ",err.Error(), "\n")
-	//	return true
-	//}
-	//
-	////if err != nil {
-	////	sess.Out.Error("Cannot determine file size: ",err.Error(), "\n")
-	////	return true
-	////}
-	//fileSize := fi.Size()
-	//var FileMaxSize int64
-	//FileMaxSize = sess.MaxFileSize * 1024 * 1024
-	//
-	//if fileSize > FileMaxSize {
-	//	return true
-	//}
+	fi, err := os.Stat(filename)
+
+	if err != nil {
+		return true
+	}
+
+	fileSize := fi.Size()
+	var FileMaxSize int64
+	FileMaxSize = sess.MaxFileSize * 1024 * 1024
+
+	if fileSize > FileMaxSize {
+		return true
+	}
 	return false
 }
 

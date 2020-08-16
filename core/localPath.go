@@ -85,6 +85,8 @@ func DoFileScan(filename string, sess *Session) {
 	}
 
 	if IsMaxFileSize(filename, sess) {
+		sess.Out.Debug("%s is too large and being ignored\n", filename)
+
 		sess.Stats.IncrementFilesIgnored()
 		return
 	}
@@ -99,7 +101,7 @@ func DoFileScan(filename string, sess *Session) {
 
 	// Scan the file for know signatures
 	for _, signature := range Signatures {
-		bMatched, matchMap := signature.ExtractMatch(matchFile, sess)
+		bMatched, matchMap := signature.ExtractMatch(matchFile, sess, nil)
 
 		var content string   // this is because file matches are puking
 		var genericID string // the generic id used in the finding

@@ -472,7 +472,7 @@ func AnalyzeRepositories(sess *Session) {
 									finding.Initialize(sess.ScanType)
 									fNew := true
 
-									for _,f := range sess.Findings {
+									for _, f := range sess.Findings {
 										if f.CommitHash == finding.CommitHash && f.SecretID == finding.SecretID && f.Description == finding.Description {
 											fNew = false
 											continue

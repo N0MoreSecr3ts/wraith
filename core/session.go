@@ -46,7 +46,7 @@ var DefaultValues = map[string]interface{}{
 	"ignore-path":      "",
 	"in-mem-clone":     false,
 	"max-file-size":    50,
-	"num-threads": 0,
+	"num-threads":      0,
 	"local-dirs":       nil,
 	"local-files":      nil,
 	"scan-forks":       true,
@@ -56,9 +56,9 @@ var DefaultValues = map[string]interface{}{
 	"csv":              false,
 	"json":             false,
 	"match-level":      3,
-	"signature-file":   "default_signatures.yml",
-	"signatures-path":  "$HOME/.wraith/signatures",
-	"signatures-url":   "",
+	"signature-file":   "default.yml",
+	"signature-path":   "$HOME/.wraith/signatures",
+	"signature-url":    "",
 	"scan-dir":         "",
 	"scan-file":        "",
 	"hide-secrets":     false,
@@ -214,7 +214,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 			}
 		}
 	} else {
-		curSig = LoadSignatures(v.GetString(".")+"default_signatures.yml", s.MatchLevel, s) // TODO implement this
+		curSig = LoadSignatures(v.GetString(".")+"default.yml", s.MatchLevel, s) // TODO implement this
 		combinedSig = append(combinedSig, curSig...)
 	}
 

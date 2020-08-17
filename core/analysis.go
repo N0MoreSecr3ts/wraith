@@ -38,7 +38,7 @@ func PrintSessionStats(sess *Session) {
 	sess.Out.Important("\n")
 	sess.Out.Important("-------General-------\n")
 	sess.Out.Info("Wraith Version......: %s\n", sess.Version)
-	sess.Out.Info("Signatures Version.......: %s\n", sess.SignatureVersion)
+	sess.Out.Info("Signatures Version..: %s\n", sess.SignatureVersion)
 	sess.Out.Info("Elapsed Time........: %s\n\n", time.Since(sess.Stats.StartedAt))
 }
 

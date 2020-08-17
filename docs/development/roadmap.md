@@ -75,6 +75,7 @@
 - [X] ~~web interface links are broken for local files~~
 - [X] ~~no error when rules file is not found~~
 - [X] ~~there are no findings in a local git search~~
+- [ ] Searching through a commit history is present but not effective
 
 
 ### Documentation
@@ -85,7 +86,25 @@
 - [ ] Document all code completely
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
+    - [ ] wraith
+    - [ ] wraith-tests
+    - [ ] wraith-signatures
+- [ ] README.md
+    - [X] ~~wraith~~
+    - [ ] wraith-tests
+    - [ ] wraith-signatures
+- [ ] Security.txt
+    - [ ] wraith
+    - [ ] wraith-tests
+    - [ ] wraith-signatures
+- [ ] Initial blog post
+- [ ] Detailed documentation published on the net and with source control
 - [X] ~~Write a new README~~
+- [ ] Cleanup issues
+- [ ] Changelog.md
+    - [ ] wraith
+    - [ ] wraith-tests
+    - [ ] wraith-signatures
 - [ ] Go doc strings
     - [ ] common
     - [ ] config
@@ -100,6 +119,11 @@
 - [ ] Golint needs to pass
 
 ### Features
+- [ ] Configure repos
+- [ ] Configure Org
+- [ ] Created a dedicated GPG key
+- [ ] Enforce https for all connections
+- [ ] Enforce https for the site
 - [ ] Fully Instrumented with Performance Stats
 - [ ] JSON or CSV Output
 - [ ] Exclude Forks
@@ -127,6 +151,7 @@
 - [X] ~~Status output of a session~~
 - [X] ~~Ability to silence the output~~
 - [X] ~~Max file size to scan~~
+- [ ] Only export the functions and variables necessary
 
 
 ### Milestone 2
@@ -138,6 +163,7 @@
 - [ ] web interface progress bar not working
 - [ ] web interface links to the file should be more detailed and point to the commit/line in the code
 - [ ] web interface is not dynamic, I need to refresh it manually
+- [ ] validate all user input
 
 ### Documentation
 
@@ -146,6 +172,7 @@
 - [ ] Scan since a given commit
 - [ ] Update Signatures command
 - [ ] Implement threading for local path scans
+- [ ] Ability to use the .gitignoe when scanning for ingoring paths and files
 
 ### Testing
 - [ ] Make tech debt fail build process

@@ -80,7 +80,7 @@ func init() {
 	scanLocalPathCmd.Flags().Int("match-level", 3, "The match level of the expressions used to find matches")
 	scanLocalPathCmd.Flags().String("ignore-extension", "", "a list of extensions to ignore during a scan")
 	scanLocalPathCmd.Flags().String("ignore-path", "", "a list of paths to ignore during a scan")
-	scanLocalPathCmd.Flags().String("rules-file", "$HOME/grover/rules/default.yml", "file(s) containing secrets detection rules.")
+	scanLocalPathCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing secrets detection rules.")
 	scanLocalPathCmd.Flags().String("scan-dir", "", "scan a directory of files not from a git project")
 	scanLocalPathCmd.Flags().String("scan-file", "", "scan a single file")
 

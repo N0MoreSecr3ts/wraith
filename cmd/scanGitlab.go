@@ -65,7 +65,7 @@ func init() {
 	scanGitlabCmd.Flags().String("gitlab-targets", "", "A space separated list of Gitlab users, projects or groups to scan")
 	scanGitlabCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
 	scanGitlabCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
-	scanGitlabCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
+	scanGitlabCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 
 	err := viperScanGitlab.BindPFlag("bind-address", scanGitlabCmd.Flags().Lookup("bind-address"))        //ORANGE
 	err = viperScanGitlab.BindPFlag("bind-port", scanGitlabCmd.Flags().Lookup("bind-port"))               //ORANGE

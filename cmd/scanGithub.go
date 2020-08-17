@@ -64,7 +64,7 @@ func init() {
 	scanGithubCmd.Flags().String("github-targets", "", "A space separated list of github.com users or orgs to scan")
 	scanGithubCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
 	scanGithubCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
-	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default_signatures.yml", "file(s) containing detection signatures.")
+	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 
 	err := viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))        //ORANGE
 	err = viperScanGithub.BindPFlag("bind-port", scanGithubCmd.Flags().Lookup("bind-port"))               //ORANGE

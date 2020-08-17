@@ -53,9 +53,10 @@
 ## Milestone 1
 
 ### Bugs
-- [ ] in-mem-clone is not working properly
-- [ ] there are no findings in a gitlab search
-- [ ] there are multiple generateID functions
+- [X] ~~temp directories are not getting deleted~~
+- [X] ~~in-mem-clone is not working properly~~
+- [X] ~~there are no findings in a gitlab search~~
+- [X] ~~there are multiple generateID functions~~
 - [X] ~~Web Frontend For Output~~
 - [X] ~~Specific YAML Configuration File~~
 - [X] ~~Signatures in a seperate repo (signature uplift)~~
@@ -84,7 +85,7 @@
 - [ ] Document all code completely
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
-- [ ] Write a new README
+- [X] ~~Write a new README~~
 - [ ] Go doc strings
     - [ ] common
     - [ ] config
@@ -94,8 +95,8 @@
 ### Testing
 - [ ] Copy existing tests to the new codebase
 - [ ] Confirm hide secrets
-- [ ] Mark all tech debt
-- [ ] Update Code Climate for Wraith
+- [X] ~~Update Code Climate for Wraith~~
+- [ ] Update CodeCov for Wraith
 - [ ] Golint needs to pass
 
 ### Features
@@ -104,18 +105,18 @@
 - [ ] Exclude Forks
 - [ ] Entrophy Checks
 - [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
-- [ ] Change empty string defaults to nil
+- [X] ~~Change empty string defaults to nil~~
 - [ ] Add content to summary
 - [ ] Cleanup issues in summary output
 - [ ] Remove all print debugging statements
 - [ ] Remove all dead code
 - [ ] Add more debuging info
-- [ ] Implement flag for setting the thread count manually
+- [X] ~~Implement flag for setting the thread count manually~~
 - [ ] Look at the clone configs
-- [ ] Make a single function to create a temp dir
+- [X] ~~Make a single function to create a temp dir~~
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen
-- [ ] Make sure we clean up the temp directories
+- [X] ~~Make sure we clean up the temp directories~~
 - [ ] Alpha sort structs, functions, flags
 - [X] ~~Exclude files based on extension~~
 - [X] ~~Exclude Test Files~~
@@ -144,6 +145,7 @@
 - [ ] Scan specific branches
 - [ ] Scan since a given commit
 - [ ] Update Signatures command
+- [ ] Implement threading for local path scans
 
 ### Testing
 - [ ] Make tech debt fail build process
@@ -222,7 +224,3 @@
 
 [1]: https://github.com/eth0izzle/shhgit/blob/master/core/github.go#L91
 [2]: https://pkg.go.dev/github.com/go-git/go-git/v5?tab=doc#example-Clone
-
- 
-
-Donk3y?OrMu1EISM3aner?

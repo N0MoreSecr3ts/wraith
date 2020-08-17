@@ -41,7 +41,7 @@
 
 Wraith uncovers forgotten secrets and brings them back to life, haunting security and operations teams. It can be used to scan hosted and local git repos as well as local filesystems.
 
-## :ghost: Capabilities
+## Capabilities
 
 ### Targets
 - Gitlab.com repositories and projects
@@ -58,14 +58,14 @@ Wraith uncovers forgotten secrets and brings them back to life, haunting securit
 - Uses [Cobra][2] sub-commands for easier, more modular, functionality
 - Ability to clone a repo to memory instead of disk
 
-## :framed_picture: Screenshots
+## Screenshots
 <p>
   <img width="537" alt="Screen Shot 2020-08-16 at 11 23 25 PM" src="https://user-images.githubusercontent.com/672940/90354541-9f515a80-e017-11ea-8669-97a2d7823cbb.png">
   <img width="365" alt="Screen Shot 2020-08-16 at 11 23 43 PM" src="https://user-images.githubusercontent.com/672940/90354550-a11b1e00-e017-11ea-9bb6-5f7c6209f7b0.png">
 </p>
 <br>
 
-## :vertical_traffic_light: Quickstart
+## Quickstart
 
 1. Download the latest [release][3] and either build it yourself with `make build` or you can use a prebuilt binary, currently they only exist for OSX. This project uses a branching git flow. Details are in the developer doc, surfice it to say **Master** is stable **develop** shoud be considered beta.
 2. Download or clone the latest set of [signatures][4] and either copy *signatures/default.yml* to *~/.wraith/signatures/* or adjust the location in the configuration file below.
@@ -107,7 +107,7 @@ signature-file: ../wraith-signatures/signatures/default.yml
 silent: false
 ```
 
-## :orange_book: Documentation
+## Documentation
 
 ### Build from source
 At this stage the best option is to build from source from this repository.
@@ -130,7 +130,7 @@ Wraith will need either a GitLab or Github access token in order to interact wit
 ### Additional Documentation
 Additional documentation is forthcoming
 
-## :wrench: Contributing
+## Contributing
 This is coming, at this point:
 - use `go fmt ./...` and `go vet ./...` before openning a PR
 - follow all golang conventions and best practices
@@ -139,12 +139,12 @@ This is coming, at this point:
 
 There is a [roadmap][13] as well, but at this point it's little more than a glorified TODO list and personal braindump. I am using that instead of issues, due to my velocity and general general laziness towards process at this point. When the project becomes stable, most likely after Milestone 1, the roadmap will probably fall away and be captured in Issues.
 
-## :movie_camera: Credits
+## Credits
 - [@michenriksen][8] for writing [gitrob][9] which serves as the foundation for wraith
 - [@codeemitter][11] for contributing several major features including in memory clones and gitlab support. His version is the immediate parent to wraith.
 - [@mattyjones][10] (Maintainer)
 
-## :card_index: Related
+## Related
 There are several other projects that wraith owes some lineage to including:
 - [Trufflehog][12]
 - all the many recon and OSINT tools already existing

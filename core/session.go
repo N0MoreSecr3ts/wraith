@@ -56,8 +56,8 @@ var DefaultValues = map[string]interface{}{
 	"csv":              false,
 	"json":             false,
 	"match-level":      3,
-	"signature-file":   "default.yml",
-	"signature-path":   "$HOME/.wraith/signatures",
+	"signature-file":   "$HOME/.wraith/signatures/default.yml",
+	"signature-path":   "$HOME/.wraith/signatures/",
 	"signature-url":    "",
 	"scan-dir":         "",
 	"scan-file":        "",
@@ -167,7 +167,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	// add any additional paths the user requested to exclude to the pre-defined slice
 	userIgnorePath := v.GetString("ignore-path")
 	if userIgnorePath != "" {
-		p := strings.Split(v.GetString("ignore-path"), ",")
+		p := strings.Split(v.GetString("ignore-path"), ",") // TODO make slice
 
 		for _, e := range p {
 			e = strings.TrimSpace(e)
@@ -183,7 +183,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	// add any additional extensions the user requested to ignore
 	userIgnoreExtensions := v.GetString("ignore-extension")
 	if userIgnoreExtensions != "" {
-		e := strings.Split(userIgnoreExtensions, ",")
+		e := strings.Split(userIgnoreExtensions, ",") // TODO make slice
 
 		for _, f := range e {
 			f = strings.TrimSpace(f)
@@ -202,7 +202,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 	var curSig []Signature
 	var combinedSig []Signature
-	SignaturesFile := v.GetString("signatures-file")
+	SignaturesFile := v.GetString("signature-file")
 	if SignaturesFile != "" {
 		Signatures := strings.Split(SignaturesFile, ",") // TODO make slice
 

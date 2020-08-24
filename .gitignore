@@ -18,6 +18,9 @@ bin/
 __debug_bin
 go_build_wraith_
 wraith-script.sh
+announcement_issue.md
+BlogPost.md
+notes.md
 
 # Test binary, build with `go test -c`
 *.test

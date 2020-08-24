@@ -53,6 +53,13 @@
 ## Milestone 1
 
 ### Bugs
+<<<<<<< HEAD
+=======
+- [ ] Gitlab client does not follow redirects
+- [ ] Need to confirm if github client follows redirects
+- [ ] In gitlab you can have a project w/ no repo, this will error out
+- [ ] In github you can have a project w/ no repo, does this error out
+>>>>>>> develop
 - [X] ~~temp directories are not getting deleted~~
 - [X] ~~in-mem-clone is not working properly~~
 - [X] ~~there are no findings in a gitlab search~~
@@ -77,7 +84,6 @@
 - [X] ~~there are no findings in a local git search~~
 - [ ] Searching through a commit history is present but not effective
 
-
 ### Documentation
 - [ ] Document how to add a new command or source
 - [ ] Document the tech debt using colors and a shell script
@@ -86,6 +92,7 @@
 - [ ] Document all code completely
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
+<<<<<<< HEAD
     - [ ] wraith
     - [ ] wraith-tests
     - [ ] wraith-signatures
@@ -105,6 +112,10 @@
     - [ ] wraith
     - [ ] wraith-tests
     - [ ] wraith-signatures
+=======
+- [X] ~~Write a new README~~
+- [ ] Label issues for begineer and hacktoberfest
+>>>>>>> develop
 - [ ] Go doc strings
     - [ ] common
     - [ ] config
@@ -172,7 +183,10 @@
 - [ ] Scan since a given commit
 - [ ] Update Signatures command
 - [ ] Implement threading for local path scans
+<<<<<<< HEAD
 - [ ] Ability to use the .gitignoe when scanning for ingoring paths and files
+=======
+>>>>>>> develop
 
 ### Testing
 - [ ] Make tech debt fail build process

@@ -9,15 +9,15 @@
 <h4 align="center">Finding digital secrets that were never meant to be found in all corners of the net.</h4>
 
 <p align="center">
-  <img alt="GitHub go.mod Go version (branch)" src="https://img.shields.io/github/go-mod/go-version/n0moresecr3ts/wraith/develop?style=for-the-badge">
+  <img alt="GitHub go.mod Go version (branch)" src="https://img.shields.io/github/go-mod/go-version/n0moresecr3ts/wraith?style=for-the-badge">
   <img alt="GitHub go.mod Go version (branch)" src="https://img.shields.io/github/go-mod/go-version/n0moresecr3ts/wraith/master?style=for-the-badge">
-  <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/n0moresecr3ts/wraith?style=for-the-badge&label=Latest%20Release">
-  <img alt="GitHub commits since latest release (by SemVer)" src="https://img.shields.io/github/commits-since/n0moresecr3ts/wraith/latest/develop?style=for-the-badge">
+  <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/n0moresecr3ts/wraith?style=for-the-badge">
+  <img alt="GitHub commits since latest release (by SemVer)" src="https://img.shields.io/github/commits-since/n0moresecr3ts/wraith/latest?style=for-the-badge">
 <br>
   <img alt="GitHub issues by-label" src="https://img.shields.io/github/issues-raw/n0moresecr3ts/wraith/Bug?color=RED&label=BUGS&style=for-the-badge">
   <img alt="GitHub issues by-label" src="https://img.shields.io/github/issues-raw/n0moresecr3ts/wraith/Feature%20Request?color=38BED3&label=FEATURE%20REQUESTS&style=for-the-badge">
-  <img alt="Travis (.org) branch" src="https://img.shields.io/travis/mattyjones/wraith/master?label=BUILD%20MASTER&style=for-the-badge">
-  <img alt="Travis (.org) branch" src="https://img.shields.io/travis/mattyjones/wraith/develop?label=BUILD%20DEVELOP&style=for-the-badge">
+  <img alt="Travis (.org) branch" src="https://img.shields.io/travis/n0moresecr3ts/wraith/master?label=BUILD%20MASTER&style=for-the-badge">
+  <img alt="Travis (.org) branch" src="https://img.shields.io/travis/n0moresecr3ts/wraith/develop?label=BUILD%20MASTER&style=for-the-badge">
 <br>
   <img alt="Code Climate maintainability" src="https://img.shields.io/codeclimate/maintainability/mattyjones/gitrob?style=for-the-badge">
   <img alt="Code Climate technical debt" src="https://img.shields.io/codeclimate/tech-debt/mattyjones/gitrob?style=for-the-badge">

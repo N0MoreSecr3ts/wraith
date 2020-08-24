@@ -1,4 +1,4 @@
-// Package common contains functionality not critical to the core project but still essential.
+// Package core contains base functionality to the project.
 package core
 
 // TODO refactor out the common package

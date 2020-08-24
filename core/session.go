@@ -4,8 +4,6 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -13,6 +11,9 @@ import (
 	"sync"
 	"time"
 	"wraith/version"
+
+	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/viper"
 
 	"github.com/gin-gonic/gin"
 )
@@ -208,16 +209,13 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 		for _, f := range Signatures {
 			f = strings.TrimSpace(f)
-			if PathExists(f, s) {
-				curSig = LoadSignatures(f, s.MatchLevel, s)
+			h := SetHomeDir(f)
+			if PathExists(h, s) {
+				curSig = LoadSignatures(h, s.MatchLevel, s)
 				combinedSig = append(combinedSig, curSig...)
 			}
 		}
-	} else {
-		curSig = LoadSignatures(v.GetString(".")+"default.yml", s.MatchLevel, s) // TODO implement this
-		combinedSig = append(combinedSig, curSig...)
-	}
-
+	} // TODO need to catch this error here
 	Signatures = combinedSig
 }
 

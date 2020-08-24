@@ -53,9 +53,10 @@
 ## Milestone 1
 
 ### Bugs
-- [ ] in-mem-clone is not working properly
-- [ ] there are no findings in a gitlab search
-- [ ] there are multiple generateID functions
+- [X] ~~temp directories are not getting deleted~~
+- [X] ~~in-mem-clone is not working properly~~
+- [X] ~~there are no findings in a gitlab search~~
+- [X] ~~there are multiple generateID functions~~
 - [X] ~~Web Frontend For Output~~
 - [X] ~~Specific YAML Configuration File~~
 - [X] ~~Signatures in a seperate repo (signature uplift)~~
@@ -74,6 +75,7 @@
 - [X] ~~web interface links are broken for local files~~
 - [X] ~~no error when rules file is not found~~
 - [X] ~~there are no findings in a local git search~~
+- [ ] Searching through a commit history is present but not effective
 
 
 ### Documentation
@@ -84,7 +86,25 @@
 - [ ] Document all code completely
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
-- [ ] Write a new README
+    - [ ] wraith
+    - [ ] wraith-tests
+    - [ ] wraith-signatures
+- [ ] README.md
+    - [X] ~~wraith~~
+    - [ ] wraith-tests
+    - [ ] wraith-signatures
+- [ ] Security.txt
+    - [ ] wraith
+    - [ ] wraith-tests
+    - [ ] wraith-signatures
+- [ ] Initial blog post
+- [ ] Detailed documentation published on the net and with source control
+- [X] ~~Write a new README~~
+- [ ] Cleanup issues
+- [ ] Changelog.md
+    - [ ] wraith
+    - [ ] wraith-tests
+    - [ ] wraith-signatures
 - [ ] Go doc strings
     - [ ] common
     - [ ] config
@@ -94,28 +114,33 @@
 ### Testing
 - [ ] Copy existing tests to the new codebase
 - [ ] Confirm hide secrets
-- [ ] Mark all tech debt
-- [ ] Update Code Climate for Wraith
+- [X] ~~Update Code Climate for Wraith~~
+- [ ] Update CodeCov for Wraith
 - [ ] Golint needs to pass
 
 ### Features
+- [ ] Configure repos
+- [ ] Configure Org
+- [ ] Created a dedicated GPG key
+- [ ] Enforce https for all connections
+- [ ] Enforce https for the site
 - [ ] Fully Instrumented with Performance Stats
 - [ ] JSON or CSV Output
 - [ ] Exclude Forks
 - [ ] Entrophy Checks
 - [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
-- [ ] Change empty string defaults to nil
+- [X] ~~Change empty string defaults to nil~~
 - [ ] Add content to summary
 - [ ] Cleanup issues in summary output
 - [ ] Remove all print debugging statements
 - [ ] Remove all dead code
 - [ ] Add more debuging info
-- [ ] Implement flag for setting the thread count manually
+- [X] ~~Implement flag for setting the thread count manually~~
 - [ ] Look at the clone configs
-- [ ] Make a single function to create a temp dir
+- [X] ~~Make a single function to create a temp dir~~
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen
-- [ ] Make sure we clean up the temp directories
+- [X] ~~Make sure we clean up the temp directories~~
 - [ ] Alpha sort structs, functions, flags
 - [X] ~~Exclude files based on extension~~
 - [X] ~~Exclude Test Files~~
@@ -126,6 +151,7 @@
 - [X] ~~Status output of a session~~
 - [X] ~~Ability to silence the output~~
 - [X] ~~Max file size to scan~~
+- [ ] Only export the functions and variables necessary
 
 
 ### Milestone 2
@@ -137,6 +163,7 @@
 - [ ] web interface progress bar not working
 - [ ] web interface links to the file should be more detailed and point to the commit/line in the code
 - [ ] web interface is not dynamic, I need to refresh it manually
+- [ ] validate all user input
 
 ### Documentation
 
@@ -144,6 +171,8 @@
 - [ ] Scan specific branches
 - [ ] Scan since a given commit
 - [ ] Update Signatures command
+- [ ] Implement threading for local path scans
+- [ ] Ability to use the .gitignoe when scanning for ingoring paths and files
 
 ### Testing
 - [ ] Make tech debt fail build process
@@ -222,7 +251,3 @@
 
 [1]: https://github.com/eth0izzle/shhgit/blob/master/core/github.go#L91
 [2]: https://pkg.go.dev/github.com/go-git/go-git/v5?tab=doc#example-Clone
-
- 
-
-Donk3y?OrMu1EISM3aner?

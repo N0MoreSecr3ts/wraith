@@ -1,125 +1,165 @@
+<h1 align="center">
+  <br>
+    <img src="./static/images/gopher_full.png" alt="wraith" width="200"/>
+  <br>
+  Wraith
+  <br>
+</h1>
+
+<h4 align="center">Finding digital secrets that were never meant to be found in all corners of the net.</h4>
+
 <p align="center">
-  <img src="./static/images/gopher_full.png" alt="wraith" width="200" />
+  <img alt="GitHub go.mod Go version (branch)" src="https://img.shields.io/github/go-mod/go-version/n0moresecr3ts/wraith/develop?style=for-the-badge">
+  <img alt="GitHub go.mod Go version (branch)" src="https://img.shields.io/github/go-mod/go-version/n0moresecr3ts/wraith/master?style=for-the-badge">
+  <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/n0moresecr3ts/wraith?style=for-the-badge&label=Latest%20Release">
+  <img alt="GitHub commits since latest release (by SemVer)" src="https://img.shields.io/github/commits-since/n0moresecr3ts/wraith/latest/develop?style=for-the-badge">
+<br>
+  <img alt="GitHub issues by-label" src="https://img.shields.io/github/issues-raw/n0moresecr3ts/wraith/Bug?color=RED&label=BUGS&style=for-the-badge">
+  <img alt="GitHub issues by-label" src="https://img.shields.io/github/issues-raw/n0moresecr3ts/wraith/Feature%20Request?color=38BED3&label=FEATURE%20REQUESTS&style=for-the-badge">
+  <img alt="Travis (.org) branch" src="https://img.shields.io/travis/mattyjones/wraith/master?label=BUILD%20MASTER&style=for-the-badge">
+  <img alt="Travis (.org) branch" src="https://img.shields.io/travis/mattyjones/wraith/develop?label=BUILD%20DEVELOP&style=for-the-badge">
+<br>
+  <img alt="Code Climate maintainability" src="https://img.shields.io/codeclimate/maintainability/mattyjones/gitrob?style=for-the-badge">
+  <img alt="Code Climate technical debt" src="https://img.shields.io/codeclimate/tech-debt/mattyjones/gitrob?style=for-the-badge">
+  <img alt="Code Climate issues" src="https://img.shields.io/codeclimate/issues/mattyjones/gitrob?style=for-the-badge">
+<br>
+  <img alt="GitHub" src="https://img.shields.io/github/license/n0moresecr3ts/wraith?color=blue&style=for-the-badge">
+  <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/n0moresecr3ts/wraith/total?style=for-the-badge">
+
 </p>
 
-# Wraith: Putting the Open Source in OSINT
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/mattyjones/wraith)![GitHub release (latest by date)](https://img.shields.io/github/v/release/mattyjones/wraith)![GitHub](https://img.shields.io/github/license/mattyjones/wraith)
+<p align="center">
+  <a href="#capabilities">Capabilities</a> •
+  <a href="#screenshots">Screenshots</a> •
+  <a href="#quickstart">Quickstart</a> •
+  <a href="#documentation">Documentation</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#credits">Credits</a> •
+  <a href="#faq">FAQ</a> •
+  <a href="#related">Related</a>
+</p>
 
-![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/mattyjones/gitrob)![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/mattyjones/gitrob)![Code Climate issues](https://img.shields.io/codeclimate/issues/mattyjones/gitrob)
+Wraith uncovers forgotten secrets and brings them back to life, haunting security and operations teams. It can be used to scan hosted and local git repos as well as local filesystems.
 
-[![Build Status](https://travis-ci.org/mattyjones/wraith.svg?branch=master)](https://travis-ci.org/mattyjones/wraith)
+## Capabilities
 
+### Targets
+- Gitlab.com repositories and projects
+- Github.com repositories and organizations
+- Local git repositories
+- Local filesystem
 
-Wraith is a tool to help find potentially sensitive information pushed to repositories on GitLab or Github. Wraith will clone repositories belonging to a user or group/organization down to a configurable depth and iterate through the commit history and flag files and/or commit content that match signatures for potentially sensitive information. The findings will be presented through a web interface for easy browsing and analysis.
+### Major Features
 
-## Features
-
-- Scan the following sources:
-  - Gitlab repositories
-  - Github.com repositories
-  - Local git repos
 - Exclude files, paths, and extensions
-- Web interface for real-time results
+- Web and terminal interfaces for real-time results
 - Configurable commit depth
-- Use environment variables, a config file, or flags
-- Uses sub-commands for easier, more modular, functionality
-- Clone a repo to memory instead of disk
+- Built with [Viper][1] to manage environment variables, config files, or flags
+- Uses [Cobra][2] sub-commands for easier, more modular, functionality
+- Ability to clone a repo to memory instead of disk
 
-This currently in beta, check the [roadmap][1] for planned functionality
+## Screenshots
+<p>
+  <img width="537" alt="Screen Shot 2020-08-16 at 11 23 25 PM" src="https://user-images.githubusercontent.com/672940/90354541-9f515a80-e017-11ea-8669-97a2d7823cbb.png">
+  <img width="365" alt="Screen Shot 2020-08-16 at 11 23 43 PM" src="https://user-images.githubusercontent.com/672940/90354550-a11b1e00-e017-11ea-9bb6-5f7c6209f7b0.png">
+</p>
+<br>
 
-## Usage
+## Quickstart
 
-For a full list of use cases and configuration options use the included help functionality.
-
-`wraith --help`
-
-
-## Configuration
-
-**IMPORTANT** If you are targeting a GitLab group, please give the **group ID** as the target argument.  You can find the group ID just below the group name in the GitLab UI.  Otherwise, names with suffice for the target arguments. This id can be found on the group homepage.
-
-There are multiple was to configure the tool for a scan. The easiest way is via commandline flags. To get a full list of available flags and their purpose use `wraith <subcommand> --help`. This will pring out a list of flags and how they interact with the base scan. You can also set all flags as environment variables or use a static config file in YAML format. This config file can be used to store targets for multiple scan targets.
-
-The order of precendence with each item taking precedence over the item below it is:
-
-- explicit call to Set
-- commandline flag
-- environment variable
-- configuration file
-- key/value store
-- default value
-
-The various values are configured independently of each other so if you set all values in a config file, you can then override just the ones you want on the commandline. A sample config file looks like:
+1. Download the latest [release][3] and either build it yourself with `make build` or you can use a prebuilt binary, currently they only exist for OSX. This project uses a branching git flow. Details are in the developer doc, surfice it to say **Master** is stable **develop** shoud be considered beta.
+2. Download or clone the latest set of [signatures][4] and either copy *signatures/default.yml* to *~/.wraith/signatures/* or adjust the location in the configuration file below.
+3. Copy the below configuration to *~/.wraith/config.yml*. This will allow you to get up and running for basic scans without having to figure out the flags. Any of these values can be overwritten on the commnd line as well. You will need to generate your own api tokens for github and gitlab if you are scanning against them.
+4. Once you have this done, just run a scan command.
+- `wraith scanGithub`
+- `wraith scanGitlab`
+- `wraith scanLocalGitRepo`
+- `wraith scanLocalPath`
 
 ```yaml
 ---
 commit-depth: 0
-gitlab-targets:
-    - codeemitter
-    - mattyjones1
-    - 8692959
-silent: false
-debug: true
-gitlab-api-token: <token>
-github-api-token: <token>
+debug: false
+github-api-token: <token>>
 github-targets:
-    - mattyjones
-    - phantomSecrets
-ignore-path:
-    - cmd/
-    - docs/
+  - mattyjones
+  - N0MoreSecr3ts
+gitlab-api-token: <token>>
+gitlab-targets:
+  - 5034914
+  - mattyjones
 ignore-extension:
-    - .go
-    - .log
-in-mem-clone: true
+  - .html
+  - .css
+  - .log
+ignore-path:
+  - static/
+  - docs/
+in-mem-clone: false
+local-dirs:
+  - ../wraith-test
+match-level: 3
+num-threads: 0
 repo-dirs:
-    - ../../../mattyjones/telegraf
+  - relative/path/to/repo
+  - absolute/path/to/repo
+signature-file: ../wraith-signatures/signatures/default.yml
+silent: false
 ```
 
-## Examples
+## Documentation
 
-Scan a GitLab group assuming your access token has been added to the environment variable or a config file.  Look for file signature matches only:
-
-    wraith scanGitlab <gitlab_group_id>
-
-Scan a multiple GitLab groups assuming your access token has been added to the environment variable or a config file.  Clone repositories into memory for faster analysis.  Set the scan mode to 2 to scan each file match for a content match before creating a result.:
-
-    wraith scanGitlab -in-mem-clone -mode 2  "<gitlab_group_id_1> <gitlab_group_id_2>"
-
-Scan a GitLab groups assuming your access token has been added to the environment variable or a config file. Clone repositories into memory for faster analysis.  Set the scan mode to 3 to scan each commit for content matches only.:
-
-    wraith scanGitlab -in-mem-clone -mode 3 "<gitlab_group_id>"
-
-Scan a Github user setting your Github access token as a parameter.  Clone repositories into memory for faster analysis.
-
-    wraith scangithub -github-access-token <token> -in-mem-clone "<github_user_name>"
-
-### Editing File and Content Regular Expressions
-
-Regular expressions are included in the [filesignatures.json](./rules/filesignatures.json) and [contentsignatures.json](./rules/contentsignatures.json) files respectively.  Edit these files to adjust your scope and fine-tune your results.
-
-wraith will start its web interface and serve the results for analysis.
-
-## Installation
-
-At this stage the only option is to build from source from this repository.
+### Build from source
+At this stage the best option is to build from source from this repository.
 
 To install from source, make sure you have a correctly configured **Go >= 1.14** environment and that `$GOPATH/bin` is in your `$PATH`.
-
-    $ git clone git@gitlab.com:mattyjones1/wraith.git
-    $ cd ~/go/src/wraith
+```shell
+    $ cd $GOPATH/src
+    $ git clone git@github.com:N0MoreSecr3ts/wraith.git
+    $ cd wraith
     $ make build
     $ ./bin/wraith-<ARCH> <sub-command>
-    
-In the future there will be binary releases of the code
+```
 
-## Access Tokens
+### Signatures
+Signatures are the current method used to detect secrets within the a target source. They are broken out into the [wraith-signatures][4] repo for extensability purposes. This allows them to be independently versioned and developed without having to recompile the code. To makes changes just edit an existing signature or create a new one. Check the [README][5] in that repo for additional details.
 
-wraith will need either a GitLab or Github access token in order to interact with the appropriate API.  You can create a [GitLab personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html), or [a Github personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) and save it in an environment variable in your `.bashrc` or similar shell configuration file:
+### Authencation
+Wraith will need either a GitLab or Github access token in order to interact with their appropriate API's.  You can create a [GitLab personal access token][6], or [a Github personal access token][7] and save it in an environment variable in your **bashrc**, add it to a wraith config file, or pass it in on the command line. This should not be done though for security reasons. Of course if you want to eat your own dog food, go ahead and do it that way, then point wraith at your command history file. :smiling_imp:
 
-    export wraith_GITLAB_ACCESS_TOKEN=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
-    export wraith_GITHUB_ACCESS_TOKEN=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+### Additional Documentation
+Additional documentation is forthcoming
 
-Alternatively you can specify the access token with the `-gitlab-access-token` or `-github-access-token` option on the command line, but watch out for your command history! A configuration file can also be used, an example is provided above.
+## Contributing
+This is coming, at this point:
+- use `go fmt ./...` and `go vet ./...` before openning a PR
+- follow all golang conventions and best practices
+- if you wrote it, you need to document it
+- if it is more than a simple bug fix or typo, an issue should be openned up first to discuss it. A good measure is if it is more than 5m worth of work, it needs to have an associated issue.
 
-[1]: docs/development/roadmap.md
+There is a [roadmap][13] as well, but at this point it's little more than a glorified TODO list and personal braindump. I am using that instead of issues, due to my velocity and general general laziness towards process at this point. When the project becomes stable, most likely after Milestone 1, the roadmap will probably fall away and be captured in Issues.
+
+## Credits
+- [@michenriksen][8] for writing [gitrob][9] which serves as the foundation for wraith
+- [@codeemitter][11] for contributing several major features including in memory clones and gitlab support. His version is the immediate parent to wraith.
+- [@mattyjones][10] (Maintainer)
+
+## Related
+There are several other projects that wraith owes some lineage to including:
+- [Trufflehog][12]
+- all the many recon and OSINT tools already existing
+
+
+[1]: https://github.com/spf13/viper
+[2]: https://github.com/spf13/cobra
+[3]: https://github.com/N0MoreSecr3ts/wraith/releases
+[4]: https://github.com/N0MoreSecr3ts/wraith-signatures
+[5]: https://github.com/N0MoreSecr3ts/wraith-signatures/blob/master/README.md
+[6]: https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html
+[7]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+[8]: https://github.com/michenriksen
+[9]: https://github.com/michenriksen/gitrob
+[10]: https://github.com/mattyjones
+[11]: https://github.com/codeEmitter/
+[12]: https://github.com/dxa4481/truffleHog
+[13]: https://github.com/N0MoreSecr3ts/wraith/blob/develop/docs/development/roadmap.md

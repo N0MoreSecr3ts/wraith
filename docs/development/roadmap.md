@@ -53,6 +53,10 @@
 ## Milestone 1
 
 ### Bugs
+- [ ] Gitlab client does not follow redirects
+- [ ] Need to confirm if github client follows redirects
+- [ ] In gitlab you can have a project w/ no repo, this will error out
+- [ ] In github you can have a project w/ no repo, does this error out
 - [X] ~~temp directories are not getting deleted~~
 - [X] ~~in-mem-clone is not working properly~~
 - [X] ~~there are no findings in a gitlab search~~
@@ -76,7 +80,6 @@
 - [X] ~~no error when rules file is not found~~
 - [X] ~~there are no findings in a local git search~~
 
-
 ### Documentation
 - [ ] Document how to add a new command or source
 - [ ] Document the tech debt using colors and a shell script
@@ -86,6 +89,7 @@
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
 - [X] ~~Write a new README~~
+- [ ] Label issues for begineer and hacktoberfest
 - [ ] Go doc strings
     - [ ] common
     - [ ] config

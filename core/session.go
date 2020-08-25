@@ -141,6 +141,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
 	//s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
+	s.EnterpriseUrl = v.GetString("EnterpriseUrl")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")

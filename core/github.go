@@ -3,10 +3,11 @@ package core
 import (
 	"context"
 	"fmt"
-	"gopkg.in/src-d/go-git.v4/storage/memory"
 	"io/ioutil"
 	"os"
 	"regexp"
+
+	"gopkg.in/src-d/go-git.v4/storage/memory"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -69,13 +70,20 @@ func CheckGithubAPIToken(t string, sess *Session) {
 }
 
 // NewClient creates a github api client instance using oauth2 credentials
-func (c githubClient) NewClient(token string) (apiClient githubClient) {
+func (c githubClient) NewClient(token string, enterpriseUrl string) (apiClient githubClient) {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	)
 	tc := oauth2.NewClient(ctx, ts)
-	c.apiClient = github.NewClient(tc)
+	// attempting to add support for enterprise instances
+	if len(enterpriseUrl) != 0 {
+		baseUrl := fmt.Sprintf("%s/api/v3", enterpriseUrl)
+		uploadUrl := fmt.Sprintf("%s/api/uploads", enterpriseUrl)
+		c.apiClient, _ = github.NewEnterpriseClient(baseUrl, uploadUrl, tc)
+	} else {
+		c.apiClient = github.NewClient(tc)
+	}
 	c.apiClient.UserAgent = UserAgent
 	return c
 }

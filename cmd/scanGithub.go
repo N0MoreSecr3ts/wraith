@@ -4,10 +4,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"time"
 	"wraith/core"
 	"wraith/version"
+
+	"github.com/spf13/viper"
 
 	"github.com/spf13/cobra"
 )
@@ -61,6 +62,7 @@ func init() {
 	scanGithubCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
 	scanGithubCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanGithubCmd.Flags().String("github-api-token", "", "API token for access to github, see doc for necessary scope")
+	scanGithubCmd.Flags().String("EnterpriseUrl", "", "Enterprise base url, stop at domain")
 	scanGithubCmd.Flags().String("github-targets", "", "A space separated list of github.com users or orgs to scan")
 	scanGithubCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
 	scanGithubCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
@@ -71,6 +73,7 @@ func init() {
 	err = viperScanGithub.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
 	err = viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))
 	err = viperScanGithub.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
+	err = viperScanGithub.BindPFlag("EnterpriseUrl", scanGithubCmd.Flags().Lookup("EnterpriseUrl"))
 	err = viperScanGithub.BindPFlag("github-targets", scanGithubCmd.Flags().Lookup("github-targets"))
 	err = viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))
 	err = viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension"))

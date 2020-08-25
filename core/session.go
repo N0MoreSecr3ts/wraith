@@ -77,6 +77,7 @@ type Session struct {
 	Debug             bool
 	Findings          []*Finding
 	GithubAccessToken string
+	EnterpriseUrl     string
 	GithubTargets     []string
 	GitlabAccessToken string
 	GitlabTargets     []string
@@ -307,7 +308,7 @@ func (s *Session) InitAPIClient() {
 	switch s.ScanType {
 	case "github":
 		CheckGithubAPIToken(s.GithubAccessToken, s)
-		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken)
+		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken, s.EnterpriseUrl)
 	case "gitlab":
 		CheckGitlabAPIToken(s.GitlabAccessToken, s)
 		var err error

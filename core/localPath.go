@@ -146,7 +146,7 @@ func DoFileScan(filename string, sess *Session) {
 				}
 
 				// Add a new finding and increment the total
-				newFinding.Initialize(sess.ScanType)
+				newFinding.Initialize(sess.ScanType,sess.EnterpriseUrl)
 				sess.AddFinding(newFinding)
 
 				// print the current finding to stdout

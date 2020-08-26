@@ -336,8 +336,11 @@ func AnalyzeRepositories(sess *Session) {
 					return
 				}
 
-				// Clone the repository from the remote source or if local from the path
-				// path is returning the path that the clone was done to, nothing inside that. The repo is clone directly to there
+				// Clone the repository from the remote source or if a local repo from the path
+				// The path variable  is returning the path that the clone was done to. The repo is cloned directly
+				// there.
+				// TODO is this cloning the local repo or just reading from it?
+				// TODO does the clone come from the local repo or does it come from a remote the local repo pulls from
 				clone, path, err := cloneRepository(sess, repo, tid)
 				if err != nil {
 					if err.Error() != "remote repository is empty" {

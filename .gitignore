@@ -20,8 +20,8 @@ go_build_wraith_
 wraith-script.sh
 announcement_issue.md
 BlogPost.md
+docs/user/notes.md
 notes.md
-
 # Test binary, build with `go test -c`
 *.test
 

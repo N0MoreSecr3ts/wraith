@@ -53,10 +53,6 @@
 ## Milestone 1
 
 ### Bugs
-- [ ] Gitlab client does not follow redirects
-- [ ] Need to confirm if github client follows redirects
-- [ ] In gitlab you can have a project w/ no repo, this will error out
-- [ ] In github you can have a project w/ no repo, does this error out
 - [X] ~~temp directories are not getting deleted~~
 - [X] ~~in-mem-clone is not working properly~~
 - [X] ~~there are no findings in a gitlab search~~
@@ -79,7 +75,14 @@
 - [X] ~~web interface links are broken for local files~~
 - [X] ~~no error when rules file is not found~~
 - [X] ~~there are no findings in a local git search~~
+- [ ] Gitlab client does not follow redirects
+- [ ] Need to confirm if github client follows redirects
+- [ ] In gitlab you can have a project w/ no repo, this will error out
+- [ ] In github you can have a project w/ no repo, does this error out
 - [ ] Searching through a commit history is present but not effective
+- [ ] Secret ID's are possibly not unique
+- [ ] Duplicate findings are being displayed
+- [ ] Findings with a line number of 0 are being displayed
 
 ### Documentation
 - [ ] Document how to add a new command or source
@@ -97,22 +100,28 @@
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [ ] Security.txt
-    - [ ] wraith
+    - [X] ~~wraith~~
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [ ] Initial blog post
 - [ ] Detailed documentation published on the net and with source control
-- [ ] Cleanup issues
+- [X] ~~Cleanup issues~~
 - [ ] Changelog.md
     - [ ] wraith
     - [ ] wraith-tests
     - [ ] wraith-signatures
-- [ ] Label issues for begineer and hacktoberfest
+- [X] ~~Label issues for begineer and hacktoberfest~~
 - [ ] Go doc strings
     - [ ] common
     - [ ] config
     - [ ] core
     - [ ] version
+- [ ] Issue template
+- [ ] PR template
+- [ ] Submit story to hackernews
+- [ ] Submit story to changelog.com
+- [ ] Add a built w/ section
+- [ ] Call out individual contributers after N merges
     
 ### Testing
 - [ ] Copy existing tests to the new codebase
@@ -120,6 +129,8 @@
 - [X] ~~Update Code Climate for Wraith~~
 - [ ] Update CodeCov for Wraith
 - [ ] Golint needs to pass
+- [ ] Convert tests to testify
+- [ ] Code review and remove debug statements
 
 ### Features
 - [ ] Configure repos
@@ -156,6 +167,8 @@
 - [X] ~~Max file size to scan~~
 - [ ] Only export the functions and variables necessary
 - [ ] Capture the eroor if no sig file is presented
+- [ ] Break out checking if a file is to be scanned into a single function
+- [ ] Add a flag to de-dupe findings 
 
 
 ### Milestone 2

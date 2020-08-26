@@ -133,7 +133,7 @@ func DoFileScan(filename string, sess *Session) {
 					Action:            `File Scan`,
 					Description:       signature.Description(),
 					Signatureid:       signature.Signatureid(),
-					Comment:           content,
+					Content:           content,
 					RepositoryOwner:   `not-a-repo`,
 					RepositoryName:    `not-a-repo`,
 					CommitHash:        ``,

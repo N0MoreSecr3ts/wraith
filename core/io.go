@@ -92,8 +92,8 @@ func realTimeOutput(finding *Finding, sess *Session) {
 		sess.Out.Info("  SecretID.............: %v\n", finding.SecretID)
 		sess.Out.Info("  Wraith Version.......: %s\n", version.AppVersion())
 		sess.Out.Info("  Signatures Version...: %v\n", finding.SignaturesVersion)
-		if len(finding.Comment) > 0 {
-			issues := "\n\t" + finding.Comment
+		if len(finding.Content) > 0 {
+			issues := "\n\t" + finding.Content
 			sess.Out.Info("  Issues..........: %s\n", issues)
 		}
 

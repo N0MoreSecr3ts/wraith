@@ -10,7 +10,7 @@ import (
 // Finding is a secret that has been discovered within a target by a discovery method
 type Finding struct {
 	Action            string
-	Comment           string
+	Content           string
 	CommitAuthor      string
 	CommitHash        string
 	CommitMessage     string

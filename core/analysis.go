@@ -336,8 +336,11 @@ func AnalyzeRepositories(sess *Session) {
 					return
 				}
 
-				// Clone the repository from the remote source or if local from the path
-				// path is returning the path that the clone was done to, nothing inside that. The repo is clone directly to there
+				// Clone the repository from the remote source or if a local repo from the path
+				// The path variable  is returning the path that the clone was done to. The repo is cloned directly
+				// there.
+				// TODO is this cloning the local repo or just reading from it?
+				// TODO does the clone come from the local repo or does it come from a remote the local repo pulls from
 				clone, path, err := cloneRepository(sess, repo, tid)
 				if err != nil {
 					if err.Error() != "remote repository is empty" {
@@ -363,39 +366,57 @@ func AnalyzeRepositories(sess *Session) {
 				//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 				sess.Out.Debug("[THREAD #%d][%s] Number of commits: %d\n", tid, *repo.CloneURL, len(history))
 
+				// For every commit in the history we want to look through it for any changes
+				// there is a known bug in here related to files that have changed paths from the most
+				// recent path. The does not do a fetch per history so if a file changes paths from
+				// the current one it will throw a file not found error. You can see this by turning
+				// on debugging.
 				for _, commit := range history {
 					sess.Out.Debug("[THREAD #%d][%s] Analyzing commit: %s\n", tid, *repo.CloneURL, commit.Hash)
 
-					// Increment the total number of commits scanned
+					// Increment the total number of commits. This needs to be used in conjunction with
+					// the total number of commits scanned as a commit may have issues and not be scanned once
+					// it is found.
 					sess.Stats.IncrementCommits()
 					//sess.Stats.IncrementCommitsScanned() // TODO implement in stats
 
-					// This will be used to increment the dirty commit stat if any matches are found
+					// This will be used to increment the dirty commit stat if any matches are found. A dirty commit
+					// means that a secret was found in that commit. This provides an easier way to manually to look
+					// through the commit history of a given repo.
 					dirtyCommit := false
 
+					// TODO what is this actually doing here?
+					// TODO We should also be doing a fetch for every commit I think to be most effective.
 					changes, _ := GetChanges(commit, clone)
 					sess.Out.Debug("[THREAD #%d][%s] %s changes in %d\n", tid, *repo.CloneURL, commit.Hash, len(changes))
 
 					for _, change := range changes {
 
+						// TODO Is this need for the finding object, why are we saving this?
 						changeAction := GetChangeAction(change)
+
+						// TODO Add an example of the output from this function
 						fPath := GetChangePath(change)
 
+						// TODO Add an example of this
 						fullFilePath := path + "/" + fPath
 
 						sess.Stats.IncrementFilesTotal()
 
-						// This will set the default value for scanning tests to whatever the
-						// default is, within the main DefaultValues map. Type assertion is
 						// required as that is a map of interfaces.
 						scanTests := DefaultValues["scan-tests"]
 						likelyTestFile := scanTests.(bool)
 
+						// If we do not want to scan tests we run some checks to see if the file in
+						// question is a test file. This will return a true if it is a test file.
 						if !sess.ScanTests {
 							likelyTestFile = isTestFileOrPath(fullFilePath)
 						}
 
-						// If the file is likely a test then ignore it
+						// If the file is likely a test then ignore it. By default this is currently
+						// set to false which means we do NOT want to scan tests. This means that we
+						// check above and if this returns true because it is likely a test file, we
+						// increment the ignored file count and pass through scanning the file and content.
 						if likelyTestFile {
 							// If we are not scanning the file then by definition we are ignoring it
 							sess.Stats.IncrementFilesIgnored()
@@ -404,6 +425,8 @@ func AnalyzeRepositories(sess *Session) {
 							continue
 						}
 
+						// Check the file size of the file. If it is greater than the default size then
+						// then we increment the ignored file count and pass on through.
 						if IsMaxFileSize(fullFilePath, sess) {
 
 							sess.Stats.IncrementFilesIgnored()
@@ -412,34 +435,46 @@ func AnalyzeRepositories(sess *Session) {
 							continue
 						}
 
-						// If the file matches a file extension or other method that precludes it from a scan
+					    // Break a file name up into its composite pieces including the extension and base name
 						matchFile := newMatchFile(fullFilePath)
+
+
+						// If the file extension matches an extension or other criteria that precludes
+						//  it from a scan we increment the ignored files count and pass on through.
 						if matchFile.isSkippable(sess) {
-							// If we are not scanning the file then by definition we are ignoring it
 							sess.Stats.IncrementFilesIgnored()
 							sess.Out.Debug("%s is skippable and being ignored\n", fPath)
 
 							continue
 						}
+
+						// The total number of files that were evaluated
 						sess.Stats.IncrementFilesTotal()
 
-						// We are now finally at the point where we are going to scan a file
+						// We are now finally at the point where we are going to scan a file so we implement
+						// that count.
 						sess.Stats.IncrementFilesScanned()
 
-						// for each signature that is loaded scan the file as a whole and generate a map of the match and the line number the match was found on
+						// for each signature that is loaded scan the file as a whole and generate a map of
+						// the match and the line number the match was found on
 						for _, signature := range Signatures {
 
 							bMatched, matchMap := signature.ExtractMatch(matchFile, sess, change)
 							if bMatched {
 
+								// Incremented the count of files that contain secrets
 								sess.Stats.IncrementFilesDirty()
 
 								var content string   // this is because file matches are puking
 								var genericID string // the generic id used in the finding
 
-								// for every instance of the secret that matched the specific signatures create a new finding
+								// For every instance of the secret that matched the specific signatures
+								// create a new finding. Thi will produce dupes as the file may exist
+								// in multiple commits.
 								for k, v := range matchMap {
 
+									// This sets the content for the finding, in this case the actual secret
+									// is the content. This can be removed and hidden via a commandline flag.
 									cleanK := strings.SplitAfterN(k, "_", 2)
 									if matchMap == nil {
 										content = ""
@@ -454,14 +489,15 @@ func AnalyzeRepositories(sess *Session) {
 									fmt.Println(cleanK) // TODO Remove me
 									fmt.Println() // TODO Remove me
 
-									// destroy the secret if the flag is set
+									// Destroy the secret by zeroing the content if the flag is set
 									if sess.HideSecrets {
 										content = ""
 									}
 
+									// Create a new instance of a finding and set the necessary fields.
 									finding := &Finding{
 										Action:            changeAction,
-										Comment:           content,
+										Content:           content,
 										CommitAuthor:      commit.Author.String(),
 										CommitHash:        commit.Hash.String(),
 										CommitMessage:     strings.TrimSpace(commit.Message),
@@ -476,7 +512,7 @@ func AnalyzeRepositories(sess *Session) {
 										SecretID:          genericID,
 									}
 
-									// Get a proper uid for the finding
+									// Get a proper uid for the finding and setup the urls
 									finding.Initialize(sess.ScanType)
 									fNew := true
 									//fmt.Println() // TODO Remove me

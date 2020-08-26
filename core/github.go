@@ -12,11 +12,12 @@ import (
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
-// CloneRepository will crete either an in memory clone of a given repository or clone to a temp dir.
+// CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
 func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
@@ -25,6 +26,10 @@ func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, st
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
 		SingleBranch:  true,
 		Tags:          git.NoTags,
+		Auth: &http.BasicAuth{
+			Username: "doesn't matter",
+			Password: *cloneConfig.Token,
+		},
 	}
 
 	var repository *git.Repository

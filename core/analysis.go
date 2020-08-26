@@ -247,6 +247,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 			Branch:     repo.DefaultBranch,
 			Depth:      &sess.CommitDepth,
 			InMemClone: &sess.InMemClone,
+			Token:      &sess.GithubAccessToken,
 		}
 		clone, path, err = CloneGithubRepository(&cloneConfig)
 	case "gitlab":

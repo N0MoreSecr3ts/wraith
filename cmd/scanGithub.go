@@ -73,7 +73,7 @@ func init() {
 	err = viperScanGithub.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
 	err = viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))
 	err = viperScanGithub.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
-	err = viperScanGithub.BindPFlag("enterprise-url", scanGithubCmd.Flags().Lookup("EnterpriseUrl"))
+	err = viperScanGithub.BindPFlag("enterprise-url", scanGithubCmd.Flags().Lookup("enterprise-url"))
 	err = viperScanGithub.BindPFlag("github-targets", scanGithubCmd.Flags().Lookup("github-targets"))
 	err = viperScanGithub.BindPFlag("hide-secrets", scanGithubCmd.Flags().Lookup("hide-secrets"))
 	err = viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension"))

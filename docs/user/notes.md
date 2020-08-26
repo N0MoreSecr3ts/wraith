@@ -9,3 +9,5 @@ https://michenriksen.com/blog/gitrob-putting-the-open-source-in-osint/
 - if you dont want to scan any commit depth (1) you should use the local file scan
 
 - a content scan will find all secrets in a file using FindAll. This will lead to duplicate findings such that a given string may be either an artifactory password due to surronding context or simply a generic password.
+
+- We want to keep dupes to some extent as each commit should be treated as a new secret to prevent removing it from one commit but having it show up in other commits.

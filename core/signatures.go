@@ -254,10 +254,14 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 					return false, results
 				}
 
-				r := s.match // this is the regex that we are going to try and match against
+				// The regex that we are going to try and match against
+				r := s.match
 
 				var contextMatches []string
 
+				// Check to see if there is a match in the data and if so switch to a Findall that
+				// will get a slice of all the individual matches. Doing this ahead of time saves us
+				// from looping through if it is not necessary.
 				if r.Match(data) {
 					for _, curRegexMatch := range r.FindAll(data, -1) {
 						contextMatches = append(contextMatches, string(curRegexMatch))
@@ -278,7 +282,7 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 								results[strconv.Itoa(i)+"_"+thisMatch] = num
 							}
 						}
-						//return bResult, results
+						//return bResult, results // TODO Remove me
 					}
 				}
 

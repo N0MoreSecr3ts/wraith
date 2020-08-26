@@ -385,7 +385,11 @@ func AnalyzeRepositories(sess *Session) {
 
 						sess.Stats.IncrementFilesTotal()
 
-						likelyTestFile := false
+						// This will set the default value for scanning tests to whatever the
+						// default is, within the main DefaultValues map. Type assertion is
+						// required as that is a map of interfaces.
+						scanTests := DefaultValues["scan-tests"]
+						likelyTestFile := scanTests.(bool)
 
 						if !sess.ScanTests {
 							likelyTestFile = isTestFileOrPath(fullFilePath)
@@ -439,12 +443,16 @@ func AnalyzeRepositories(sess *Session) {
 									cleanK := strings.SplitAfterN(k, "_", 2)
 									if matchMap == nil {
 										content = ""
-										genericID = *repo.Name + "://" + fPath + "_" + generateGenericID(content)
+										//genericID = *repo.Name + "://" + fPath + "_" + generateGenericID(content) // TODO remove me
 									} else {
 										content = cleanK[1]
-										genericID = *repo.Name + "://" + fPath + "_" + generateGenericID(content)
+										//genericID = *repo.Name + "://" + fPath + "_" + generateGenericID(content) // TODO remove me
 
 									}
+									genericID = *repo.Name + "://" + fPath + "_" + generateGenericID(content)
+									fmt.Println("Content:") // TODO Remove me
+									fmt.Println(cleanK) // TODO Remove me
+									fmt.Println() // TODO Remove me
 
 									// destroy the secret if the flag is set
 									if sess.HideSecrets {
@@ -471,13 +479,17 @@ func AnalyzeRepositories(sess *Session) {
 									// Get a proper uid for the finding
 									finding.Initialize(sess.ScanType)
 									fNew := true
+									//fmt.Println() // TODO Remove me
+									//fmt.Println(finding.Description) // TODO Remove me
+									//fmt.Println(finding.CommitHash) // TODO Remove me
+									//fmt.Println(finding.SecretID) // TODO Remove me
 
-									for _, f := range sess.Findings {
-										if f.CommitHash == finding.CommitHash && f.SecretID == finding.SecretID && f.Description == finding.Description {
-											fNew = false
-											continue
-										}
-									}
+									//for _, f := range sess.Findings {
+									//	if f.CommitHash == finding.CommitHash && f.SecretID == finding.SecretID && f.Description == finding.Description {
+									//		fNew = false
+									//		continue
+									//	}
+									//}
 
 									if fNew {
 										// Add it to the session

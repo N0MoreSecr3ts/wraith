@@ -453,7 +453,7 @@ func AnalyzeRepositories(sess *Session) {
 
 									finding := &Finding{
 										Action:            changeAction,
-										Comment:           content,
+										Content:           content,
 										CommitAuthor:      commit.Author.String(),
 										CommitHash:        commit.Hash.String(),
 										CommitMessage:     strings.TrimSpace(commit.Message),

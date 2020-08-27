@@ -110,3 +110,51 @@ func (s *Stats) IncrementCommitsDirty() {
 	defer s.Unlock()
 	s.CommitsDirty++
 }
+// InitStats will set the initial values for a session
+func (s *Session) InitStats() {
+	if s.Stats != nil {
+		return
+	}
+	s.Stats = &Stats{
+		FilesIgnored:  0,
+		FilesScanned:  0,
+		FindingsTotal: 0,
+		Organizations: 0,
+		Progress:      0.0,
+		StartedAt:     time.Now(),
+		Status:        StatusFinished,
+		Users:         0,
+		Targets:       0,
+		Repositories:  0,
+		Commits:       0,
+		Findings:      0,
+		Files:         0,
+	}
+}
+
+/// PrintSessionStats will print the performance and sessions stats to stdout at the conclusion of a session scan
+func PrintSessionStats(sess *Session) {
+
+	sess.Out.Important("\n--------Results--------\n")
+	sess.Out.Important("\n")
+	sess.Out.Important("-------Findings------\n")
+	sess.Out.Info("Total Findings......: %d\n", sess.Stats.Findings)
+	sess.Out.Important("\n")
+	sess.Out.Important("--------Files--------\n")
+	sess.Out.Info("Total Files.........: %d\n", sess.Stats.FilesTotal)
+	sess.Out.Info("Files Scanned.......: %d\n", sess.Stats.FilesScanned)
+	sess.Out.Info("Files Ignored.......: %d\n", sess.Stats.FilesIgnored)
+	sess.Out.Info("Files Dirty.........: %d\n", sess.Stats.FilesDirty)
+	sess.Out.Important("\n")
+	sess.Out.Important("---------SCM---------\n")
+	sess.Out.Info("Repos Found.........: %d\n", sess.Stats.RepositoriesTotal)
+	sess.Out.Info("Repos Cloned........: %d\n", sess.Stats.RepositoriesCloned)
+	sess.Out.Info("Repos Scanned.......: %d\n", sess.Stats.RepositoriesScanned)
+	sess.Out.Info("Commits Scanned.....: %d\n", sess.Stats.Commits)
+	sess.Out.Info("Commits Dirty.......: %d\n", sess.Stats.CommitsDirty)
+	sess.Out.Important("\n")
+	sess.Out.Important("-------General-------\n")
+	sess.Out.Info("Wraith Version......: %s\n", sess.Version)
+	sess.Out.Info("Signatures Version..: %s\n", sess.SignatureVersion)
+	sess.Out.Info("Elapsed Time........: %s\n\n", time.Since(sess.Stats.StartedAt))
+}

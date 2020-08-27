@@ -96,3 +96,10 @@ func (l *Logger) Info(format string, args ...interface{}) {
 func (l *Logger) Debug(format string, args ...interface{}) {
 	l.Log(DEBUG, format, args...)
 }
+
+// InitLogger will initialize the logger for the session
+func (s *Session) InitLogger() {
+	s.Out = &Logger{}
+	s.Out.SetDebug(s.Debug)
+	s.Out.SetSilent(s.Silent)
+}

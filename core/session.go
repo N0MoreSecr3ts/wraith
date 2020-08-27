@@ -272,35 +272,6 @@ func (s *Session) AddFinding(finding *Finding) {
 	s.Stats.IncrementFindingsTotal()
 }
 
-// InitStats will set the initial values for a session
-func (s *Session) InitStats() {
-	if s.Stats != nil {
-		return
-	}
-	s.Stats = &Stats{
-		FilesIgnored:  0,
-		FilesScanned:  0,
-		FindingsTotal: 0,
-		Organizations: 0,
-		Progress:      0.0,
-		StartedAt:     time.Now(),
-		Status:        StatusFinished,
-		Users:         0,
-		Targets:       0,
-		Repositories:  0,
-		Commits:       0,
-		Findings:      0,
-		Files:         0,
-	}
-}
-
-// InitLogger will initialize the logger for the session
-func (s *Session) InitLogger() {
-	s.Out = &Logger{}
-	s.Out.SetDebug(s.Debug)
-	s.Out.SetSilent(s.Silent)
-}
-
 // InitAPIClient will create a new gitlab or github api client based on the session identifier
 func (s *Session) InitAPIClient() {
 

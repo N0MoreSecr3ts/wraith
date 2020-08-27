@@ -60,19 +60,19 @@ func getEntropyInt(s string) float64 {
 }
 
 // generateGenericID will return an id with sufficient enough entropy to be usable for larger scale sessionss
-func generateGenericID(val1 string) string {
-	id := sha1.New()
-
-	str := val1
-
-	io.WriteString(id, str)
-
-	j := id.Sum(nil)
-
-	encodedStr := hex.EncodeToString(j)
-
-	return encodedStr
-}
+//func generateGenericID(val1 string) string { // TODO remove me
+//	id := sha1.New()
+//
+//	str := val1
+//
+//	io.WriteString(id, str)
+//
+//	j := id.Sum(nil)
+//
+//	encodedStr := hex.EncodeToString(j)
+//
+//	return encodedStr
+//}
 
 // Signature is an expression that we are looking for in a file
 type Signature interface {

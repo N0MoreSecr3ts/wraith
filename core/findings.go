@@ -48,25 +48,21 @@ func (f *Finding) setupUrls(scanType string) {
 }
 
 // generateID will create an ID for each finding based up the SHA1 of discrete data points associated
-// with the finding
-func (f *Finding) generateID() {
+// with the finding.
+func generateID() string {
 	h := sha1.New()
-	_, err := io.WriteString(h, f.FilePath)
-	_, err = io.WriteString(h, f.Action)
-	_, err = io.WriteString(h, f.RepositoryOwner)
-	_, err = io.WriteString(h, f.RepositoryName)
-	_, err = io.WriteString(h, f.CommitHash)
-	_, err = io.WriteString(h, f.CommitMessage)
-	_, err = io.WriteString(h, f.CommitAuthor)
+	source := rand.NewSource(time.Now().UnixNano())
+	randNum := rand.New(source)
+
+	_, err := io.WriteString(h, fmt.Sprintf("%x", randNum.Intn(10000000000)))
 
 	if err != nil {
 		fmt.Println("Not able to generate finding ID: ", err)
 	}
-	f.SecretID = fmt.Sprintf("%x", h.Sum(nil))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 // Initialize will set the urls and create an ID for inclusion within the finding
 func (f *Finding) Initialize(scanType string) {
 	f.setupUrls(scanType)
-	f.generateID()
 }

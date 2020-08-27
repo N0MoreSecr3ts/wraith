@@ -275,11 +275,13 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 								linesOfScannedFile := strings.Split(string(data), "\n")
 								linesOfScannedFile = linesOfScannedFile[:len(linesOfScannedFile)] // TODO Is this needed?
 
+								fmt.Println("I am in the data") // TODO remove
+								fmt.Println("context matches index: ",i) // TODO remove
 								num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
 								results[strconv.Itoa(i)+"_"+thisMatch] = num
 							}
 						}
-						//return bResult, results // TODO Remove me
+						return bResult, results // TODO Remove me
 					}
 				}
 
@@ -304,21 +306,32 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 								linesOfScannedFile := strings.Split(content, "\n")
 								linesOfScannedFile = linesOfScannedFile[:len(linesOfScannedFile)] // TODO Is this needed?
 
+								fmt.Println("I am in the patch") // TODO remove
 								num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
 								results[strconv.Itoa(i)+"_"+thisMatch] = num
 							}
 						}
-						//return bResult, results //Lk e nubmer is alway zero
+						//fmt.Println("I am at end of context")// TODO remove me
+						//fmt.Println() // TODO remove me
+						//fmt.Println() // TODO remove me
+						return bResult, results
 						//meed to depr
 					}
-				}
-				return bResult, results
+				} // TODO remove me I did this
+				//return bResult, results
 			}
 		}
-		//default:
-		//	return bResult, results
+		default:
+			//fmt.Println("I am default")// TODO remove me
+			//fmt.Println() // TODO remove me
+			//fmt.Println() // TODO remove me
+			return bResult, results
 	}
+	//fmt.Println("I am at the end")// TODO remove me
+	//fmt.Println() // TODO remove me
+	//fmt.Println() // TODO remove me
 	return bResult, results
+
 }
 
 // fetchLineNumber will read a file in line by line and when the match is found, save the line number. It manages multiple matches in a file by way of the count and an index
@@ -330,11 +343,14 @@ func fetchLineNumber(input *[]string, thisMatch string, idx int) int {
 
 	for i, line := range linesOfScannedFile {
 		if strings.Contains(line, thisMatch) {
+			//fmt.Println("found one") // TODO remove me
 
 			lineNumIndexMap[count] = i + 1
 			count = count + 1
 		}
 	}
+	fmt.Println("index: ", lineNumIndexMap[idx]) // TODO remove me
+	fmt.Println("count: ", count) // TODO remove me
 	return lineNumIndexMap[idx]
 }
 

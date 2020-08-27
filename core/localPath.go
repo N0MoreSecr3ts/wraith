@@ -104,7 +104,6 @@ func DoFileScan(filename string, sess *Session) {
 		bMatched, matchMap := signature.ExtractMatch(matchFile, sess, nil)
 
 		var content string   // this is because file matches are puking
-		var genericID string // the generic id used in the finding
 
 		// for every instance of the secret that matched the specific rule create a new finding
 		for k, v := range matchMap {
@@ -116,11 +115,13 @@ func DoFileScan(filename string, sess *Session) {
 
 			if matchMap == nil {
 				content = ""
-				genericID = "not-a-repo://" + filename + "_" + generateGenericID(content)
+				//genericID = "not-a-repo://" + filename + "_" + generateGenericID(content) // TODO remove me
 			} else {
 				content = cleanK[1]
-				genericID = "not-a-repo://" + filename + "_" + generateGenericID(content)
+				//genericID = "not-a-repo://" + filename + "_" + generateGenericID(content) // TODO remove me
 			}
+
+			//genericID = generateID() // TODO remove me
 
 			// destroy the secret if the flag is set
 			if sess.HideSecrets {
@@ -140,7 +141,7 @@ func DoFileScan(filename string, sess *Session) {
 					CommitMessage:     ``,
 					CommitAuthor:      ``,
 					LineNumber:        strconv.Itoa(v),
-					SecretID:          genericID,
+					SecretID:          generateID(),
 					WraithVersion:     version.AppVersion(),
 					SignaturesVersion: sess.SignatureVersion,
 				}

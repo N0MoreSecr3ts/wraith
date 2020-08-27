@@ -470,7 +470,7 @@ func AnalyzeRepositories(sess *Session) {
 									}
 
 									// Get a proper uid for the finding
-									finding.Initialize(sess.ScanType,sess.EnterpriseUrl)
+									finding.Initialize(sess.ScanType, sess.EnterpriseURL)
 									fNew := true
 
 									for _, f := range sess.Findings {

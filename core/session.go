@@ -77,7 +77,7 @@ type Session struct {
 	Debug             bool
 	Findings          []*Finding
 	GithubAccessToken string
-	EnterpriseUrl     string
+	EnterpriseURL     string
 	GithubTargets     []string
 	GitlabAccessToken string
 	GitlabTargets     []string
@@ -141,7 +141,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
 	//s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
-	s.EnterpriseUrl = v.GetString("enterprise-url")
+	s.EnterpriseURL = v.GetString("enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")
@@ -309,7 +309,7 @@ func (s *Session) InitAPIClient() {
 	switch s.ScanType {
 	case "github":
 		CheckGithubAPIToken(s.GithubAccessToken, s)
-		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken, s.EnterpriseUrl)
+		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken, s.EnterpriseURL)
 	case "gitlab":
 		CheckGitlabAPIToken(s.GitlabAccessToken, s)
 		var err error

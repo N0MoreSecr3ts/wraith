@@ -75,16 +75,16 @@ func CheckGithubAPIToken(t string, sess *Session) {
 }
 
 // NewClient creates a github api client instance using oauth2 credentials
-func (c githubClient) NewClient(token string, enterpriseUrl string) (apiClient githubClient) {
+func (c githubClient) NewClient(token string, enterpriseURL string) (apiClient githubClient) {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	)
 	tc := oauth2.NewClient(ctx, ts)
-	// attempting to add support for enterprise instances
-	if len(enterpriseUrl) != 0 {
-		baseUrl := fmt.Sprintf("%s/api/v3", enterpriseUrl)
-		uploadUrl := fmt.Sprintf("%s/api/uploads", enterpriseUrl)
+	// NewEnterpriseClient creates a github api client for enterprise instances which will use basic auth
+	if len(enterpriseURL) != 0 {
+		baseUrl := fmt.Sprintf("%s/api/v3", enterpriseURL)
+		uploadUrl := fmt.Sprintf("%s/api/uploads", enterpriseURL)
 		c.apiClient, _ = github.NewEnterpriseClient(baseUrl, uploadUrl, tc)
 	} else {
 		c.apiClient = github.NewClient(tc)

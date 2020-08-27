@@ -30,10 +30,10 @@ type Finding struct {
 }
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
-func (f *Finding) setupUrls(scanType string, enterpriseUrl string) {
+func (f *Finding) setupUrls(scanType string, enterpriseURL string) {
 	baseUrl := ""
-	if len(enterpriseUrl) > 0 {
-		baseUrl = enterpriseUrl
+	if len(enterpriseURL) > 0 {
+		baseUrl = enterpriseURL
 	} else if scanType == "github" {
 		baseUrl = "https://github.com"
 	} else {
@@ -72,7 +72,7 @@ func (f *Finding) generateID() {
 }
 
 // Initialize will set the urls and create an ID for inclusion within the finding
-func (f *Finding) Initialize(scanType string, enterpriseUrl string) {
-	f.setupUrls(scanType, enterpriseUrl)
+func (f *Finding) Initialize(scanType string, enterpriseURL string) {
+	f.setupUrls(scanType, enterpriseURL)
 	f.generateID()
 }

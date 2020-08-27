@@ -2,9 +2,14 @@
 package core
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
 
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"

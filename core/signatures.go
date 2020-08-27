@@ -2,12 +2,9 @@
 package core
 
 import (
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/yaml.v2"
-	"io"
 	"io/ioutil"
 	"math"
 	"os"

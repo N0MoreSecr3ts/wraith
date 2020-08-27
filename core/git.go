@@ -10,6 +10,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
+	"sync"
 )
 
 // Set easier names to refer to
@@ -96,7 +97,10 @@ func GetRepositoryHistory(repository *git.Repository) ([]*object.Commit, error) 
 	return commits, nil
 }
 
-// GetChanges will get the changes between to specific commits
+// GetChanges will get the changes between to specific commits. It grabs the parent commit of
+// the one being passed and uses that to fetch the tree for that commit. If no commit is found,
+// it will create a fake on. It then takes that parent tree along with the tree for the commit
+// passed in and does a diff
 func GetChanges(commit *object.Commit, repo *git.Repository) (object.Changes, error) {
 	parentCommit, err := getParentCommit(commit, repo)
 	if err != nil {

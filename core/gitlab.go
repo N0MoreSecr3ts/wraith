@@ -15,7 +15,7 @@ import (
 )
 
 // CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
-func CloneGitlabRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
+func cloneGitlab(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
 		URL:           *cloneConfig.Url,

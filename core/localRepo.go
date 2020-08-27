@@ -11,7 +11,7 @@ import (
 )
 
 // CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
-func CloneLocalRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
+func cloneLocal(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
 		URL:           *cloneConfig.Url,

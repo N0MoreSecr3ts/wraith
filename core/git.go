@@ -174,3 +174,130 @@ func GetChangeContent(change *object.Change) (result string, contentError error)
 	}
 	return result, nil
 }
+
+// Gather Repositories will gather all repositories associated with a given target during a scan session.
+// This is done using threads, whose count is set via commandline flag. Care much be taken to avoid rate
+// limiting associated with suspected DOS attacks.
+func GatherRepositories(sess *Session) {
+	var ch = make(chan *Owner, len(sess.Targets))
+	sess.Out.Debug("Number of targets: %d\n", len(sess.Targets))
+	var wg sync.WaitGroup
+	var threadNum int
+	if len(sess.Targets) == 1 {
+		threadNum = 1
+	} else if len(sess.Targets) <= sess.Threads {
+		threadNum = len(sess.Targets) - 1
+	} else {
+		threadNum = sess.Threads
+	}
+	wg.Add(threadNum)
+	sess.Out.Debug("Threads for repository gathering: %d\n", threadNum)
+	for i := 0; i < threadNum; i++ {
+		go func() {
+			for {
+				target, ok := <-ch
+				if !ok {
+					wg.Done()
+					return
+				}
+				repos, err := sess.Client.GetRepositoriesFromOwner(*target)
+				if err != nil {
+					sess.Out.Error(" Failed to retrieve repositories from %s: %s\n", *target.Login, err)
+				}
+				if len(repos) == 0 {
+					continue
+				}
+				for _, repo := range repos {
+					sess.Out.Debug(" Retrieved repository: %s\n", *repo.CloneURL)
+					sess.AddRepository(repo)
+				}
+				sess.Out.Info(" Retrieved %d %s from %s\n", len(repos), Pluralize(len(repos), "repository", "repositories"), *target.Login)
+			}
+		}()
+	}
+
+	for _, target := range sess.Targets {
+		ch <- target
+	}
+	close(ch)
+	wg.Wait()
+}
+
+//	sess.Out.Debug("[THREAD #%d][%s] Skipping %s\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me
+//
+//sess.Out.Debug("[THREAD #%d][%s] Inspecting file: %s...\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me
+//
+//			sess.Out.Error(fmt.Sprintf("Error while performing file match: %s\n", err))
+
+// cloneRepository will clone a given repository based upon a configured set or options a user provides.
+// This is a catchall for all different types of repos and create a single entry point for cloning a repo.
+func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Repository, string, error) {
+	sess.Out.Debug("[THREAD #%d][%s] Cloning repository...\n", threadId, *repo.CloneURL)
+
+	var clone *git.Repository
+	var path string
+	var err error
+
+	switch sess.ScanType {
+	case "github":
+		cloneConfig := CloneConfiguration{
+			Url:        repo.CloneURL,
+			Branch:     repo.DefaultBranch,
+			Depth:      &sess.CommitDepth,
+			InMemClone: &sess.InMemClone,
+		}
+		// Clone a github repo
+		clone, path, err = cloneGithub(&cloneConfig)
+	case "gitlab":
+		userName := "oauth2"
+		cloneConfig := CloneConfiguration{
+			Url:        repo.CloneURL,
+			Branch:     repo.DefaultBranch,
+			Depth:      &sess.CommitDepth,
+			Token:      &sess.GitlabAccessToken, // TODO Is this need since we already have a client?
+			InMemClone: &sess.InMemClone,
+			Username:   &userName,
+		}
+		// Clone a gitlab repo
+		clone, path, err = cloneGitlab(&cloneConfig)
+	case "localGit":
+		cloneConfig := CloneConfiguration{
+			Url:        repo.CloneURL,
+			Branch:     repo.DefaultBranch,
+			Depth:      &sess.CommitDepth,
+			InMemClone: &sess.InMemClone,
+		}
+		// Clone a local repo
+		clone, path, err = cloneLocal(&cloneConfig)
+
+	}
+	if err != nil {
+		switch err.Error() {
+		case "remote repository is empty":
+			sess.Out.Error("Repository %s is empty: %s\n", *repo.CloneURL, err)
+			sess.Stats.IncrementRepositoriesCloned()
+			//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
+			return nil, "", err
+		default:
+			sess.Out.Error("Error cloning repository %s: %s\n", *repo.CloneURL, err)
+			//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
+			return nil, "", err
+		}
+	}
+	sess.Stats.IncrementRepositoriesCloned()
+	//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
+	sess.Out.Debug("[THREAD #%d][%s] Cloned repository to: %s\n", threadId, *repo.CloneURL, path)
+	return clone, path, err
+}
+
+//sess.Out.Debug("Threads for repository analysis: %d\n", threadNum)
+//sess.Out.Important("Analyzing %d %s...\n", len(sess.Repositories), Pluralize(len(sess.Repositories), "repository", "repositories"))
+//				sess.Out.Debug("[THREAD #%d] No more tasks, marking WaitGroup as done\n", tid)
+
+//					sess.Out.Debug("[THREAD #%d][%s] Analyzing commit: %s\n", tid, *repo.CloneURL, commit.Hash)
+//					sess.Out.Debug("[THREAD #%d][%s] %s changes in %d\n", tid, *repo.CloneURL, commit.Hash, len(changes))
+//
+//					sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)
+//
+//				sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
+//				sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)

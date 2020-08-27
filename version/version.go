@@ -12,7 +12,7 @@ const AppVersionMajor = "0"
 const AppVersionMinor = "0"
 
 // AppVersionPatch is the patch version
-const AppVersionPatch = "1"
+const AppVersionPatch = "5"
 
 // AppVersionPre ...
 const AppVersionPre = ""

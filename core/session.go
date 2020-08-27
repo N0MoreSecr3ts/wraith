@@ -39,6 +39,7 @@ var DefaultValues = map[string]interface{}{
 	"commit-depth":     0,
 	"config-file":      "$HOME/.wraith/config.yaml",
 	"debug":            false,
+	"expand-orgs": false,
 	"github-targets":   "",
 	"github-api-token": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXVZabcd",
 	"gitlab-targets":   "",
@@ -47,7 +48,7 @@ var DefaultValues = map[string]interface{}{
 	"ignore-path":      "",
 	"in-mem-clone":     false,
 	"max-file-size":    50,
-	"num-threads":      0,
+	"num-threads":      -1,
 	"local-dirs":       nil,
 	"local-files":      nil,
 	"scan-forks":       true,
@@ -75,6 +76,7 @@ type Session struct {
 	CommitDepth       int
 	CSV               bool
 	Debug             bool
+	ExpandOrgs      bool
 	Findings          []*Finding
 	GithubAccessToken string
 	GithubTargets     []string
@@ -84,7 +86,6 @@ type Session struct {
 	InMemClone        bool
 	JSON              bool
 	MaxFileSize       int64
-	NoExpandOrgs      bool
 	Out               *Logger `json:"-"`
 	LocalDirs         []string
 	LocalFiles        []string
@@ -140,6 +141,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
 	//s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
+	s.ExpandOrgs = v.GetBool("expaand-orgs")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")

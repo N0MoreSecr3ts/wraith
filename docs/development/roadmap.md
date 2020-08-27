@@ -80,11 +80,15 @@
 - [ ] In gitlab you can have a project w/ no repo, this will error out
 - [ ] In github you can have a project w/ no repo, does this error out
 - [ ] Searching through a commit history is present but not effective
-- [ ] Secret ID's are possibly not unique
+- [X] ~~Secret ID's are possibly not unique~~
 - [ ] Duplicate findings are being displayed
 - [ ] Findings with a line number of 0 are being displayed
+- [ ] Review all flags to ensure they are needed
+- [ ] Expanding orgs is not working
+- [ ] Set unique secrets in the test
 
 ### Documentation
+- [ ] Document all flags
 - [ ] Document how to add a new command or source
 - [ ] Document the tech debt using colors and a shell script
 - [ ] Document all stats
@@ -133,6 +137,8 @@
 - [ ] Code review and remove debug statements
 
 ### Features
+- [ ] Change name from threads to go routines or make that clear
+- [ ] Refactor how threads are calculated
 - [ ] Configure repos
 - [ ] Configure Org
 - [ ] Created a dedicated GPG key
@@ -140,11 +146,11 @@
 - [ ] Enforce https for the site
 - [ ] Fully Instrumented with Performance Stats
 - [ ] JSON or CSV Output
-- [ ] Exclude Forks
+- [ ] Exclude/Include Forks
 - [ ] Entrophy Checks
 - [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
 - [X] ~~Change empty string defaults to nil~~
-- [ ] Add content to summary
+- [X] ~~Add content to summary~~
 - [ ] Cleanup issues in summary output
 - [ ] Remove all print debugging statements
 - [ ] Remove all dead code
@@ -166,9 +172,9 @@
 - [X] ~~Ability to silence the output~~
 - [X] ~~Max file size to scan~~
 - [ ] Only export the functions and variables necessary
-- [ ] Capture the eroor if no sig file is presented
+- [ ] Capture the error if no sig file is given and the default does not exist
 - [ ] Break out checking if a file is to be scanned into a single function
-- [ ] Add a flag to de-dupe findings 
+- [ ] Add a flag to de-dupe findings
 
 
 ### Milestone 2

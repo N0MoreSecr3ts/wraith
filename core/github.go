@@ -12,9 +12,9 @@ import (
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 
-	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
 // CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.

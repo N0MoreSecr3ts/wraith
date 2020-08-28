@@ -30,16 +30,16 @@ type Finding struct {
 }
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
-func (f *Finding) setupUrls(scanType string, enterpriseURL string) {
+func (f *Finding) setupUrls(sess *Session) {
 	baseUrl := ""
-	if len(enterpriseURL) > 0 {
-		baseUrl = enterpriseURL
-	} else if scanType == "github" {
+	if len(sess.EnterpriseURL) > 0 {
+		baseUrl = sess.EnterpriseURL
+	} else if sess.ScanType == "github" {
 		baseUrl = "https://github.com"
 	} else {
 		baseUrl = "https://gitlab.com"
 	}
-	switch scanType {
+	switch sess.ScanType {
 	case "github":
 		f.RepositoryUrl = fmt.Sprintf("%s/%s/%s", baseUrl, f.RepositoryOwner, f.RepositoryName)
 		f.FileUrl = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryUrl, f.CommitHash, f.FilePath)
@@ -72,7 +72,7 @@ func (f *Finding) generateID() {
 }
 
 // Initialize will set the urls and create an ID for inclusion within the finding
-func (f *Finding) Initialize(scanType string, enterpriseURL string) {
-	f.setupUrls(scanType, enterpriseURL)
+func (f *Finding) Initialize(sess *Session) {
+	f.setupUrls(sess)
 	f.generateID()
 }

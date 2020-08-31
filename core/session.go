@@ -73,7 +73,7 @@ type Session struct {
 	BindPort          int
 	Client            IClient `json:"-"`
 	CommitDepth       int
-	CSV               bool
+	CSVOutput         string
 	Debug             bool
 	Findings          []*Finding
 	GithubAccessToken string
@@ -139,7 +139,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.BindAddress = v.GetString("bind-address")
 	s.BindPort = v.GetInt("bind-port")
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
-	//s.CSVOutput = v.GetBool("csv")
+	s.CSVOutput = v.GetString("output-csv")
 	s.Debug = v.GetBool("debug")
 	s.EnterpriseURL = v.GetString("enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")

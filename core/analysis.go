@@ -3,6 +3,7 @@ package core
 
 import (
 	"crypto/sha1"
+	"encoding/csv"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -84,7 +85,7 @@ func GatherTargets(sess *Session) {
 func GatherLocalRepositories(sess *Session) {
 
 	// This is the number of targets as we don't do forks or anything else.
-	// It will contain directorys, that will then be added to the repo count
+	// It will contain directories, that will then be added to the repo count
 	// if they contain a .git directory
 	sess.Stats.Targets = len(sess.LocalDirs)
 	sess.Stats.Status = StatusGathering
@@ -494,6 +495,26 @@ func AnalyzeRepositories(sess *Session) {
 
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
+								if len(sess.CSVOutput) != 0 {
+									sess.Out.Debug("Writing results to csv: %s",sess.CSVOutput)
+									f, err := os.Create(sess.CSVOutput)
+									if err != nil {
+										sess.Out.Error("Failed writing to csv with error:\n%s",err)
+									}
+									defer f.Close()
+
+									writer := csv.NewWriter(f)
+									defer writer.Flush()
+
+									fields := sess.Findings[0].getFieldNames()
+									writer.Write(fields)
+									for _, v := range sess.Findings {
+										_ = writer.Write(v.getValues())
+									}
+									writer.Flush()
+									f.Close()
+									//writer.WriteAll(sess.Findings)
+								}
 								if sess.InMemClone {
 									err = os.RemoveAll(path)
 									if err != nil {

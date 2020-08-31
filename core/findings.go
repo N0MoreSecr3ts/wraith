@@ -27,6 +27,7 @@ type Finding struct {
 	Signatureid       string
 	SignaturesVersion string
 	SecretID          string
+	Fields            []string
 }
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
@@ -53,6 +54,33 @@ func (f *Finding) setupUrls(sess *Session) {
 
 }
 
+func (f *Finding) getFieldNames() []string {
+	return f.Fields
+}
+
+func (f *Finding) getValues() []string {
+	values := *new([]string)
+	values = append(values, f.Action)
+	values = append(values, f.Comment)
+	values = append(values, f.CommitAuthor)
+	values = append(values, f.CommitHash)
+	values = append(values, f.CommitMessage)
+	values = append(values, f.CommitUrl)
+	values = append(values, f.Description)
+	values = append(values, f.FilePath)
+	values = append(values, f.FileUrl)
+	values = append(values, f.WraithVersion)
+	values = append(values, f.Hash)
+	values = append(values, f.LineNumber)
+	values = append(values, f.RepositoryName)
+	values = append(values, f.RepositoryOwner)
+	values = append(values, f.RepositoryUrl)
+	values = append(values, f.Signatureid)
+	values = append(values, f.SignaturesVersion)
+	values = append(values, f.SecretID)
+	return values
+}
+
 // generateID will create an ID for each finding based up the SHA1 of discrete data points associated
 // with the finding
 func (f *Finding) generateID() {
@@ -75,4 +103,7 @@ func (f *Finding) generateID() {
 func (f *Finding) Initialize(sess *Session) {
 	f.setupUrls(sess)
 	f.generateID()
+	f.Fields = []string{"Action","Comment","CommitAuthor","CommitHash","CommitMessage","CommitUrl","Description","FilePath",
+		"FileUrl","WraithVersion","Hash","LineNumber","RepositoryName","RepositoryOwner","RepositoryUrl","Signatureid",
+		"SignaturesVersion","SecretID"}
 }

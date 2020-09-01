@@ -309,7 +309,7 @@ func (s *Session) InitAPIClient() {
 	switch s.ScanType {
 	case "github":
 		CheckGithubAPIToken(s.GithubAccessToken, s)
-		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken, s.EnterpriseURL)
+		s.Client = githubClient.NewClient(githubClient{}, s)
 	case "gitlab":
 		CheckGitlabAPIToken(s.GitlabAccessToken, s)
 		var err error

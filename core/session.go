@@ -77,6 +77,7 @@ type Session struct {
 	Debug             bool
 	Findings          []*Finding
 	GithubAccessToken string
+	EnterpriseScan    bool
 	EnterpriseURL     string
 	GithubTargets     []string
 	GitlabAccessToken string
@@ -141,6 +142,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
 	//s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
+	s.EnterpriseScan = v.GetBool("enterprise-scan")
 	s.EnterpriseURL = v.GetString("enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")

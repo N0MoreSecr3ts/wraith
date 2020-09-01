@@ -82,7 +82,7 @@ func (c githubClient) NewClient(sess *Session) (apiClient githubClient) {
 	)
 	tc := oauth2.NewClient(ctx, ts)
 	// NewEnterpriseClient creates a github api client for enterprise instances which will use basic auth
-	if len(sess.EnterpriseURL) != 0 {
+	if len(sess.EnterpriseURL) != 0 && sess.EnterpriseScan {
 		baseUrl := fmt.Sprintf("%s/api/v3", sess.EnterpriseURL)
 		uploadUrl := fmt.Sprintf("%s/api/uploads", sess.EnterpriseURL)
 		c.apiClient, _ = github.NewEnterpriseClient(baseUrl, uploadUrl, tc)

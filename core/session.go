@@ -201,6 +201,12 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitThreads()
 	s.InitAPIClient()
 
+	// checking enterprise parameters here so logger is initialized
+	if (s.EnterpriseScan == false && len(s.EnterpriseURL) > 0) || (s.EnterpriseScan == true && len(s.EnterpriseURL) == 0) {
+		s.Out.Error("To scan an enterprise instance, both --enterprise-scan and --enterprise-url parameters are required")
+		os.Exit(1)
+	}
+
 	if !s.Silent {
 		s.InitRouter()
 	}

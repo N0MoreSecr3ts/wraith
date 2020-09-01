@@ -30,15 +30,23 @@ type Finding struct {
 }
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
-func (f *Finding) setupUrls(scanType string) {
-	switch scanType {
+func (f *Finding) setupUrls(sess *Session) {
+	baseUrl := ""
+	if len(sess.EnterpriseURL) > 0 && sess.EnterpriseScan {
+		baseUrl = sess.EnterpriseURL
+	} else if sess.ScanType == "github" {
+		baseUrl = "https://github.com"
+	} else {
+		baseUrl = "https://gitlab.com"
+	}
+	switch sess.ScanType {
 	case "github":
-		f.RepositoryUrl = fmt.Sprintf("https://github.com/%s/%s", f.RepositoryOwner, f.RepositoryName)
+		f.RepositoryUrl = fmt.Sprintf("%s/%s/%s", baseUrl, f.RepositoryOwner, f.RepositoryName)
 		f.FileUrl = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryUrl, f.CommitHash, f.FilePath)
 		f.CommitUrl = fmt.Sprintf("%s/commit/%s", f.RepositoryUrl, f.CommitHash)
 	case "gitlab":
 		results := CleanUrlSpaces(f.RepositoryOwner, f.RepositoryName)
-		f.RepositoryUrl = fmt.Sprintf("https://gitlab.com/%s/%s", results[0], results[1])
+		f.RepositoryUrl = fmt.Sprintf("%s/%s/%s", baseUrl, results[0], results[1])
 		f.FileUrl = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryUrl, f.CommitHash, f.FilePath)
 		f.CommitUrl = fmt.Sprintf("%s/commit/%s", f.RepositoryUrl, f.CommitHash)
 	}
@@ -64,7 +72,7 @@ func (f *Finding) generateID() {
 }
 
 // Initialize will set the urls and create an ID for inclusion within the finding
-func (f *Finding) Initialize(scanType string) {
-	f.setupUrls(scanType)
+func (f *Finding) Initialize(sess *Session) {
+	f.setupUrls(sess)
 	f.generateID()
 }

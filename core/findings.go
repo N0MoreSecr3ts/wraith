@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"reflect"
 )
 
 // Finding is a secret that has been discovered within a target by a discovery method
@@ -27,7 +28,6 @@ type Finding struct {
 	Signatureid       string
 	SignaturesVersion string
 	SecretID          string
-	Fields            []string
 }
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
@@ -54,30 +54,24 @@ func (f *Finding) setupUrls(sess *Session) {
 
 }
 
+// getFieldNames will return the field names defined by the Finding struct used for output generation
 func (f *Finding) getFieldNames() []string {
-	return f.Fields
+	ft := reflect.TypeOf(*f)
+	fields := make([]string, ft.NumField())
+	for i := 0; i < ft.NumField(); i++ {
+		field := ft.Field(i)
+		fields[i] = field.Name
+	}
+	return fields
 }
 
+// getValues will return the values of the fields set for the Finding as strings
 func (f *Finding) getValues() []string {
-	values := *new([]string)
-	values = append(values, f.Action)
-	values = append(values, f.Comment)
-	values = append(values, f.CommitAuthor)
-	values = append(values, f.CommitHash)
-	values = append(values, f.CommitMessage)
-	values = append(values, f.CommitUrl)
-	values = append(values, f.Description)
-	values = append(values, f.FilePath)
-	values = append(values, f.FileUrl)
-	values = append(values, f.WraithVersion)
-	values = append(values, f.Hash)
-	values = append(values, f.LineNumber)
-	values = append(values, f.RepositoryName)
-	values = append(values, f.RepositoryOwner)
-	values = append(values, f.RepositoryUrl)
-	values = append(values, f.Signatureid)
-	values = append(values, f.SignaturesVersion)
-	values = append(values, f.SecretID)
+	fields := f.getFieldNames()
+	values := make([]string, len(fields))
+	for i := 0; i < len(fields); i++ {
+		values[i] = reflect.ValueOf(f).Elem().FieldByName(fields[i]).String()
+	}
 	return values
 }
 
@@ -103,7 +97,4 @@ func (f *Finding) generateID() {
 func (f *Finding) Initialize(sess *Session) {
 	f.setupUrls(sess)
 	f.generateID()
-	f.Fields = []string{"Action","Comment","CommitAuthor","CommitHash","CommitMessage","CommitUrl","Description","FilePath",
-		"FileUrl","WraithVersion","Hash","LineNumber","RepositoryName","RepositoryOwner","RepositoryUrl","Signatureid",
-		"SignaturesVersion","SecretID"}
 }

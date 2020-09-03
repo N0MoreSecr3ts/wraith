@@ -3,6 +3,8 @@ package core
 
 import (
 	"crypto/sha1"
+	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -84,7 +86,7 @@ func GatherTargets(sess *Session) {
 func GatherLocalRepositories(sess *Session) {
 
 	// This is the number of targets as we don't do forks or anything else.
-	// It will contain directorys, that will then be added to the repo count
+	// It will contain directories, that will then be added to the repo count
 	// if they contain a .git directory
 	sess.Stats.Targets = len(sess.LocalDirs)
 	sess.Stats.Status = StatusGathering
@@ -494,6 +496,7 @@ func AnalyzeRepositories(sess *Session) {
 
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
+
 								if sess.InMemClone {
 									err = os.RemoveAll(path)
 									if err != nil {
@@ -527,4 +530,45 @@ func AnalyzeRepositories(sess *Session) {
 	close(ch)
 	wg.Wait()
 
+}
+
+func WriteOutput(sess *Session) {
+	if len(sess.Findings) > 0 {
+		if len(sess.OutputFile) != 0 {
+			f, err := os.Create(sess.OutputFile)
+			if err != nil {
+				sess.Out.Error("Failed writing to csv with error:\n%s\n", err)
+			}
+			defer f.Close()
+			if sess.CSV == true {
+				sess.Out.Info("Writing results in CSV format to: %s\n", sess.OutputFile)
+				w := csv.NewWriter(f)
+				defer w.Flush()
+
+				fields := sess.Findings[0].getFieldNames()
+				w.Write(fields)
+				for _, v := range sess.Findings {
+					_ = w.Write(v.getValues())
+				}
+				w.Flush()
+				f.Close()
+			} else if sess.JSON == true {
+				sess.Out.Info("Writing results in JSON format to: %s\n", sess.OutputFile)
+				b, err := json.MarshalIndent(sess.Findings, "", "    ")
+				if err != nil {
+					sess.Out.Error("Encountered error marshaling findings to json: %s\n",err)
+					return
+				}
+				c := string(b)
+				f.WriteString(c)
+				f.Close()
+			} else {
+				sess.Out.Debug("Didn't specify --csv or --json, no results written to disk\n")
+			}
+		} else {
+			sess.Out.Debug("Didn't specify --output-file to write to, no results written to disk\n")
+		}
+	} else {
+		sess.Out.Info("No findings\n")
+	}
 }

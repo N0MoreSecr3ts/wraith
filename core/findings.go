@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"reflect"
 )
 
 // Finding is a secret that has been discovered within a target by a discovery method
@@ -51,6 +52,27 @@ func (f *Finding) setupUrls(sess *Session) {
 		f.CommitUrl = fmt.Sprintf("%s/commit/%s", f.RepositoryUrl, f.CommitHash)
 	}
 
+}
+
+// getFieldNames will return the field names defined by the Finding struct used for output generation
+func (f *Finding) getFieldNames() []string {
+	ft := reflect.TypeOf(*f)
+	fields := make([]string, ft.NumField())
+	for i := 0; i < ft.NumField(); i++ {
+		field := ft.Field(i)
+		fields[i] = field.Name
+	}
+	return fields
+}
+
+// getValues will return the values of the fields set for the Finding as strings
+func (f *Finding) getValues() []string {
+	fields := f.getFieldNames()
+	values := make([]string, len(fields))
+	for i := 0; i < len(fields); i++ {
+		values[i] = reflect.ValueOf(f).Elem().FieldByName(fields[i]).String()
+	}
+	return values
 }
 
 // generateID will create an ID for each finding based up the SHA1 of discrete data points associated

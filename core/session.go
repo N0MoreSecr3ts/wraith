@@ -57,6 +57,7 @@ var DefaultValues = map[string]interface{}{
 	"csv":              false,
 	"json":             false,
 	"match-level":      3,
+	"output-file":		"",
 	"signature-file":   "$HOME/.wraith/signatures/default.yml",
 	"signature-path":   "$HOME/.wraith/signatures/",
 	"signature-url":    "",
@@ -88,6 +89,7 @@ type Session struct {
 	MaxFileSize       int64
 	NoExpandOrgs      bool
 	Out               *Logger `json:"-"`
+	OutputFile        string
 	LocalDirs         []string
 	LocalFiles        []string
 	Repositories      []*Repository
@@ -140,7 +142,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.BindAddress = v.GetString("bind-address")
 	s.BindPort = v.GetInt("bind-port")
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
-	//s.CSVOutput = v.GetBool("csv")
+	s.CSV = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
 	s.EnterpriseScan = v.GetBool("enterprise-scan")
 	s.EnterpriseURL = v.GetString("enterprise-url")
@@ -150,10 +152,11 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
-	//s.JSONOutput = v.GetBool("json")
+	s.JSON = v.GetBool("json")
 	s.LocalDirs = v.GetStringSlice("local-dirs")
 	s.MaxFileSize = v.GetInt64("max-file-size")
 	s.MatchLevel = v.GetInt("match-level")
+	s.OutputFile = v.GetString("output-file")
 	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement
 	s.ScanTests = v.GetBool("scan-tests")
 	s.ScanType = scanType
@@ -201,6 +204,12 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitThreads()
 	s.InitAPIClient()
 
+	// check output options
+  if ((s.CSV == true && s.JSON == true) || (s.CSV == true && s.JSON == true)) && len(s.OutputFile) == 0 {
+		s.Out.Error("Ensure that either --json or --csv were specified and file path was specified with --output-file")
+    os.Exit(1)
+  }
+  
 	// checking enterprise parameters here so logger is initialized
 	if (s.EnterpriseScan == false && len(s.EnterpriseURL) > 0) || (s.EnterpriseScan == true && len(s.EnterpriseURL) == 0) {
 		s.Out.Error("To scan an enterprise instance, both --enterprise-scan and --enterprise-url parameters are required")

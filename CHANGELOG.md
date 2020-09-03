@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - change the file extension of the sample config to .yml
 
 ### Added
+- json and csv output support
 - support for enterprise github with personal token using basic auth
 
 ### Removed

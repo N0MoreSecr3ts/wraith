@@ -532,6 +532,7 @@ func AnalyzeRepositories(sess *Session) {
 
 }
 
+// WriteOutput will write a csv or json file to disk based on user specified options containing discovered findings
 func WriteOutput(sess *Session) {
 	if len(sess.Findings) > 0 {
 		if len(sess.OutputFile) != 0 {

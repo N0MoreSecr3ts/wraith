@@ -78,6 +78,7 @@ type Session struct {
 	Debug             bool
 	Findings          []*Finding
 	GithubAccessToken string
+	EnterpriseScan    bool
 	EnterpriseURL     string
 	GithubTargets     []string
 	GitlabAccessToken string
@@ -143,6 +144,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
 	s.CSV = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
+	s.EnterpriseScan = v.GetBool("enterprise-scan")
 	s.EnterpriseURL = v.GetString("enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")
@@ -202,8 +204,15 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitThreads()
 	s.InitAPIClient()
 
-	if ((s.CSV == true && s.JSON == true) || (s.CSV == true && s.JSON == true)) && len(s.OutputFile) == 0 {
+	// check output options
+  if ((s.CSV == true && s.JSON == true) || (s.CSV == true && s.JSON == true)) && len(s.OutputFile) == 0 {
 		s.Out.Error("Ensure that either --json or --csv were specified and file path was specified with --output-file")
+    os.Exit(1)
+  }
+  
+	// checking enterprise parameters here so logger is initialized
+	if (s.EnterpriseScan == false && len(s.EnterpriseURL) > 0) || (s.EnterpriseScan == true && len(s.EnterpriseURL) == 0) {
+		s.Out.Error("To scan an enterprise instance, both --enterprise-scan and --enterprise-url parameters are required")
 		os.Exit(1)
 	}
 
@@ -317,7 +326,7 @@ func (s *Session) InitAPIClient() {
 	switch s.ScanType {
 	case "github":
 		CheckGithubAPIToken(s.GithubAccessToken, s)
-		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken, s.EnterpriseURL)
+		s.Client = githubClient.NewClient(githubClient{}, s)
 	case "gitlab":
 		CheckGitlabAPIToken(s.GitlabAccessToken, s)
 		var err error

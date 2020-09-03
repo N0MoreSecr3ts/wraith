@@ -35,6 +35,9 @@ var scanGithubCmd = &cobra.Command{
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
+		// do outputting here as opposed to in session
+		core.WriteOutput(sess)
+
 		core.PrintSessionStats(sess)
 
 		if !sess.Silent {
@@ -52,7 +55,7 @@ func init() {
 	scanGithubCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanGithubCmd.Flags().Int("bind-port", 9393, "The port for the webserver")
 	scanGithubCmd.Flags().Int("commit-depth", 0, "Set the depth for commits")
-	scanGithubCmd.Flags().String("output-csv", "", "File path to write csv results")
+	scanGithubCmd.Flags().Bool("csv", false, "Write results to --output-file in CSV format")
 	scanGithubCmd.Flags().Bool("debug", false, "Print debugging information")
 	scanGithubCmd.Flags().String("enterprise-url", "", "Enterprise base url, must include protocol. IE https://github.org.com")
 	scanGithubCmd.Flags().String("github-api-token", "", "API token for access to github, see doc for necessary scope")
@@ -61,10 +64,12 @@ func init() {
 	scanGithubCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
 	scanGithubCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
 	scanGithubCmd.Flags().Bool("in-mem-clone", false, "Clone repos in memory")
+	scanGithubCmd.Flags().Bool("json", false, "Write results to --output-file in JSON format")
 	scanGithubCmd.Flags().Int("match-level", 3, "Signature match level")
 	scanGithubCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
 	scanGithubCmd.Flags().Bool("no-expand-orgs", false, "Don't add members to targets when processing organizations")
 	scanGithubCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
+	scanGithubCmd.Flags().String("output-file", "", "File to write results as CSV or JSON. Must specify format with --json or --csv")
 	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 	scanGithubCmd.Flags().Bool("silent", false, "No output")
@@ -72,7 +77,7 @@ func init() {
 	err := viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))
 	err = viperScanGithub.BindPFlag("bind-port", scanGithubCmd.Flags().Lookup("bind-port"))
 	err = viperScanGithub.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
-	err = viperScanGithub.BindPFlag("output-csv", scanGithubCmd.Flags().Lookup("output-csv"))
+	err = viperScanGithub.BindPFlag("csv", scanGithubCmd.Flags().Lookup("csv"))
 	err = viperScanGithub.BindPFlag("debug", scanGithubCmd.Flags().Lookup("debug"))
 	err = viperScanGithub.BindPFlag("enterprise-url", scanGithubCmd.Flags().Lookup("enterprise-url"))
 	err = viperScanGithub.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
@@ -81,10 +86,12 @@ func init() {
 	err = viperScanGithub.BindPFlag("ignore-extension", scanGithubCmd.Flags().Lookup("ignore-extension"))
 	err = viperScanGithub.BindPFlag("ignore-path", scanGithubCmd.Flags().Lookup("ignore-extension"))
 	err = viperScanGithub.BindPFlag("in-mem-clone", scanGithubCmd.Flags().Lookup("in-mem-clone"))
+	err = viperScanGithub.BindPFlag("json", scanGithubCmd.Flags().Lookup("json"))
 	err = viperScanGithub.BindPFlag("match-level", scanGithubCmd.Flags().Lookup("match-level"))
 	err = viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))
 	err = viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))
 	err = viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))
+	err = viperScanGithub.BindPFlag("output-file", scanGithubCmd.Flags().Lookup("output-file"))
 	err = viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
 	err = viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))
 	err = viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))

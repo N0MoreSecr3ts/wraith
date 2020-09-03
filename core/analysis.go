@@ -495,26 +495,7 @@ func AnalyzeRepositories(sess *Session) {
 
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
-								if len(sess.CSVOutput) != 0 {
-									sess.Out.Debug("Writing results to csv: %s",sess.CSVOutput)
-									f, err := os.Create(sess.CSVOutput)
-									if err != nil {
-										sess.Out.Error("Failed writing to csv with error:\n%s",err)
-									}
-									defer f.Close()
 
-									writer := csv.NewWriter(f)
-									defer writer.Flush()
-
-									fields := sess.Findings[0].getFieldNames()
-									writer.Write(fields)
-									for _, v := range sess.Findings {
-										_ = writer.Write(v.getValues())
-									}
-									writer.Flush()
-									f.Close()
-									//writer.WriteAll(sess.Findings)
-								}
 								if sess.InMemClone {
 									err = os.RemoveAll(path)
 									if err != nil {
@@ -548,4 +529,33 @@ func AnalyzeRepositories(sess *Session) {
 	close(ch)
 	wg.Wait()
 
+}
+
+func WriteOutput(sess *Session) {
+	if len(sess.OutputFile) != 0 {
+		f, err := os.Create(sess.OutputFile)
+		if err != nil {
+			sess.Out.Error("Failed writing to csv with error:\n%s",err)
+		}
+		defer f.Close()
+		if sess.CSV == true {
+			sess.Out.Info("Writing results in CSV format to: %s",sess.OutputFile)
+			writer := csv.NewWriter(f)
+			defer writer.Flush()
+
+			fields := sess.Findings[0].getFieldNames()
+			writer.Write(fields)
+			for _, v := range sess.Findings {
+				_ = writer.Write(v.getValues())
+			}
+			writer.Flush()
+			f.Close()
+		} else if sess.JSON == true{
+			sess.Out.Info("Writing results in JSON format to: %s",sess.OutputFile)
+		} else {
+			sess.Out.Debug("Didn't specify --csv or --json, no results written to disk")
+		}
+	} else {
+		sess.Out.Debug("Didn't specify --output-file to write to, no results written to disk")
+	}
 }

@@ -57,6 +57,8 @@ var scanLocalPathCmd = &cobra.Command{
 
 		sess.Finish()
 
+		core.WriteOutput(sess)
+
 		core.PrintSessionStats(sess)
 
 		if !sess.Silent {
@@ -72,29 +74,36 @@ func init() {
 
 	viperScanLocalPath = core.SetConfig()
 
+	scanLocalPathCmd.Flags().Bool("csv", false, "Write results to --output-file in CSV format")
 	scanLocalPathCmd.Flags().Bool("debug", false, "Print debugging information")
 	scanLocalPathCmd.Flags().Bool("hide-secrets", false, "Show secrets in any supported output")
-	scanLocalPathCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
-	scanLocalPathCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
-	scanLocalPathCmd.Flags().Int64("max-file-size", 50, "Max file size to scan")
-	scanLocalPathCmd.Flags().Int("match-level", 3, "The match level of the expressions used to find matches")
 	scanLocalPathCmd.Flags().String("ignore-extension", "", "a list of extensions to ignore during a scan")
 	scanLocalPathCmd.Flags().String("ignore-path", "", "a list of paths to ignore during a scan")
-	scanLocalPathCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing secrets detection signatures.")
+	scanLocalPathCmd.Flags().Bool("json", false, "Write results to --output-file in JSON format")
+	scanLocalPathCmd.Flags().Int64("max-file-size", 50, "Max file size to scan")
+	scanLocalPathCmd.Flags().Int("match-level", 3, "The match level of the expressions used to find matches")
+	scanLocalPathCmd.Flags().String("output-file", "", "File to write results as CSV or JSON. Must specify format with --json or --csv")
 	scanLocalPathCmd.Flags().String("scan-dir", "", "scan a directory of files not from a git project")
 	scanLocalPathCmd.Flags().String("scan-file", "", "scan a single file")
+	scanLocalPathCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
+	scanLocalPathCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing secrets detection signatures.")
+	scanLocalPathCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
 
-	err := viperScanLocalPath.BindPFlag("debug", scanLocalPathCmd.Flags().Lookup("debug"))
+
+	err := viperScanLocalPath.BindPFlag("csv", scanLocalPathCmd.Flags().Lookup("csv"))
+	err = viperScanLocalPath.BindPFlag("debug", scanLocalPathCmd.Flags().Lookup("debug"))
 	err = viperScanLocalPath.BindPFlag("hide-secrets", scanLocalPathCmd.Flags().Lookup("hide-secrets"))
-	err = viperScanLocalPath.BindPFlag("scan-tests", scanLocalPathCmd.Flags().Lookup("scan-tests"))
-	err = viperScanLocalPath.BindPFlag("silent", scanLocalPathCmd.Flags().Lookup("silent"))
-	err = viperScanLocalPath.BindPFlag("max-file-size", scanLocalPathCmd.Flags().Lookup("max-file-size"))
-	err = viperScanLocalPath.BindPFlag("match-level", scanLocalPathCmd.Flags().Lookup("match-level"))
 	err = viperScanLocalPath.BindPFlag("ignore-extension", scanLocalPathCmd.Flags().Lookup("ignore-extension"))
 	err = viperScanLocalPath.BindPFlag("ignore-path", scanLocalPathCmd.Flags().Lookup("ignore-path"))
-	err = viperScanLocalPath.BindPFlag("signature-file", scanLocalPathCmd.Flags().Lookup("signature-file"))
+	err = viperScanLocalPath.BindPFlag("json", scanLocalPathCmd.Flags().Lookup("json"))
+	err = viperScanLocalPath.BindPFlag("max-file-size", scanLocalPathCmd.Flags().Lookup("max-file-size"))
+	err = viperScanLocalPath.BindPFlag("match-level", scanLocalPathCmd.Flags().Lookup("match-level"))
+	err = viperScanLocalPath.BindPFlag("output-file", scanLocalPathCmd.Flags().Lookup("output-file"))
 	err = viperScanLocalPath.BindPFlag("scan-dir", scanLocalPathCmd.Flags().Lookup("scan-dir"))
 	err = viperScanLocalPath.BindPFlag("scan-file", scanLocalPathCmd.Flags().Lookup("scan-file"))
+	err = viperScanLocalPath.BindPFlag("scan-tests", scanLocalPathCmd.Flags().Lookup("scan-tests"))
+	err = viperScanLocalPath.BindPFlag("signature-file", scanLocalPathCmd.Flags().Lookup("signature-file"))
+	err = viperScanLocalPath.BindPFlag("silent", scanLocalPathCmd.Flags().Lookup("silent"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

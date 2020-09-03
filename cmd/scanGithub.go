@@ -35,7 +35,6 @@ var scanGithubCmd = &cobra.Command{
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
-		// do outputting here as opposed to in session
 		core.WriteOutput(sess)
 
 		core.PrintSessionStats(sess)

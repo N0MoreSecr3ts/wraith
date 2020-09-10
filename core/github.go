@@ -31,7 +31,7 @@ func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, erro
 	var dir string
 
 	if !*cloneConfig.InMemClone {
-		dir, err = ioutil.TempDir("", "wraith") //TODO need to remove this when we are done with it
+		dir, err = ioutil.TempDir("", "wraith")
 		if err != nil {
 			return nil, "", err
 		}

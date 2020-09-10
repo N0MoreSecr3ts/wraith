@@ -1,8 +1,6 @@
 // Package common contains functionality not critical to the core project but still essential.
 package core
 
-// TODO refactor out the common package
-
 import (
 	"errors"
 	"fmt"

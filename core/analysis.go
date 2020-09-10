@@ -2,7 +2,6 @@
 package core
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -131,9 +130,7 @@ func AnalyzeRepositories(sess *Session) {
 				// recent path. The does not do a fetch per history so if a file changes paths from
 				// the current one it will throw a file not found error. You can see this by turning
 				// on debugging.
-				n := 0 //TODO remove me
 				for _, commit := range history {
-					n = n + 1 // TODO remove me
 
 					sess.Out.Debug("[THREAD #%d][%s] Analyzing commit: %s\n", tid, *repo.CloneURL, commit.Hash)
 
@@ -141,7 +138,6 @@ func AnalyzeRepositories(sess *Session) {
 					// the total number of commits scanned as a commit may have issues and not be scanned once
 					// it is found.
 					sess.Stats.IncrementCommits()
-					//sess.Stats.IncrementCommitsScanned() // TODO implement in stats
 
 					// This will be used to increment the dirty commit stat if any matches are found. A dirty commit
 					// means that a secret was found in that commit. This provides an easier way to manually to look
@@ -149,34 +145,16 @@ func AnalyzeRepositories(sess *Session) {
 					dirtyCommit := false
 
 					// TODO what is this actually doing here?
-					// TODO We should also be doing a fetch for every commit I think to be most effective.
 					changes, _ := GetChanges(commit, clone)
 					sess.Out.Debug("[THREAD #%d][%s] %s changes in %d\n", tid, *repo.CloneURL, commit.Hash, len(changes))
 
 					for _, change := range changes {
-						//fmt.Println(change.Files()) //TODO remove me
-						//fmt.Println(change.Action()) //TODO remove me
-						//fmt.Println(change.Patch()) //TODO remove me
-						//fmt.Println(change.String()) //TODO remove me
-						//fmt.Println() //TODO remove me
-						//fmt.Println() //TODO remove me
-
-
-						//patch, err := os.Open("changes.patch")
-						//if err != nil {
-						//	log.Fatal(err)
-						//}
-
 
 						// TODO Is this need for the finding object, why are we saving this?
 						changeAction := GetChangeAction(change)
 
 						// TODO Add an example of the output from this function
 						fPath := GetChangePath(change)
-						//fmt.Println(fPath) //TODO remove me
-						//fmt.Println(change.String()) //TODO remove me
-						//fmt.Println() //TODO remove me
-						//fmt.Println() //TODO remove me
 
 
 						// TODO Add an example of this
@@ -221,7 +199,7 @@ func AnalyzeRepositories(sess *Session) {
 
 
 						// If the file extension matches an extension or other criteria that precludes
-						//  it from a scan we increment the ignored files count and pass on through.
+						// it from a scan we increment the ignored files count and pass on through.
 						if matchFile.isSkippable(sess) {
 							sess.Stats.IncrementFilesIgnored()
 							sess.Out.Debug("%s is skippable and being ignored\n", fPath)
@@ -289,7 +267,6 @@ func AnalyzeRepositories(sess *Session) {
 
 									// Get a proper uid for the finding and setup the urls
 									finding.Initialize(sess.ScanType)
-									//fNew := true ?? TODO remove me
 
 									//for _, f := range sess.Findings { // TODO this is for de-duping if needed
 									//	if f.CommitHash == finding.CommitHash && f.SecretID == finding.SecretID && f.Description == finding.Description {
@@ -301,7 +278,6 @@ func AnalyzeRepositories(sess *Session) {
 									if true {
 										// Add it to the session
 										sess.AddFinding(finding)
-										sess.Stats.IncrementCommits()
 										sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)
 
 										dirtyCommit = true
@@ -329,7 +305,6 @@ func AnalyzeRepositories(sess *Session) {
 						sess.Stats.IncrementCommitsDirty()
 					}
 				}
-				fmt.Println(*repo.Name,  " :: number of commits:: ", n)
 
 				err = os.RemoveAll(path)
 				if err != nil {

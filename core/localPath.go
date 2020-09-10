@@ -113,15 +113,7 @@ func DoFileScan(filename string, sess *Session) {
 
 			cleanK := strings.SplitAfterN(k, "_", 2)
 
-			if matchMap == nil {
-				content = ""
-				//genericID = "not-a-repo://" + filename + "_" + generateGenericID(content) // TODO remove me
-			} else {
 				content = cleanK[1]
-				//genericID = "not-a-repo://" + filename + "_" + generateGenericID(content) // TODO remove me
-			}
-
-			//genericID = generateID() // TODO remove me
 
 			// destroy the secret if the flag is set
 			if sess.HideSecrets {

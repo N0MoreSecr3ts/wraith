@@ -24,14 +24,12 @@ func PathExists(path string, sess *Session) bool {
 		return true
 	}
 	if os.IsNotExist(err) {
-		//sess.Out.Error("File does not exist: %s\n", err.Error()) // TODO need to flip this back on.
+		sess.Out.Error("File does not exist: %s\n", err.Error())
 		return false
 	}
 
 	return true
 }
-
-// TODO refactor out the common package
 
 // FileExists will check for the existence of a file and return a bool depending
 // on if it exists in a given path or not.

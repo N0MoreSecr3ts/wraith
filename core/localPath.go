@@ -103,7 +103,7 @@ func DoFileScan(filename string, sess *Session) {
 	for _, signature := range Signatures {
 		bMatched, matchMap := signature.ExtractMatch(matchFile, sess, nil)
 
-		var content string   // this is because file matches are puking
+		var content string // this is because file matches are puking
 
 		// for every instance of the secret that matched the specific rule create a new finding
 		for k, v := range matchMap {
@@ -113,7 +113,7 @@ func DoFileScan(filename string, sess *Session) {
 
 			cleanK := strings.SplitAfterN(k, "_", 2)
 
-				content = cleanK[1]
+			content = cleanK[1]
 
 			// destroy the secret if the flag is set
 			if sess.HideSecrets {

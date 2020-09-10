@@ -110,6 +110,7 @@ func (s *Stats) IncrementCommitsDirty() {
 	defer s.Unlock()
 	s.CommitsDirty++
 }
+
 // InitStats will set the initial values for a session
 func (s *Session) InitStats() {
 	if s.Stats != nil {

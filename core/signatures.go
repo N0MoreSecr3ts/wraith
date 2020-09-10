@@ -297,8 +297,8 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 				}
 			}
 		}
-		default: // TODO We need to do something with this
-			return bResult, results
+	default: // TODO We need to do something with this
+		return bResult, results
 	}
 	return bResult, results
 

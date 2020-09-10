@@ -156,7 +156,6 @@ func AnalyzeRepositories(sess *Session) {
 						// TODO Add an example of the output from this function
 						fPath := GetChangePath(change)
 
-
 						// TODO Add an example of this
 						fullFilePath := path + "/" + fPath
 
@@ -194,9 +193,8 @@ func AnalyzeRepositories(sess *Session) {
 							continue
 						}
 
-					    // Break a file name up into its composite pieces including the extension and base name
+						// Break a file name up into its composite pieces including the extension and base name
 						matchFile := newMatchFile(fullFilePath)
-
 
 						// If the file extension matches an extension or other criteria that precludes
 						// it from a scan we increment the ignored files count and pass on through.

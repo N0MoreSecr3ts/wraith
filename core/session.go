@@ -39,7 +39,7 @@ var DefaultValues = map[string]interface{}{
 	"commit-depth":     0,
 	"config-file":      "$HOME/.wraith/config.yaml",
 	"debug":            false,
-	"expand-orgs": false,
+	"expand-orgs":      false,
 	"github-targets":   "",
 	"github-api-token": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXVZabcd",
 	"gitlab-targets":   "",
@@ -76,7 +76,7 @@ type Session struct {
 	CommitDepth       int
 	CSV               bool
 	Debug             bool
-	ExpandOrgs      bool
+	ExpandOrgs        bool
 	Findings          []*Finding
 	GithubAccessToken string
 	GithubTargets     []string

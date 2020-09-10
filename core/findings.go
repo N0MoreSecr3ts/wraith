@@ -5,8 +5,8 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
-	"time"
 	"math/rand"
+	"time"
 )
 
 // Finding is a secret that has been discovered within a target by a discovery method

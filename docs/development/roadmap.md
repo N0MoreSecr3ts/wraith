@@ -79,21 +79,29 @@
 - [ ] Need to confirm if github client follows redirects
 - [ ] In gitlab you can have a project w/ no repo, this will error out
 - [ ] In github you can have a project w/ no repo, does this error out
-- [ ] Searching through a commit history is present but not effective
+- [X] ~~Searching through a commit history is present but not effective~~
 - [X] ~~Secret ID's are possibly not unique~~
 - [ ] Duplicate findings are being displayed
-- [ ] Findings with a line number of 0 are being displayed
+- [X] ~~Findings with a line number of 0 are being displayed~~
 - [ ] Review all flags to ensure they are needed
 - [ ] Expanding orgs is not working
-- [ ] Set unique secrets in the test
+- [ ] Setting the number of commits to 1 does not scan anything
+- [X] ~~Number of total commits was wrong~~
+- [X] ~~Line numbers are wrong in the patches being scanned~~
+- [ ] Number of dirty commits is wrong, it should be more than is showing
+- [ ] **Redo github enterprise bits to clean them up**
+- [ ] **Refactor the client to follow G's method**
+- [ ] **Set the debug like G**
+- [ ] Set the csv and json like G
+- [ ] **Set orgs and repos like G**
 
 ### Documentation
-- [ ] Document all flags
+- [ ] **Document all flags**
 - [ ] Document how to add a new command or source
 - [ ] Document the tech debt using colors and a shell script
 - [ ] Document all stats
-- [ ] Document the differance between targets and repos
-- [ ] Document all code completely
+- [ ] **Document the differance between targets and repos**
+- [ ] **Document all code completely**
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
     - [ ] wraith
@@ -115,7 +123,7 @@
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [X] ~~Label issues for begineer and hacktoberfest~~
-- [ ] Go doc strings
+- [ ] **Go doc strings**
     - [ ] common
     - [ ] config
     - [ ] core
@@ -129,34 +137,35 @@
     
 ### Testing
 - [ ] Copy existing tests to the new codebase
-- [ ] Confirm hide secrets
+- [X] ~~Confirm hide secrets~~
 - [X] ~~Update Code Climate for Wraith~~
 - [ ] Update CodeCov for Wraith
 - [ ] Golint needs to pass
 - [ ] Convert tests to testify
-- [ ] Code review and remove debug statements
+- [ ] **Code review and remove debug statements**
+- [X] ~~Set unique secrets in the test~~
 
 ### Features
 - [ ] Change name from threads to go routines or make that clear
 - [ ] Refactor how threads are calculated
-- [ ] Configure repos
-- [ ] Configure Org
+- [ ] **Configure repos
+- [ ] **Configure Org
 - [ ] Created a dedicated GPG key
 - [ ] Enforce https for all connections
 - [ ] Enforce https for the site
 - [ ] Fully Instrumented with Performance Stats
 - [ ] JSON or CSV Output
-- [ ] Exclude/Include Forks
+- [ ] **Exclude/Include Forks**
 - [ ] Entrophy Checks
 - [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
 - [X] ~~Change empty string defaults to nil~~
 - [X] ~~Add content to summary~~
 - [ ] Cleanup issues in summary output
-- [ ] Remove all print debugging statements
-- [ ] Remove all dead code
+- [ ] **Remove all print debugging statements**
+- [ ] **Remove all dead code**
 - [ ] Add more debuging info
 - [X] ~~Implement flag for setting the thread count manually~~
-- [ ] Look at the clone configs
+- [ ] **Look at the clone configs**
 - [X] ~~Make a single function to create a temp dir~~
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen

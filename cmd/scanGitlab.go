@@ -29,6 +29,9 @@ var scanGitlabCmd = &cobra.Command{
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
+		sess.GitlabAccessToken = core.CheckGithubAPIToken(viperScanGitlab.GetString("gitlab-api-token"), sess)
+		sess.InitGitClient()
+
 		core.GatherTargets(sess)
 		core.GatherRepositories(sess)
 		core.AnalyzeRepositories(sess)

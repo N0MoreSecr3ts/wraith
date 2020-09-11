@@ -68,7 +68,7 @@ func (c gitlabClient) NewClient(token string, logger *Logger) (gitlabClient, err
 
 //TODO make this a single function
 // CheckAPIToken will ensure we have a valid github api token
-func CheckGitlabAPIToken(t string, sess *Session) {
+func CheckGitlabAPIToken(t string, sess *Session) string {
 
 	// check to make sure the length is proper
 	if len(t) != 20 {
@@ -82,7 +82,7 @@ func CheckGitlabAPIToken(t string, sess *Session) {
 		sess.Out.Error("Gitlab token is invalid\n")
 		os.Exit(2)
 	}
-	//return t
+	return t
 }
 
 // GetUserOrganization is used to enumerate the owner in a given org

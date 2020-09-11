@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"regexp"
 
@@ -20,10 +21,10 @@ import (
 //<<<<<<< HEAD
 // CloneRepository will crete either an in memory clone of a given repository or clone to a temp dir.
 func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
-////=======
-//// CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
-//func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
-//>>>>>>> 33e8672995d58dbbbca9fe5a6d5e56505d77f933
+	////=======
+	//// CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
+	//func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
+	//>>>>>>> 33e8672995d58dbbbca9fe5a6d5e56505d77f933
 
 	cloneOptions := &git.CloneOptions{
 		URL:           *cloneConfig.Url,
@@ -58,12 +59,12 @@ func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, erro
 
 // Client holds a github api client instance
 type githubClient struct {
-	apiClient *github.Client
+	apiClient *github.Client // TODO put this into the session struct
 }
 
 // TODO make this a single function
 // CheckAPIToken will ensure we have a valid github api token
-func CheckGithubAPIToken(t string, sess *Session) {
+func CheckGithubAPIToken(t string, sess *Session) string {
 
 	// check to make sure the length is proper
 	if len(t) != 40 {
@@ -77,25 +78,49 @@ func CheckGithubAPIToken(t string, sess *Session) {
 		sess.Out.Error("The token is invalid. Please use a valid Github token")
 		os.Exit(2)
 	}
+	return t
 }
 
-// NewClient creates a github api client instance using oauth2 credentials
-func (c githubClient) NewClient(sess *Session) (apiClient githubClient) {
+// InitGithubClient will create a new github client of the type given by the input string. Currently Enterprise and github.com are supported
+func (s *Session) InitGitClient() {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: sess.GithubAccessToken},
+		&oauth2.Token{AccessToken: s.GithubAccessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
-	// NewEnterpriseClient creates a github api client for enterprise instances which will use basic auth
-	if len(sess.EnterpriseURL) != 0 && sess.EnterpriseScan {
-		baseUrl := fmt.Sprintf("%s/api/v3", sess.EnterpriseURL)
-		uploadUrl := fmt.Sprintf("%s/api/uploads", sess.EnterpriseURL)
-		c.apiClient, _ = github.NewEnterpriseClient(baseUrl, uploadUrl, tc)
-	} else {
-		c.apiClient = github.NewClient(tc)
+
+	// TODO need to make this a switch
+	if s.ScanType == "github-enterprise" {
+
+		if s.GithubEnterpriseURL != "" {
+
+			_, err := url.Parse(s.GithubEnterpriseURL)
+			if err != nil {
+				s.Out.Error("Unable to parse --github-enterprise-url: <%s>", s.GithubEnterpriseURL)
+			}
+		}
+		s.GithubClient, _ = github.NewEnterpriseClient(s.GithubEnterpriseURL, "", tc)
 	}
-	c.apiClient.UserAgent = UserAgent
-	return c
+
+	if s.ScanType == "github" {
+		if s.GithubURL != "" {
+			_, err := url.Parse(s.GithubURL)
+			if err != nil {
+				s.Out.Error("Unable to parse --github-url: <%s>", s.GithubURL)
+			}
+		}
+		s.GithubClient = github.NewClient(tc)
+	}
+
+	if s.ScanType == "gitlab" { // TODO need to refactor all this
+		CheckGitlabAPIToken(s.GitlabAccessToken, s) // TODO move this out
+		var err error
+		// TODO need to add in the bits to parse the url here as well
+		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out) // TODO set this to some sort of consistent client, look to github for ideas
+		if err != nil {
+			s.Out.Fatal("Error initializing GitLab client: %s", err)
+		}
+	}
 }
 
 // GetUserOrganization is used to enumerate the owner in a given org

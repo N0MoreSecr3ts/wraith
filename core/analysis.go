@@ -26,6 +26,8 @@ func GatherTargets(sess *Session) {
 		targets = sess.GitlabTargets
 	}
 
+	var target *Owner
+
 	// For each target that the user provided, we use the client set in the session
 	// initialization to enumerate the target. There are flag that be used here to
 	// decide if forks are followed the scope of a target can be increased a lot. This
@@ -34,11 +36,22 @@ func GatherTargets(sess *Session) {
 	// file within there repo that is not set to be ignored so they can more easily develop
 	// on multiple boxes or collaborate with multiple people.
 	for _, loginOption := range targets {
-		target, err := sess.Client.GetUserOrganization(loginOption)
-		if err != nil || target == nil {
-			sess.Out.Error(" Error retrieving information on %s: %s\n", loginOption, err)
-			continue
+
+		//for _, loginOption := range targets {
+		if sess.ScanType == "github" || sess.ScanType == "github-enterprise" {
+			target, err := sess.GithubClient.GetUserOrganization(loginOption)
+			if err != nil || target == nil {
+				sess.Out.Error(" Error retrieving information on %s: %s\n", loginOption, err)
+				continue
+			}
+		} else {
+			target, err := sess.Client.GetUserOrganization(loginOption)
+			if err != nil || target == nil {
+				sess.Out.Error(" Error retrieving information on %s: %s\n", loginOption, err)
+				continue
+			}
 		}
+
 		sess.Out.Debug("%s (ID: %d) type: %s\n", *target.Login, *target.ID, *target.Type)
 		sess.AddTarget(target)
 		// If forking is false AND the target type is an Organization as set above in GetUserOrganization

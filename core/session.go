@@ -79,6 +79,8 @@ type Session struct {
 	ExpandOrgs        bool
 	Findings          []*Finding
 	GithubAccessToken string
+	EnterpriseScan    bool
+	EnterpriseURL     string
 	GithubTargets     []string
 	GitlabAccessToken string
 	GitlabTargets     []string
@@ -142,6 +144,8 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	//s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
 	s.ExpandOrgs = v.GetBool("expaand-orgs")
+	s.EnterpriseScan = v.GetBool("enterprise-scan")
+	s.EnterpriseURL = v.GetString("enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")
@@ -198,6 +202,12 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitLogger()
 	s.InitThreads()
 	s.InitAPIClient()
+
+	// checking enterprise parameters here so logger is initialized
+	if (s.EnterpriseScan == false && len(s.EnterpriseURL) > 0) || (s.EnterpriseScan == true && len(s.EnterpriseURL) == 0) {
+		s.Out.Error("To scan an enterprise instance, both --enterprise-scan and --enterprise-url parameters are required")
+		os.Exit(1)
+	}
 
 	if !s.Silent {
 		s.InitRouter()
@@ -280,7 +290,7 @@ func (s *Session) InitAPIClient() {
 	switch s.ScanType {
 	case "github":
 		CheckGithubAPIToken(s.GithubAccessToken, s)
-		s.Client = githubClient.NewClient(githubClient{}, s.GithubAccessToken)
+		s.Client = githubClient.NewClient(githubClient{}, s)
 	case "gitlab":
 		CheckGitlabAPIToken(s.GitlabAccessToken, s)
 		var err error

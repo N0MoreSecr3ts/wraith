@@ -3,20 +3,27 @@ package core
 import (
 	"context"
 	"fmt"
-	"gopkg.in/src-d/go-git.v4/storage/memory"
 	"io/ioutil"
 	"os"
 	"regexp"
+
+	"gopkg.in/src-d/go-git.v4/storage/memory"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
+//<<<<<<< HEAD
 // CloneRepository will crete either an in memory clone of a given repository or clone to a temp dir.
 func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
+////=======
+//// CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
+//func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
+//>>>>>>> 33e8672995d58dbbbca9fe5a6d5e56505d77f933
 
 	cloneOptions := &git.CloneOptions{
 		URL:           *cloneConfig.Url,
@@ -24,6 +31,10 @@ func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, erro
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
 		SingleBranch:  true,
 		Tags:          git.NoTags,
+		Auth: &http.BasicAuth{
+			Username: "doesn't matter",
+			Password: *cloneConfig.Token,
+		},
 	}
 
 	var repository *git.Repository
@@ -69,13 +80,20 @@ func CheckGithubAPIToken(t string, sess *Session) {
 }
 
 // NewClient creates a github api client instance using oauth2 credentials
-func (c githubClient) NewClient(token string) (apiClient githubClient) {
+func (c githubClient) NewClient(sess *Session) (apiClient githubClient) {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
+		&oauth2.Token{AccessToken: sess.GithubAccessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
-	c.apiClient = github.NewClient(tc)
+	// NewEnterpriseClient creates a github api client for enterprise instances which will use basic auth
+	if len(sess.EnterpriseURL) != 0 && sess.EnterpriseScan {
+		baseUrl := fmt.Sprintf("%s/api/v3", sess.EnterpriseURL)
+		uploadUrl := fmt.Sprintf("%s/api/uploads", sess.EnterpriseURL)
+		c.apiClient, _ = github.NewEnterpriseClient(baseUrl, uploadUrl, tc)
+	} else {
+		c.apiClient = github.NewClient(tc)
+	}
 	c.apiClient.UserAgent = UserAgent
 	return c
 }

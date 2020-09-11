@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"golang.org/x/sync/errgroup"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -10,6 +9,8 @@ import (
 	"sync"
 	"time"
 	"wraith/version"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // search will walk the path or a given directory and append each viable path to an array
@@ -139,7 +140,7 @@ func DoFileScan(filename string, sess *Session) {
 				}
 
 				// Add a new finding and increment the total
-				newFinding.Initialize(sess.ScanType)
+				newFinding.Initialize(sess)
 				sess.AddFinding(newFinding)
 
 				// print the current finding to stdout

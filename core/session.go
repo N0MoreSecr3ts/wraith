@@ -416,7 +416,7 @@ func (s *Stats) UpdateProgress(current int, total int) {
 }
 
 // NewSession  is the entry point for starting a new scan session
-func NewSession(v *viper.Viper, scanType string) *Session {
+func NewSession(v *viper.Viper, scanType string) *Session { // TODO refactor out this function
 	var session Session
 
 	session.Initialize(v, scanType)

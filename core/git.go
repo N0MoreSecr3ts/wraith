@@ -4,11 +4,15 @@ package core
 import (
 	"errors"
 	"fmt"
+	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
+	"net/url"
 	"sync"
+	"context"
 )
 
 // Set easier names to refer to
@@ -223,6 +227,48 @@ func GatherRepositories(sess *Session) {
 	}
 	close(ch)
 	wg.Wait()
+}
+
+// InitGithubClient will create a new github client of the type given by the input string. Currently Enterprise and github.com are supported
+func (s *Session) InitGitClient() {
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: s.GithubAccessToken},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	// TODO need to make this a switch
+	if s.ScanType == "github-enterprise" {
+
+		if s.GithubEnterpriseURL != "" {
+
+			_, err := url.Parse(s.GithubEnterpriseURL)
+			if err != nil {
+				s.Out.Error("Unable to parse --github-enterprise-url: <%s>", s.GithubEnterpriseURL)
+			}
+		}
+		s.GithubClient, _ = github.NewEnterpriseClient(s.GithubEnterpriseURL, "", tc)
+	}
+
+	if s.ScanType == "github" {
+		if s.GithubURL != "" {
+			_, err := url.Parse(s.GithubURL)
+			if err != nil {
+				s.Out.Error("Unable to parse --github-url: <%s>", s.GithubURL)
+			}
+		}
+		s.GithubClient = github.NewClient(tc)
+	}
+
+	if s.ScanType == "gitlab" { // TODO need to refactor all this
+		CheckGitlabAPIToken(s.GitlabAccessToken, s) // TODO move this out
+		var err error
+		// TODO need to add in the bits to parse the url here as well
+		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out) // TODO set this to some sort of consistent client, look to github for ideas
+		if err != nil {
+			s.Out.Fatal("Error initializing GitLab client: %s", err)
+		}
+	}
 }
 
 //	sess.Out.Debug("[THREAD #%d][%s] Skipping %s\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me

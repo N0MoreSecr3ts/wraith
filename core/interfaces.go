@@ -7,3 +7,6 @@ type IClient interface {
 	GetRepositoriesFromOwner(target Owner) ([]*Repository, error)
 	GetOrganizationMembers(target Owner) ([]*Owner, error)
 }
+
+//the game plan is to do github and github ent correctly, then do local git.
+//	Leave gitlab as is for now

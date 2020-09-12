@@ -2,12 +2,9 @@
 package core
 
 import (
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/yaml.v2"
-	"io"
 	"io/ioutil"
 	"math"
 	"os"
@@ -28,7 +25,7 @@ const (
 var Signatures []Signature
 
 // SafeFunctionSignatures is a collection of safe function sigs
-var SafeFunctionSignatures = []SafeFunctionSignature{}
+var SafeFunctionSignatures []SafeFunctionSignature
 
 // loadSignatureSet will read in the defined signatures from an external source
 func loadSignatureSet(filename string) (SignatureConfig, error) {
@@ -60,21 +57,6 @@ func getEntropyInt(s string) float64 {
 	l := float64(len(s))
 	res := math.Log2(l) - hm/l
 	return res
-}
-
-// generateGenericID will return an id with sufficient enough entropy to be usable for larger scale sessionss
-func generateGenericID(val1 string) string {
-	id := sha1.New()
-
-	str := val1
-
-	io.WriteString(id, str)
-
-	j := id.Sum(nil)
-
-	encodedStr := hex.EncodeToString(j)
-
-	return encodedStr
 }
 
 // Signature is an expression that we are looking for in a file
@@ -254,10 +236,14 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 					return false, results
 				}
 
-				r := s.match // this is the regex that we are going to try and match against
+				// The regex that we are going to try and match against
+				r := s.match
 
 				var contextMatches []string
 
+				// Check to see if there is a match in the data and if so switch to a Findall that
+				// will get a slice of all the individual matches. Doing this ahead of time saves us
+				// from looping through if it is not necessary.
 				if r.Match(data) {
 					for _, curRegexMatch := range r.FindAll(data, -1) {
 						contextMatches = append(contextMatches, string(curRegexMatch))
@@ -265,6 +251,7 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 					if len(contextMatches) > 0 {
 						bResult = true
 						for i, curMatch := range contextMatches {
+
 							thisMatch := string(curMatch[:])
 							thisMatch = strings.TrimSuffix(thisMatch, "\n")
 
@@ -272,20 +259,19 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 
 							if bResult {
 								linesOfScannedFile := strings.Split(string(data), "\n")
-								linesOfScannedFile = linesOfScannedFile[:len(linesOfScannedFile)] // TODO Is this needed?
 
-								num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
+								num := fetchLineNumber(&linesOfScannedFile, thisMatch, 0)
 								results[strconv.Itoa(i)+"_"+thisMatch] = num
 							}
 						}
-						//return bResult, results
+						return bResult, results
 					}
 				}
 
 				content, err := GetChangeContent(change)
 				if err != nil {
 					sess.Out.Error("Error retrieving content in commit %s, change %s:  %s", "commit.String()", change.String(), err)
-				} // TODO bring in the commit
+				}
 
 				if r.Match([]byte(content)) {
 					for _, curRegexMatch := range r.FindAll([]byte(content), -1) {
@@ -301,26 +287,25 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 
 							if bResult {
 								linesOfScannedFile := strings.Split(content, "\n")
-								linesOfScannedFile = linesOfScannedFile[:len(linesOfScannedFile)] // TODO Is this needed?
 
 								num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
 								results[strconv.Itoa(i)+"_"+thisMatch] = num
 							}
 						}
-						//return bResult, results //Lk e nubmer is alway zero
-						//meed to depr
+						return bResult, results
 					}
 				}
-				return bResult, results
 			}
 		}
-		//default:
-		//	return bResult, results
+	default: // TODO We need to do something with this
+		return bResult, results
 	}
 	return bResult, results
+
 }
 
-// fetchLineNumber will read a file in line by line and when the match is found, save the line number. It manages multiple matches in a file by way of the count and an index
+// fetchLineNumber will read a file line by line and when the match is found, save the line number.
+// It manages multiple matches in a file by way of the count and an index
 func fetchLineNumber(input *[]string, thisMatch string, idx int) int {
 	linesOfScannedFile := *input
 	lineNumIndexMap := make(map[int]int)
@@ -330,6 +315,7 @@ func fetchLineNumber(input *[]string, thisMatch string, idx int) int {
 	for i, line := range linesOfScannedFile {
 		if strings.Contains(line, thisMatch) {
 
+			// We need to add 1 here as the index starts at zero so every line number would be line -1 normally
 			lineNumIndexMap[count] = i + 1
 			count = count + 1
 		}
@@ -414,8 +400,8 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 
 	sess.SignatureVersion = signaturesMetaData.Version
 
-	SimpleSignatures := []SimpleSignature{}   // TODO change this variable name
-	PatternSignatures := []PatternSignature{} // TODO change this variable name
+	var SimpleSignatures []SimpleSignature
+	var PatternSignatures []PatternSignature
 	for _, curSig := range c.SimpleSignatures {
 
 		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {

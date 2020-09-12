@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"github.com/spf13/viper"
+	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -29,6 +30,15 @@ var scanLocalGitRepoCmd = &cobra.Command{
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
 
+		sess.UserDirtyRepos = viperScanLocalGitRepo.GetString("local-dirs")
+
+		if sess.UserDirtyRepos == "" {
+			fmt.Println("You must enter a repo[s] to scan")
+			os.Exit(1)
+		}
+
+		core.ValidateGHInput(sess)
+
 		core.GatherLocalRepositories(sess)
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
@@ -51,7 +61,6 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Bool("debug", false, "Print debugging information")
 	scanLocalGitRepoCmd.Flags().Bool("hide-secrets", false, "Hide secrets from output")
 	scanLocalGitRepoCmd.Flags().Bool("in-mem-clone", false, "Clone repos in memory")
-	scanLocalGitRepoCmd.Flags().Bool("no-expand-orgs", false, "Don't add members to targets when processing organizations")
 	scanLocalGitRepoCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanLocalGitRepoCmd.Flags().Bool("silent", false, "No output")
 	scanLocalGitRepoCmd.Flags().Int("bind-port", 9393, "The port for the webserver")
@@ -76,7 +85,6 @@ func init() {
 	err = viperScanLocalGitRepo.BindPFlag("local-dirs", scanLocalGitRepoCmd.Flags().Lookup("local-dirs"))
 	err = viperScanLocalGitRepo.BindPFlag("match-level", scanLocalGitRepoCmd.Flags().Lookup("match-level"))
 	err = viperScanLocalGitRepo.BindPFlag("max-file-size", scanLocalGitRepoCmd.Flags().Lookup("max-file-size"))
-	err = viperScanLocalGitRepo.BindPFlag("no-expand-orgs", scanLocalGitRepoCmd.Flags().Lookup("no-expand-orgs"))
 	err = viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
 	err = viperScanLocalGitRepo.BindPFlag("scan-tests", scanLocalGitRepoCmd.Flags().Lookup("scan-tests"))
 	err = viperScanLocalGitRepo.BindPFlag("signature-file", scanLocalGitRepoCmd.Flags().Lookup("signature-file"))

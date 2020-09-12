@@ -5,8 +5,6 @@ import (
 	"wraith/version"
 )
 
-// TODO refactor out the common package
-
 // Project name and banner
 const (
 	Name = "wraith"

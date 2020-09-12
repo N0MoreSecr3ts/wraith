@@ -79,14 +79,33 @@
 - [X] ~~web interface links are broken for local files~~
 - [X] ~~no error when rules file is not found~~
 - [X] ~~there are no findings in a local git search~~
-- [ ] Searching through a commit history is present but not effective
+- [X] ~~Searching through a commit history is present but not effective~~
+- [X] ~~Secret ID's are possibly not unique~~
+- [X] ~~Findings with a line number of 0 are being displayed~~
+- [X] ~~Number of total commits was wrong~~
+- [X] ~~Line numbers are wrong in the patches being scanned~~
+- [ ] Gitlab client does not follow redirects
+- [ ] Gitlab client does not follow redirects
+- [ ] In gitlab you can have a project w/ no repo, this will error out
+- [ ] In github you can have an org w/ no repo, this will error out
+- [ ] Expanding orgs is not working
+- [ ] Scanning forks is not working
+- [ ] Not scanning tests is not working
+- [ ] Max file size is not working
+- [ ] Setting the number of commits to 1 does not scan anything
+- [ ] Number of dirty commits is wrong, it should be more than is showing
+- [ ] ~/ does not work in the config file due to a missing '/'
+- [ ] yaml list does not work for github enterprise 
+- [ ] yaml list does not work for github
+- [ ] yaml list does not work for local git 
 
 ### Documentation
+- [X] ~~**Document the differance between targets and repos**~~
+- [ ] **Document all flags**
+- [ ] **Document all code completely**
 - [ ] Document how to add a new command or source
 - [ ] Document the tech debt using colors and a shell script
 - [ ] Document all stats
-- [ ] Document the differance between targets and repos
-- [ ] Document all code completely
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
     - [ ] wraith
@@ -116,35 +135,28 @@
     
 ### Testing
 - [ ] Copy existing tests to the new codebase
-- [ ] Confirm hide secrets
+
+- [X] ~~Confirm hide secrets~~
 - [X] ~~Update Code Climate for Wraith~~
+- [X] ~~Set unique secrets in the test~~
+- [ ] **Code review and remove debug statements**
 - [ ] Update CodeCov for Wraith
 - [ ] Golint needs to pass
+- [ ] Convert tests to testify
+- [ ] Review all flags to ensure they are needed
 
 ### Features
-- [ ] Configure repos
-- [ ] Configure Org
-- [ ] Created a dedicated GPG key
-- [ ] Enforce https for all connections
-- [ ] Enforce https for the site
-- [ ] Fully Instrumented with Performance Stats
-- [ ] JSON or CSV Output
-- [ ] Exclude Forks
-- [ ] Entrophy Checks
-- [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
+- [X] ~~**Redo github enterprise bits to clean them up**~~
+- [X] ~~**Refactor the client to follow G's method**~~
+- [X] ~~**Set orgs and repos like G**~~
+- [X] ~~**Configure repos~~
+- [X] ~~**Configure Org~~
 - [X] ~~Change empty string defaults to nil~~
-- [ ] Add content to summary
-- [ ] Cleanup issues in summary output
-- [ ] Remove all print debugging statements
-- [ ] Remove all dead code
-- [ ] Add more debuging info
+- [X] ~~Add content to summary~~
 - [X] ~~Implement flag for setting the thread count manually~~
 - [ ] Look at the clone configs
 - [X] ~~Make a single function to create a temp dir~~
-- [ ] Need to list the flag defaults on the help screen
-- [ ] If no arg's are given for a command, then list the help screen
 - [X] ~~Make sure we clean up the temp directories~~
-- [ ] Alpha sort structs, functions, flags
 - [X] ~~Exclude files based on extension~~
 - [X] ~~Exclude Test Files~~
 - [X] ~~Ability to set commit depth of scan~~
@@ -154,6 +166,33 @@
 - [X] ~~Status output of a session~~
 - [X] ~~Ability to silence the output~~
 - [X] ~~Max file size to scan~~
+- [ ] **Need to find gitlab api endpoint**
+- [ ] **Port gitlab to match G**
+- [ ] **Set the debug like G**
+- [ ] **Exclude/Include Forks**
+- [ ] **Remove all print debugging statements**
+- [ ] **Remove all dead code**
+- [ ] Refactor how we do stats on commits
+- [ ] Need to be able to scan all the repos for a specific user
+- [ ] Need to be able to scan all the orgs a user is a member of
+- [ ] Need to be able to scan a single repo for a specific user
+- [ ] Need to be able to scan all the orgs a user is a member of
+- [ ] Need to be able to scan all the forks of a given repo
+- [ ] Set the csv and json like G
+- [ ] Change name from threads to go routines or make that clear
+- [ ] Refactor how threads are calculated
+- [ ] Created a dedicated GPG key
+- [ ] Enforce https for all connections
+- [ ] Enforce https for the site
+- [ ] Fully Instrumented with Performance Stats
+- [ ] JSON or CSV Output
+- [ ] Entrophy Checks
+- [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
+- [ ] Cleanup issues in summary output
+- [ ] Add more debuging info
+- [ ] Alpha sort structs, functions, flags
+- [ ] Need to list the flag defaults on the help screen
+- [ ] If no arg's are given for a command, then list the help screen
 - [ ] Only export the functions and variables necessary
 - [ ] Capture the eroor if no sig file is presented
 

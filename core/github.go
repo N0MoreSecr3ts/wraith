@@ -325,7 +325,6 @@ func GatherGithubRepositories(sess *Session) {
 
 	fmt.Println("I am here") // TODO Remove me
 
-
 	wg.Add(threadNum)
 	sess.Out.Debug("Threads for repository gathering: %d\n", threadNum)
 

@@ -56,10 +56,6 @@ var scanGithubCmd = &cobra.Command{
 		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithub.GetString("github-api-token"), sess)
 		sess.InitGitClient()
 
-		fmt.Println("Orgs: ", sess.UserOrgs)
-		fmt.Println("Repos: ", sess.UserRepos)
-
-		//core.GatherTargets(sess)
 		core.GatherOrgs(sess)
 		core.GatherGithubRepositories(sess)
 		core.AnalyzeRepositories(sess)

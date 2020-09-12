@@ -55,7 +55,7 @@ var DefaultValues = map[string]interface{}{
 	"in-mem-clone":                false,
 	"max-file-size":               50,
 	"num-threads":                 -1,
-	"repo-pathss":                  nil,
+	"local-dirs":                  nil,
 	"local-files":                 nil,
 	"scan-forks":                  true,
 	"scan-tests":                  false,
@@ -106,7 +106,7 @@ type Session struct {
 	JSON                bool
 	MaxFileSize         int64
 	Out                 *Logger `json:"-"`
-	RepoPaths           []string
+	LocalDirs           []string
 	LocalFiles          []string
 	Repositories        []*Repository
 	Router              *gin.Engine `json:"-"`
@@ -187,7 +187,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
-	s.RepoPaths = v.GetStringSlice("repo-paths")
+	s.LocalDirs = v.GetStringSlice("local-dirs")
 	s.MaxFileSize = v.GetInt64("max-file-size")
 	s.MatchLevel = v.GetInt("match-level")
 	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement

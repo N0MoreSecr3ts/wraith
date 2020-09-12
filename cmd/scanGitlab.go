@@ -30,7 +30,7 @@ var scanGitlabCmd = &cobra.Command{
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
 		// TODO need to validate this
-		sess.GitlabAccessToken =viperScanGitlab.GetString("gitlab-api-token")
+		sess.GitlabAccessToken = viperScanGitlab.GetString("gitlab-api-token")
 
 		sess.InitGitClient()
 

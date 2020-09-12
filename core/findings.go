@@ -5,12 +5,14 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"math/rand"
+	"time"
 )
 
 // Finding is a secret that has been discovered within a target by a discovery method
 type Finding struct {
 	Action            string
-	Comment           string
+	Content           string
 	CommitAuthor      string
 	CommitHash        string
 	CommitMessage     string
@@ -32,8 +34,8 @@ type Finding struct {
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
 func (f *Finding) setupUrls(sess *Session) {
 	baseUrl := ""
-	if len(sess.EnterpriseURL) > 0 && sess.EnterpriseScan {
-		baseUrl = sess.EnterpriseURL
+	if sess.ScanType == "github-enterprise" {
+		baseUrl = sess.GithubEnterpriseURL
 	} else if sess.ScanType == "github" {
 		baseUrl = "https://github.com"
 	} else {
@@ -54,25 +56,21 @@ func (f *Finding) setupUrls(sess *Session) {
 }
 
 // generateID will create an ID for each finding based up the SHA1 of discrete data points associated
-// with the finding
-func (f *Finding) generateID() {
+// with the finding.
+func generateID() string {
 	h := sha1.New()
-	_, err := io.WriteString(h, f.FilePath)
-	_, err = io.WriteString(h, f.Action)
-	_, err = io.WriteString(h, f.RepositoryOwner)
-	_, err = io.WriteString(h, f.RepositoryName)
-	_, err = io.WriteString(h, f.CommitHash)
-	_, err = io.WriteString(h, f.CommitMessage)
-	_, err = io.WriteString(h, f.CommitAuthor)
+	source := rand.NewSource(time.Now().UnixNano())
+	randNum := rand.New(source)
+
+	_, err := io.WriteString(h, fmt.Sprintf("%x", randNum.Intn(10000000000)))
 
 	if err != nil {
 		fmt.Println("Not able to generate finding ID: ", err)
 	}
-	f.SecretID = fmt.Sprintf("%x", h.Sum(nil))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 // Initialize will set the urls and create an ID for inclusion within the finding
 func (f *Finding) Initialize(sess *Session) {
 	f.setupUrls(sess)
-	f.generateID()
 }

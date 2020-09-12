@@ -9,13 +9,12 @@ import (
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 	"io/ioutil"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 )
 
 // CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
-func CloneGitlabRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
+func cloneGitlab(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
 		URL:           *cloneConfig.Url,
@@ -68,7 +67,7 @@ func (c gitlabClient) NewClient(token string, logger *Logger) (gitlabClient, err
 
 //TODO make this a single function
 // CheckAPIToken will ensure we have a valid github api token
-func CheckGitlabAPIToken(t string, sess *Session) {
+func CheckGitlabAPIToken(t string, sess *Session) string {
 
 	// check to make sure the length is proper
 	if len(t) != 20 {
@@ -76,13 +75,15 @@ func CheckGitlabAPIToken(t string, sess *Session) {
 		os.Exit(2)
 	}
 
+	// TODO gitlab access tokens can contain special character.
+	//  This needs to be fixed
 	// match only letters and numbers and ensure you match 40
-	exp1 := regexp.MustCompile(`^[A-Za-z0-9]{20}`)
-	if !exp1.MatchString(t) {
-		sess.Out.Error("Gitlab token is invalid\n")
-		os.Exit(2)
-	}
-	//return t
+	//exp1 := regexp.MustCompile(`^[A-Za-z0-9]{20}`)
+	//if !exp1.MatchString(t) {
+	//	sess.Out.Error("Gitlab token is invalid\n")
+	//	os.Exit(2)
+	//}
+	return t
 }
 
 // GetUserOrganization is used to enumerate the owner in a given org

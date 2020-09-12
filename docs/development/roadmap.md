@@ -53,10 +53,6 @@
 ## Milestone 1
 
 ### Bugs
-- [ ] Gitlab client does not follow redirects
-- [ ] Need to confirm if github client follows redirects
-- [ ] In gitlab you can have a project w/ no repo, this will error out
-- [ ] In github you can have a project w/ no repo, does this error out
 - [X] ~~temp directories are not getting deleted~~
 - [X] ~~in-mem-clone is not working properly~~
 - [X] ~~there are no findings in a gitlab search~~
@@ -79,14 +75,43 @@
 - [X] ~~web interface links are broken for local files~~
 - [X] ~~no error when rules file is not found~~
 - [X] ~~there are no findings in a local git search~~
-- [ ] Searching through a commit history is present but not effective
+- [ ] Gitlab client does not follow redirects
+- [ ] Need to confirm if github client follows redirects
+- [ ] In gitlab you can have a project w/ no repo, this will error out
+- [ ] In github you can have a project w/ no repo, does this error out
+- [X] ~~Searching through a commit history is present but not effective~~
+- [X] ~~Secret ID's are possibly not unique~~
+- [ ] Duplicate findings are being displayed
+- [X] ~~Findings with a line number of 0 are being displayed~~
+- [ ] Review all flags to ensure they are needed
+- [ ] Expanding orgs is not working
+- [ ] Setting the number of commits to 1 does not scan anything
+- [X] ~~Number of total commits was wrong~~
+- [X] ~~Line numbers are wrong in the patches being scanned~~
+- [ ] Number of dirty commits is wrong, it should be more than is showing
+- [X] ~~**Redo github enterprise bits to clean them up**~~
+- [X] ~~**Refactor the client to follow G's method**~~
+- [ ] **Set the debug like G**
+- [ ] Set the csv and json like G
+- [X] ~~**Set orgs and repos like G**~~
+- [ ] **gitlab api endpoint**
+- [ ] **Port gitlab to match G**
+- [ ] ~/ does not work in the config file due to a missing '/'
+- [ ] yaml list does not work for github enterprise 
+- [ ] need to be able to scan all the repos for a specific user
+- [ ] need to be able to scan all the orgs a user is a member of
+- [X] ~~remove all lazy, one-off data structures and use the official ones~~
+- [ ] refactor how we do stats on commits
+- [ ] Validate the gitlab api token
+- [ ] Uplift gitlab functionality to match github
 
 ### Documentation
+- [ ] **Document all flags**
 - [ ] Document how to add a new command or source
 - [ ] Document the tech debt using colors and a shell script
 - [ ] Document all stats
-- [ ] Document the differance between targets and repos
-- [ ] Document all code completely
+- [X] ~~**Document the differance between targets and repos**~~
+- [ ] **Document all code completely**
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
     - [ ] wraith
@@ -97,49 +122,60 @@
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [ ] Security.txt
-    - [ ] wraith
+    - [X] ~~wraith~~
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [ ] Initial blog post
 - [ ] Detailed documentation published on the net and with source control
-- [ ] Cleanup issues
+- [X] ~~Cleanup issues~~
 - [ ] Changelog.md
     - [ ] wraith
     - [ ] wraith-tests
     - [ ] wraith-signatures
-- [ ] Label issues for begineer and hacktoberfest
-- [ ] Go doc strings
+- [X] ~~Label issues for begineer and hacktoberfest~~
+- [ ] **Go doc strings**
     - [ ] common
     - [ ] config
     - [ ] core
     - [ ] version
+- [ ] Issue template
+- [ ] PR template
+- [ ] Submit story to hackernews
+- [ ] Submit story to changelog.com
+- [ ] Add a built w/ section
+- [ ] Call out individual contributers after N merges
     
 ### Testing
 - [ ] Copy existing tests to the new codebase
-- [ ] Confirm hide secrets
+- [X] ~~Confirm hide secrets~~
 - [X] ~~Update Code Climate for Wraith~~
 - [ ] Update CodeCov for Wraith
 - [ ] Golint needs to pass
+- [ ] Convert tests to testify
+- [ ] **Code review and remove debug statements**
+- [X] ~~Set unique secrets in the test~~
 
 ### Features
-- [ ] Configure repos
-- [ ] Configure Org
+- [ ] Change name from threads to go routines or make that clear
+- [ ] Refactor how threads are calculated
+- [X] ~~**Configure repos~~
+- [X] ~~**Configure Org~~
 - [ ] Created a dedicated GPG key
 - [ ] Enforce https for all connections
 - [ ] Enforce https for the site
 - [ ] Fully Instrumented with Performance Stats
 - [ ] JSON or CSV Output
-- [ ] Exclude Forks
+- [ ] **Exclude/Include Forks**
 - [ ] Entrophy Checks
 - [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
 - [X] ~~Change empty string defaults to nil~~
-- [ ] Add content to summary
+- [X] ~~Add content to summary~~
 - [ ] Cleanup issues in summary output
-- [ ] Remove all print debugging statements
-- [ ] Remove all dead code
+- [ ] **Remove all print debugging statements**
+- [ ] **Remove all dead code**
 - [ ] Add more debuging info
 - [X] ~~Implement flag for setting the thread count manually~~
-- [ ] Look at the clone configs
+- [X] ~~**Look at the clone configs**~~
 - [X] ~~Make a single function to create a temp dir~~
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen
@@ -155,7 +191,9 @@
 - [X] ~~Ability to silence the output~~
 - [X] ~~Max file size to scan~~
 - [ ] Only export the functions and variables necessary
-- [ ] Capture the eroor if no sig file is presented
+- [ ] Capture the error if no sig file is given and the default does not exist
+- [ ] Break out checking if a file is to be scanned into a single function
+- [ ] Add a flag to de-dupe findings
 
 
 ### Milestone 2

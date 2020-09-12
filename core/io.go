@@ -24,14 +24,12 @@ func PathExists(path string, sess *Session) bool {
 		return true
 	}
 	if os.IsNotExist(err) {
-		//sess.Out.Error("File does not exist: %s\n", err.Error()) // TODO need to flip this back on.
+		sess.Out.Error("File does not exist: %s\n", err.Error())
 		return false
 	}
 
 	return true
 }
-
-// TODO refactor out the common package
 
 // FileExists will check for the existence of a file and return a bool depending
 // on if it exists in a given path or not.
@@ -92,8 +90,8 @@ func realTimeOutput(finding *Finding, sess *Session) {
 		sess.Out.Info("  SecretID.............: %v\n", finding.SecretID)
 		sess.Out.Info("  Wraith Version.......: %s\n", version.AppVersion())
 		sess.Out.Info("  Signatures Version...: %v\n", finding.SignaturesVersion)
-		if len(finding.Comment) > 0 {
-			issues := "\n\t" + finding.Comment
+		if len(finding.Content) > 0 {
+			issues := "\n\t" + finding.Content
 			sess.Out.Info("  Issues..........: %s\n", issues)
 		}
 

@@ -96,7 +96,7 @@ ignore-path:
   - static/
   - docs/
 in-mem-clone: false
-local-dirs:
+repo-paths:
   - ../wraith-test
 match-level: 3
 num-threads: 0
@@ -131,11 +131,8 @@ Wraith will need either a GitLab or Github access token in order to interact wit
 Additional documentation is forthcoming
 
 ## Contributing
-This is coming, at this point:
-- use `go fmt ./...` and `go vet ./...` before openning a PR
-- follow all golang conventions and best practices
-- if you wrote it, you need to document it
-- if it is more than a simple bug fix or typo, an issue should be openned up first to discuss it. A good measure is if it is more than 5m worth of work, it needs to have an associated issue.
+
+[Contributing.md][14]
 
 There is a [roadmap][13] as well, but at this point it's little more than a glorified TODO list and personal braindump. I am using that instead of issues, due to my velocity and general general laziness towards process at this point. When the project becomes stable, most likely after Milestone 1, the roadmap will probably fall away and be captured in Issues.
 
@@ -163,3 +160,4 @@ There are several other projects that wraith owes some lineage to including:
 [11]: https://github.com/codeEmitter/
 [12]: https://github.com/dxa4481/truffleHog
 [13]: https://github.com/N0MoreSecr3ts/wraith/blob/develop/docs/development/roadmap.md
+[14]: https://github.com/N0MoreSecr3ts/wraith/blob/master/Contributing.md

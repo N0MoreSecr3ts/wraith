@@ -19,14 +19,14 @@ func GatherTargets(sess *Session) {
 
 	// Based on the type of scan, set in the cmd package, we set a generic
 	// variable to the specific targets
-	switch sess.ScanType {
-	case "github":
-		targets = sess.GithubTargets
-	case "gitlab":
-		targets = sess.GitlabTargets
-	}
+	//switch sess.ScanType {
+	//case "github":
+	//	targets = sess.GithubTargets
+	//case "gitlab":
+	targets = sess.GitlabTargets
+	//}
 
-	var target *Owner
+	//var target *Owner
 
 	// For each target that the user provided, we use the client set in the session
 	// initialization to enumerate the target. There are flag that be used here to
@@ -37,19 +37,17 @@ func GatherTargets(sess *Session) {
 	// on multiple boxes or collaborate with multiple people.
 	for _, loginOption := range targets {
 
-		//for _, loginOption := range targets {
-		if sess.ScanType == "github" || sess.ScanType == "github-enterprise" {
-			target, err := sess.GithubClient.GetUserOrganization(loginOption)
-			if err != nil || target == nil {
-				sess.Out.Error(" Error retrieving information on %s: %s\n", loginOption, err)
-				continue
-			}
-		} else {
-			target, err := sess.Client.GetUserOrganization(loginOption)
-			if err != nil || target == nil {
-				sess.Out.Error(" Error retrieving information on %s: %s\n", loginOption, err)
-				continue
-			}
+		//if sess.ScanType == "github" || sess.ScanType == "github-enterprise" {
+		//	target, err := sess.GithubClient.GetUserOrganization(loginOption)
+		//	if err != nil || target == nil {
+		//		sess.Out.Error(" Error retrieving information on %s: %s\n", loginOption, err)
+		//		continue
+		//	}
+		//} else {
+		target, err := sess.Client.GetUserOrganization(loginOption)
+		if err != nil || target == nil {
+			sess.Out.Error(" Error retrieving information on %s: %s\n", loginOption, err)
+			continue
 		}
 
 		sess.Out.Debug("%s (ID: %d) type: %s\n", *target.Login, *target.ID, *target.Type)

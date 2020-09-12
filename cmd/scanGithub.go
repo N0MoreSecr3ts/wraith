@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -25,6 +26,28 @@ var scanGithubCmd = &cobra.Command{
 		scanType := "github"
 		sess := core.NewSession(viperScanGithub, scanType)
 
+		sess.UserDirtyRepos = viperScanGithub.GetString("github-repos")
+		sess.UserDirtyOrgs = viperScanGithub.GetString("github-orgs")
+		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithub.GetString("github-api-token"), sess) //TODO can we clean this function up at all
+
+		//fmt.Println( viperScanGithubEnterprise.GetString("github-enterprise-repos")) //TODO remove me
+		//fmt.Println( viperScanGithubEnterprise.GetString("github-enterprise-orgs")) //TODO remove me
+
+		if sess.UserDirtyRepos == "" && sess.UserDirtyOrgs == "" {
+			fmt.Println("You must enter either an org or repo[s] to scan")
+			os.Exit(2)
+		}
+
+		if sess.UserDirtyOrgs != "" {
+			core.ValidateGHInput(sess)
+		}
+
+		fmt.Println(sess.UserOrgs)
+		if len(sess.UserRepos) >= 1 && len(sess.UserOrgs) < 1 {
+			fmt.Println("You need to specify an org that contains the repo(s).")
+			os.Exit(2)
+		}
+
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
@@ -33,8 +56,12 @@ var scanGithubCmd = &cobra.Command{
 		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithub.GetString("github-api-token"), sess)
 		sess.InitGitClient()
 
-		core.GatherTargets(sess)
-		core.GatherRepositories(sess)
+		fmt.Println("Orgs: ", sess.UserOrgs)
+		fmt.Println("Repos: ", sess.UserRepos)
+
+		//core.GatherTargets(sess)
+		core.GatherOrgs(sess)
+		core.GatherGithubRepositories(sess)
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
@@ -70,6 +97,8 @@ func init() {
 	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 	scanGithubCmd.Flags().Bool("silent", false, "No output")
 	scanGithubCmd.Flags().String("github-url", "", "The api endpoint for github.com")
+	scanGithubCmd.Flags().String("github-orgs", "", "A coma separated list of github orgs to scan")
+	scanGithubCmd.Flags().String("github-repos", "", "A coma separated list of github repositories to scan")
 
 	err := viperScanGithub.BindPFlag("bind-address", scanGithubCmd.Flags().Lookup("bind-address"))
 	err = viperScanGithub.BindPFlag("github-url", scanGithubCmd.Flags().Lookup("github-url"))
@@ -90,6 +119,8 @@ func init() {
 	err = viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
 	err = viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))
 	err = viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))
+	err = viperScanGithub.BindPFlag("github-orgs", scanGithubCmd.Flags().Lookup("github-orgs"))
+	err = viperScanGithub.BindPFlag("github-repos", scanGithubCmd.Flags().Lookup("github-repos"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

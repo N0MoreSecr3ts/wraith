@@ -61,7 +61,7 @@ func init() {
 	scanLocalGitRepoCmd.Flags().String("bind-address", "127.0.0.1", "The IP address for the webserver")
 	scanLocalGitRepoCmd.Flags().String("ignore-extension", "", "a comma separated list of extensions to ignore")
 	scanLocalGitRepoCmd.Flags().String("ignore-path", "", "a comma separated list of paths to ignore")
-	scanLocalGitRepoCmd.Flags().String("local-dirs", "", "local disk parent dir containing git repos")
+	scanLocalGitRepoCmd.Flags().String("repo-path", "", "local disk parent dir containing git repos")
 	scanLocalGitRepoCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 
 	err := viperScanLocalGitRepo.BindPFlag("bind-address", scanLocalGitRepoCmd.Flags().Lookup("bind-address"))
@@ -72,7 +72,7 @@ func init() {
 	err = viperScanLocalGitRepo.BindPFlag("ignore-extension", scanLocalGitRepoCmd.Flags().Lookup("ignore-extension"))
 	err = viperScanLocalGitRepo.BindPFlag("ignore-path", scanLocalGitRepoCmd.Flags().Lookup("ignore-extension"))
 	err = viperScanLocalGitRepo.BindPFlag("in-mem-clone", scanLocalGitRepoCmd.Flags().Lookup("in-mem-clone"))
-	err = viperScanLocalGitRepo.BindPFlag("local-dirs", scanLocalGitRepoCmd.Flags().Lookup("local-dirs"))
+	err = viperScanLocalGitRepo.BindPFlag("repo-path", scanLocalGitRepoCmd.Flags().Lookup("repo-path"))
 	err = viperScanLocalGitRepo.BindPFlag("match-level", scanLocalGitRepoCmd.Flags().Lookup("match-level"))
 	err = viperScanLocalGitRepo.BindPFlag("max-file-size", scanLocalGitRepoCmd.Flags().Lookup("max-file-size"))
 	err = viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))

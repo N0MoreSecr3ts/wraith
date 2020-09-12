@@ -89,18 +89,28 @@
 - [X] ~~Number of total commits was wrong~~
 - [X] ~~Line numbers are wrong in the patches being scanned~~
 - [ ] Number of dirty commits is wrong, it should be more than is showing
-- [ ] **Redo github enterprise bits to clean them up**
-- [ ] **Refactor the client to follow G's method**
+- [X] ~~**Redo github enterprise bits to clean them up**~~
+- [X] ~~**Refactor the client to follow G's method**~~
 - [ ] **Set the debug like G**
 - [ ] Set the csv and json like G
-- [ ] **Set orgs and repos like G**
+- [X] ~~**Set orgs and repos like G**~~
+- [ ] **gitlab api endpoint**
+- [ ] **Port gitlab to match G**
+- [ ] ~/ does not work in the config file due to a missing '/'
+- [ ] yaml list does not work for github enterprise 
+- [ ] need to be able to scan all the repos for a specific user
+- [ ] need to be able to scan all the orgs a user is a member of
+- [X] ~~remove all lazy, one-off data structures and use the official ones~~
+- [ ] refactor how we do stats on commits
+- [ ] Validate the gitlab api token
+- [ ] Uplift gitlab functionality to match github
 
 ### Documentation
 - [ ] **Document all flags**
 - [ ] Document how to add a new command or source
 - [ ] Document the tech debt using colors and a shell script
 - [ ] Document all stats
-- [ ] **Document the differance between targets and repos**
+- [X] ~~**Document the differance between targets and repos**~~
 - [ ] **Document all code completely**
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
@@ -148,8 +158,8 @@
 ### Features
 - [ ] Change name from threads to go routines or make that clear
 - [ ] Refactor how threads are calculated
-- [ ] **Configure repos
-- [ ] **Configure Org
+- [X] ~~**Configure repos~~
+- [X] ~~**Configure Org~~
 - [ ] Created a dedicated GPG key
 - [ ] Enforce https for all connections
 - [ ] Enforce https for the site
@@ -165,7 +175,7 @@
 - [ ] **Remove all dead code**
 - [ ] Add more debuging info
 - [X] ~~Implement flag for setting the thread count manually~~
-- [ ] **Look at the clone configs**
+- [X] ~~**Look at the clone configs**~~
 - [X] ~~Make a single function to create a temp dir~~
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen

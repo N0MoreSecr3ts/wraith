@@ -2,6 +2,8 @@
 package core
 
 import (
+	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"github.com/google/go-github/github"
@@ -10,9 +12,9 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
+	"net/http"
 	"net/url"
 	"sync"
-	"context"
 )
 
 // Set easier names to refer to
@@ -20,6 +22,18 @@ const (
 	TargetTypeUser         = "User"
 	TargetTypeOrganization = "Organization"
 )
+
+type GithubRepository struct {
+	Owner         *string
+	ID            *int64
+	Name          *string
+	FullName      *string
+	CloneURL      *string
+	URL           *string
+	DefaultBranch *string
+	Description   *string
+	Homepage      *string
+}
 
 // CloneConfiguration holds the configurations for cloning a repo
 type CloneConfiguration struct {
@@ -184,7 +198,7 @@ func GetChangeContent(change *object.Change) (result string, contentError error)
 // Gather Repositories will gather all repositories associated with a given target during a scan session.
 // This is done using threads, whose count is set via commandline flag. Care much be taken to avoid rate
 // limiting associated with suspected DOS attacks.
-func GatherRepositories(sess *Session) {
+func GatherGitlabRepositories(sess *Session) {
 	var ch = make(chan *Owner, len(sess.Targets))
 	sess.Out.Debug("Number of targets: %d\n", len(sess.Targets))
 	var wg sync.WaitGroup
@@ -231,14 +245,27 @@ func GatherRepositories(sess *Session) {
 
 // InitGithubClient will create a new github client of the type given by the input string. Currently Enterprise and github.com are supported
 func (s *Session) InitGitClient() {
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: s.GithubAccessToken},
-	)
-	tc := oauth2.NewClient(ctx, ts)
 
 	// TODO need to make this a switch
 	if s.ScanType == "github-enterprise" {
+
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		sslcli := &http.Client{Transport: tr}
+		//ctx := context.TODO()
+
+		ctx := context.Background()
+		//ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
+		ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
+		//tlsConfig := &tls.Config{}
+		//if config.Insecure {
+		//	tlsConfig.InsecureSkipVerify = true
+		//}
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: s.GithubAccessToken},
+		)
+		tc := oauth2.NewClient(ctx, ts)
 
 		if s.GithubEnterpriseURL != "" {
 
@@ -251,6 +278,25 @@ func (s *Session) InitGitClient() {
 	}
 
 	if s.ScanType == "github" {
+
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		sslcli := &http.Client{Transport: tr}
+		//ctx := context.TODO()
+
+		ctx := context.Background()
+		//ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
+		ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
+		//tlsConfig := &tls.Config{}
+		//if config.Insecure {
+		//	tlsConfig.InsecureSkipVerify = true
+		//}
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: s.GithubAccessToken},
+		)
+		tc := oauth2.NewClient(ctx, ts)
+
 		if s.GithubURL != "" {
 			_, err := url.Parse(s.GithubURL)
 			if err != nil {
@@ -297,6 +343,18 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 		}
 		// Clone a github repo
 		clone, path, err = cloneGithub(&cloneConfig)
+
+	case "github-enterprise":
+		cloneConfig := CloneConfiguration{
+			Url:        repo.CloneURL,
+			Branch:     repo.DefaultBranch,
+			Depth:      &sess.CommitDepth,
+			InMemClone: &sess.InMemClone,
+			Token:      &sess.GithubAccessToken,
+		}
+		// Clone a github repo
+		clone, path, err = cloneGithub(&cloneConfig)
+
 	case "gitlab":
 		userName := "oauth2"
 		cloneConfig := CloneConfiguration{
@@ -337,6 +395,85 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 	//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 	sess.Out.Debug("[THREAD #%d][%s] Cloned repository to: %s\n", threadId, *repo.CloneURL, path)
 	return clone, path, err
+}
+
+// getRepositoriesFromOrganization will generate a slice of github repo objects for an org. This has only been tested on github enterprise.
+func getRepositoriesFromOrganization(login *string, client *github.Client, scanFork bool) ([]*Repository, error) {
+	var allRepos []*Repository
+	orgName := *login
+	ctx := context.Background()
+	opt := &github.RepositoryListByOrgOptions{
+		Type: "sources",
+	}
+
+	fmt.Println("org name (loginVal): ", orgName)
+
+	for {
+		repos, resp, err := client.Repositories.ListByOrg(ctx, orgName, opt)
+		if err != nil {
+			return allRepos, err
+		}
+		for _, repo := range repos {
+			// TODO: This needs to be implemented
+			if scanFork {
+				r := Repository{
+					Owner:         repo.Owner.Login,
+					ID:            repo.ID,
+					Name:          repo.Name,
+					FullName:      repo.FullName,
+					CloneURL:      repo.SSHURL,
+					URL:           repo.HTMLURL,
+					DefaultBranch: repo.DefaultBranch,
+					Description:   repo.Description,
+					Homepage:      repo.Homepage,
+				}
+				allRepos = append(allRepos, &r)
+			}
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+	return allRepos, nil
+}
+
+func getRepositoriesFromOwner(login *string, client *github.Client, scanFork bool) ([]*githubRepository, error) {
+	var allRepos []*githubRepository
+	loginVal := *login
+	ctx := context.Background()
+	opt := &github.RepositoryListOptions{
+		Type: "sources",
+	}
+
+	for {
+		repos, resp, err := client.Repositories.List(ctx, loginVal, opt)
+		if err != nil {
+			return allRepos, err
+		}
+		for _, repo := range repos {
+			if scanFork {
+				r := githubRepository{
+					Owner:         repo.Owner.Login,
+					ID:            repo.ID,
+					Name:          repo.Name,
+					FullName:      repo.FullName,
+					CloneURL:      repo.CloneURL,
+					URL:           repo.HTMLURL,
+					DefaultBranch: repo.DefaultBranch,
+					Description:   repo.Description,
+					Homepage:      repo.Homepage,
+				}
+				allRepos = append(allRepos, &r)
+			}
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+
+	return allRepos, nil
 }
 
 //sess.Out.Debug("Threads for repository analysis: %d\n", threadNum)

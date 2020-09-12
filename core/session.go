@@ -55,7 +55,7 @@ var DefaultValues = map[string]interface{}{
 	"in-mem-clone":                false,
 	"max-file-size":               50,
 	"num-threads":                 -1,
-	"local-dirs":                  nil,
+	"repo-pathss":                  nil,
 	"local-files":                 nil,
 	"scan-forks":                  true,
 	"scan-tests":                  false,
@@ -73,6 +73,11 @@ var DefaultValues = map[string]interface{}{
 	"github-url":                  "https://api.github.com",
 	"gitlab-url":                  "", // TODO set the default
 	"rules-url":                   "git@example.com:foo/bar.git",
+	"github-enterprise-orgs":      "",
+	"github-enterprise-repos":     "",
+	"github-orgs":                 "",
+	"github-repos":                "",
+	"github-users":                "",
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -88,18 +93,20 @@ type Session struct {
 	ExpandOrgs        bool
 	Findings          []*Finding
 	GithubAccessToken string
+	Organizations     []*github.Organization
 	//EnterpriseScan    bool
 	GithubClient        *github.Client `json:"-"`
 	GithubEnterpriseURL string
 	GithubTargets       []string
 	GitlabAccessToken   string
 	GitlabTargets       []string
+	GithubUsers         []*github.User
 	HideSecrets         bool
 	InMemClone          bool
 	JSON                bool
 	MaxFileSize         int64
 	Out                 *Logger `json:"-"`
-	LocalDirs           []string
+	RepoPaths           []string
 	LocalFiles          []string
 	Repositories        []*Repository
 	Router              *gin.Engine `json:"-"`
@@ -118,6 +125,24 @@ type Session struct {
 	MatchLevel          int
 	GithubURL           string
 	GitlabURL           string
+	UserDirtyNames      string
+	UserDirtyOrgs       string
+	UserDirtyRepos      string
+	UserLogins          []string
+	UserOrgs            []string
+	UserRepos           []string
+}
+
+type githubRepository struct {
+	Owner         *string
+	ID            *int64
+	Name          *string
+	FullName      *string
+	CloneURL      *string
+	URL           *string
+	DefaultBranch *string
+	Description   *string
+	Homepage      *string
 }
 
 // setConfig will set the defaults, and load a config file and environment variables if they are present
@@ -162,7 +187,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
-	s.LocalDirs = v.GetStringSlice("local-dirs")
+	s.RepoPaths = v.GetStringSlice("repo-paths")
 	s.MaxFileSize = v.GetInt64("max-file-size")
 	s.MatchLevel = v.GetInt("match-level")
 	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement

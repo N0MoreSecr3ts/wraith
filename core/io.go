@@ -64,13 +64,13 @@ func SetHomeDir(h string) string {
 		h = strings.Replace(h, "$HOME", home, -1)
 	}
 
-	if strings.Contains(h, "~/") {
+	if strings.Contains(h, "~") {
 		home, err := homedir.Dir()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(2)
 		}
-		h = strings.Replace(h, "~/", home, -1)
+		h = strings.Replace(h, "~", home, -1)
 	}
 	return h
 }

@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"github.com/spf13/viper"
-	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -46,7 +45,7 @@ var scanLocalGitRepoCmd = &cobra.Command{
 		core.PrintSessionStats(sess)
 
 		if !sess.Silent {
-			sess.Out.Important("Press Ctrl+C to stop web server and exit.")
+			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
 			select {}
 		}
 

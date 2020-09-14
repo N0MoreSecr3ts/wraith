@@ -4,12 +4,12 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"github.com/spf13/viper"
 	"io"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
-	"strings"
 	"sync"
 
 	"gopkg.in/src-d/go-git.v4/storage/memory"
@@ -20,13 +20,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
-//<<<<<<< HEAD
-// CloneRepository will crete either an in memory clone of a given repository or clone to a temp dir.
 func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
-	////=======
-	//// CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
-	//func CloneGithubRepository(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
-	//>>>>>>> 33e8672995d58dbbbca9fe5a6d5e56505d77f933
 
 	cloneOptions := &git.CloneOptions{
 		URL:           *cloneConfig.Url,
@@ -61,27 +55,26 @@ func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, erro
 
 // Client holds a github api client instance
 type githubClient struct {
-	apiClient *github.Client // TODO put this into the session struct
+	apiClient *github.Client
 }
 
-// TODO can we clean this up at all
-// validateGHEInput will ensure that the user supplied input for orgs and repos is valid and not malicious.
-func ValidateGHInput(s *Session) {
-	// Ex. bar, 3ar, bar_foo, baz-foo
-	// This regex is case insensitive
-	exp1 := regexp.MustCompile(`[A-Za-z0-9,-_]*$`)
+// addUser will add a new user to the sess for further scanning and analyzing
+func (s *Session) addUser(user *github.User) {
+	s.Lock()
+	defer s.Unlock()
+	h := md5.New()
+	_, _ = io.WriteString(h, *user.Login)                     // TODO handle error
 
-	if !exp1.MatchString(strings.TrimSpace(s.UserDirtyOrgs)) {
-		fmt.Println("The orgs are in an unsupported format. Please use a coma separated list with no whitespace or special characters")
-		os.Exit(2)
-	}
-	if !exp1.MatchString(strings.TrimSpace(s.UserDirtyRepos)) {
-		fmt.Println("The repos are in an unsupported format. Please use a coma separated list with no whitespace or special characters")
-		os.Exit(2)
-	}
-	if !exp1.MatchString(strings.TrimSpace(s.UserDirtyNames)) {
-		fmt.Println("The users are in an unsupported format. Please use a coma separated list with no whitespace or special characters")
-		os.Exit(2)
+	for _, o := range s.GithubUsers {
+		j := md5.New()
+		_, _ = io.WriteString(j, *o.Login)                     // TODO handle error
+		}
+
+// GatherUsers will generate a list of users from github.com that can then be filtered down to a specific target range
+		}
+
+		// Add the user to the session and increment the user count
+		sess.addUser(u)
 	}
 
 	orgs := strings.Split(s.UserDirtyOrgs, ",")
@@ -107,20 +100,19 @@ func ValidateGHInput(s *Session) {
 	}
 }
 
-// TODO make this a single function
 // CheckAPIToken will ensure we have a valid github api token
 func CheckGithubAPIToken(t string, sess *Session) string {
 
 	// check to make sure the length is proper
 	if len(t) != 40 {
-		sess.Out.Error("The token is invalid. Please use a valid Github token")
+		sess.Out.Error("The token is invalid. Please use a valid Github token\n")
 		os.Exit(2)
 	}
 
 	// match only letters and numbers and ensure you match 40
 	exp1 := regexp.MustCompile(`^[A-Za-z0-9]{40}`)
 	if !exp1.MatchString(t) {
-		sess.Out.Error("The token is invalid. Please use a valid Github token")
+		sess.Out.Error("The token is invalid. Please use a valid Github token\n")
 		os.Exit(2)
 	}
 	return t
@@ -214,7 +206,6 @@ func GatherOrgs(sess *Session) {
 
 	ctx := context.Background()
 
-	// List of orgs that we find
 	var orgList []*github.Organization
 
 	var orgID int64
@@ -226,7 +217,7 @@ func GatherOrgs(sess *Session) {
 	// How many orgs per page
 	opts.PerPage = 40
 
-	// this controls pagination, see below. In order for it to work this gets set to the last org that was found
+	// This controls pagination, see below. In order for it to work this gets set to the last org that was found
 	// and the next page picks up with the next one in line.
 	opts.Since = -1
 
@@ -242,9 +233,8 @@ func GatherOrgs(sess *Session) {
 			}
 			orgs, _, err := sess.GithubClient.Organizations.ListAll(ctx, &opts)
 
-			if err != nil { // TODO add better error checking here
-				fmt.Println(err)
-				os.Exit(99)
+			if err != nil {
+				sess.Out.Error("Error gathering Github orgs: %s\n", err)
 			}
 
 			for _, org := range orgs {
@@ -256,28 +246,25 @@ func GatherOrgs(sess *Session) {
 			tmpOrgID = orgID + 1
 		}
 	} else {
-		// This will handle user specificed orgs //TODO can we do something better here
+		// This will handle orgs passed in via flags
 		for _, o := range sess.UserOrgs {
 			org, _, err := sess.GithubClient.Organizations.Get(ctx, o)
 
 			if err != nil {
-				fmt.Println(err)
-				os.Exit(99)
+				sess.Out.Error("Error gathering the Github org %s: %s\n", o, err)
 			}
 
 			orgList = append(orgList, org)
 		}
 	}
+
+	// Add the orgs to the list for later enumeration of repos
 	for _, org := range orgList {
-
-		// Add the orgs to the list for later enumeration of repos
 		sess.addOrganization(org)
+		sess.Stats.IncrementOrgs()
+		sess.Out.Debug("Added org %s\n", *org.Login)
+
 	}
-
-	//fmt.Println(sess.Organizations) // TODO remove me
-
-	// Set the total count of orgs scanned
-	sess.Stats.Organizations = len(orgList)
 }
 
 // addOrganization will add a new organization to the session for further scanning and analyzing
@@ -341,7 +328,6 @@ func GatherGithubRepositories(sess *Session) {
 				}
 				// Retrieve all the repos in an org regardless of public/private
 				repos, err = getRepositoriesFromOrganization(org.Login, sess.GithubClient, sess.ScanFork)
-				fmt.Println("I am after we gather the org repos")
 
 				if err != nil {
 					sess.Out.Error(" Failed to retrieve repositories from %s: %s\n", *org.Login, err)
@@ -349,16 +335,19 @@ func GatherGithubRepositories(sess *Session) {
 
 				// In the case where all the repos are private
 				if len(repos) == 0 {
+					sess.Out.Debug("No repositories have benn gathered for %s\n", *org.Login)
 					fmt.Println("I am at zero")
 					continue
 				}
-				// This is for all the repos we could see in a given org.
+
+				// If we re only looking for a subset of the repos in an org we do a comparison
+				// of the repos gathered for the org and the list pf repos that we care about.
 				for _, repo := range repos {
 					if len(sess.UserRepos) >= 1 && sess.UserRepos[0] != "" {
 						for _, r := range sess.UserRepos {
 							if r == *repo.Name {
 
-								sess.Out.Debug(" Retrieved repository: %s\n", *repo.FullName)
+								sess.Out.Debug(" Retrieved repository %s from org %s\n", *repo.FullName, *org.Login)
 								// Add the repo to the sess to be scanned
 
 								sess.AddRepository(repo)
@@ -368,10 +357,12 @@ func GatherGithubRepositories(sess *Session) {
 						}
 						continue
 					}
-					sess.Out.Debug(" Retrieved repository: %s\n", *repo.FullName)
-					// Add the repo to the sess to be scanned
+					sess.Out.Debug(" Retrieved repository %s from org %s\n", *repo.FullName, *org.Login)
 
+					// If we are not doing any filtering and simply grabbing all available repos we add the repos
+					// to the session to be scanned
 					sess.AddRepository(repo)
+
 					// Increment the total count of repos found, regardless if it gets cloned or scanned
 					sess.Stats.IncrementRepositoriesTotal()
 				}

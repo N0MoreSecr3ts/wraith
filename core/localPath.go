@@ -186,12 +186,12 @@ func ScanDir(path string, sess *Session) {
 // CheckArgs will ensure that both a directory and file are not defined at the same time
 func CheckArgs(sFile []string, sDir []string, sess *Session) {
 	if sFile != nil && sDir != nil {
-		sess.Out.Error("You cannot set both scan-file and scan-dir at the same time")
+		sess.Out.Error("You cannot set both scan-file and scan-dir at the same time\n")
 		os.Exit(1)
 	}
 
 	if sFile == nil && sDir == nil {
-		sess.Out.Error("You must set either a path or file to scan")
+		sess.Out.Error("You must set either a path or file to scan\n")
 		os.Exit(1)
 	}
 }

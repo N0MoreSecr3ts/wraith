@@ -4,14 +4,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"time"
-	"wraith/core"
-	"wraith/version"
-
-	"github.com/spf13/viper"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"wraith/core"
 )
 
 var viperScanGithub *viper.Viper
@@ -64,7 +59,7 @@ var scanGithubCmd = &cobra.Command{
 		core.PrintSessionStats(sess)
 
 		if !sess.Silent {
-			sess.Out.Important("Press Ctrl+C to stop web server and exit.")
+			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
 			select {}
 		}
 	},

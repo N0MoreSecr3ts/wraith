@@ -45,7 +45,6 @@ var DefaultValues = map[string]interface{}{
 	"debug":                       false,
 	"expand-orgs":                 false,
 	"github-enterprise-url":       "",
-	"github-targets":              "",
 	"github-api-token":            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXVZabcd",
 	"github-enterprise-api-token": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXVZabcd",
 	"gitlab-targets":              "",
@@ -73,31 +72,29 @@ var DefaultValues = map[string]interface{}{
 	"github-url":                  "https://api.github.com",
 	"gitlab-url":                  "", // TODO set the default
 	"rules-url":                   "git@example.com:foo/bar.git",
-	"github-enterprise-orgs":      "",
-	"github-enterprise-repos":     "",
-	"github-orgs":                 "",
-	"github-repos":                "",
-	"github-users":                "",
+	"github-enterprise-orgs":      nil,
+	"github-enterprise-repos":     nil,
+	"github-orgs":                 nil,
+	"github-repos":                nil,
+	"github-users":                nil,
 }
 
 // Session contains all the necessary values and parameters used during a scan
 type Session struct {
 	sync.Mutex
 
-	BindAddress       string
-	BindPort          int
-	Client            IClient `json:"-"`
-	CommitDepth       int
-	CSV               bool
-	Debug             bool
-	ExpandOrgs        bool
-	Findings          []*Finding
-	GithubAccessToken string
-	Organizations     []*github.Organization
-	//EnterpriseScan    bool
+	BindAddress         string
+	BindPort            int
+	Client              IClient `json:"-"`
+	CommitDepth         int
+	CSV                 bool
+	Debug               bool
+	ExpandOrgs          bool
+	Findings            []*Finding
+	GithubAccessToken   string
+	Organizations       []*github.Organization
 	GithubClient        *github.Client `json:"-"`
 	GithubEnterpriseURL string
-	GithubTargets       []string
 	GitlabAccessToken   string
 	GitlabTargets       []string
 	GithubUsers         []*github.User
@@ -125,9 +122,9 @@ type Session struct {
 	MatchLevel          int
 	GithubURL           string
 	GitlabURL           string
-	UserDirtyNames      string
-	UserDirtyOrgs       string
-	UserDirtyRepos      string
+	UserDirtyNames      []string
+	UserDirtyOrgs       []string
+	UserDirtyRepos      []string
 	UserLogins          []string
 	UserOrgs            []string
 	UserRepos           []string
@@ -182,7 +179,6 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.ExpandOrgs = v.GetBool("expaand-orgs")
 	s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")
-	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.HideSecrets = v.GetBool("hide-secrets")
@@ -196,10 +192,8 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
 	s.Version = version.AppVersion()
-	v.GetStringSlice("scan-dir")
-	v.GetStringSlice("scan-file")
 
-	// add the default directories to the sess if they don't already exist
+	// Add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {
 		e = strings.TrimSpace(e)
 		s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
@@ -258,7 +252,8 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	Signatures = combinedSig
 }
 
-// setCommitDepth will set the commit depth to go to during a sess. This is an ugly way of doing it but for the moment it works fine.
+// setCommitDepth will set the commit depth to go to during a sess. This is an ugly way of doing it
+// but for the moment it works fine.
 func setCommitDepth(c int) int {
 	if c == 0 {
 		return 9999999999
@@ -310,56 +305,6 @@ func (s *Session) AddFinding(finding *Finding) {
 	s.Findings = append(s.Findings, finding)
 	s.Stats.IncrementFindingsTotal()
 }
-
-// InitGithubClient will create a new github client of the type given by the input string. Currently Enterprise and github.com are supported
-//func (s *Session) InitAPIClient() {
-//	ctx := context.Background()
-//	ts := oauth2.StaticTokenSource(
-//		&oauth2.Token{AccessToken: s.GithubAccessToken},
-//	)
-//	tc := oauth2.NewClient(ctx, ts)
-//
-//	if s.ScanType == "github-enterprise" {
-//
-//		if s.GithubEnterpriseURL != "" {
-//
-//			_, err := url.Parse(s.GithubEnterpriseURL)
-//			if err != nil {
-//				s.Out.Error("Unable to parse --github-enterprise-url: <%s>", s.GithubEnterpriseURL)
-//			}
-//		}
-//		s.GithubClient, _ = github.NewEnterpriseClient(s.GithubEnterpriseURL, "", tc)
-//	}
-//
-//	if t == "github" {
-//		if s.GithubURL != "" {
-//			_, err := url.Parse(s.GithubURL)
-//			if err != nil {
-//				s.Out.Error("Unable to parse --github-url: <%s>", s.GithubURL)
-//			}
-//		}
-//		s.GithubClient = github.NewClient(tc)
-//	}
-//}
-
-// InitAPIClient will create a new gitlab or github api client based on the session identifier
-//func (s *Session) InitAPIClient() {
-//
-//	switch s.ScanType {
-//	case "github":
-//		CheckGithubAPIToken(s.GithubAccessToken, s)
-//		s.Client = githubClient.NewClient(githubClient{}, s)
-//	case "gitlab":
-//		CheckGitlabAPIToken(s.GitlabAccessToken, s)
-//		var err error
-//		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out)
-//		if err != nil {
-//			s.Out.Fatal("Error initializing GitLab client: %s", err)
-//		}
-//	default:
-//		// TODO put something in here when needed
-//	}
-//}
 
 // InitThreads will set the correct number of threads based on the commandline flags
 func (s *Session) InitThreads() {
@@ -441,7 +386,7 @@ func (s *Stats) UpdateProgress(current int, total int) {
 }
 
 // NewSession  is the entry point for starting a new scan session
-func NewSession(v *viper.Viper, scanType string) *Session { // TODO refactor out this function
+func NewSession(v *viper.Viper, scanType string) *Session {
 	var session Session
 
 	session.Initialize(v, scanType)

@@ -29,7 +29,6 @@ var scanGitlabCmd = &cobra.Command{
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
-		// TODO need to validate this
 		sess.GitlabAccessToken = viperScanGitlab.GetString("gitlab-api-token")
 
 		sess.InitGitClient()
@@ -43,7 +42,7 @@ var scanGitlabCmd = &cobra.Command{
 
 		if !sess.Silent {
 			sess.Out.Important("%s", core.GitLabTanuki)
-			sess.Out.Important("Press Ctrl+C to stop web server and exit.")
+			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
 			select {}
 		}
 	},

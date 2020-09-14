@@ -174,7 +174,6 @@ func GetChangePath(change *object.Change) string {
 // GetChangeContent will get the contents of a git change or patch.
 func GetChangeContent(change *object.Change) (result string, contentError error) {
 	//temporary response to:  https://github.com/sergi/go-diff/issues/89
-	// TODO Where possible switch to libgit2 https://github.com/libgit2/git2go
 	defer func() {
 		if err := recover(); err != nil {
 			contentError = errors.New(fmt.Sprintf("Panic occurred while retrieving change content: %s", err))
@@ -253,15 +252,10 @@ func (s *Session) InitGitClient() {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 		sslcli := &http.Client{Transport: tr}
-		//ctx := context.TODO()
 
 		ctx := context.Background()
-		//ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
 		ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
-		//tlsConfig := &tls.Config{}
-		//if config.Insecure {
-		//	tlsConfig.InsecureSkipVerify = true
-		//}
+
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: s.GithubAccessToken},
 		)
@@ -283,15 +277,10 @@ func (s *Session) InitGitClient() {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 		sslcli := &http.Client{Transport: tr}
-		//ctx := context.TODO()
 
 		ctx := context.Background()
-		//ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
 		ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
-		//tlsConfig := &tls.Config{}
-		//if config.Insecure {
-		//	tlsConfig.InsecureSkipVerify = true
-		//}
+
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: s.GithubAccessToken},
 		)

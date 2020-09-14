@@ -270,7 +270,7 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 
 				content, err := GetChangeContent(change)
 				if err != nil {
-					sess.Out.Error("Error retrieving content in commit %s, change %s:  %s", "commit.String()", change.String(), err)
+					sess.Out.Error("Error retrieving content in commit %s, change %s:  %s\n", "commit.String()", change.String(), err)
 				}
 
 				if r.Match([]byte(content)) {

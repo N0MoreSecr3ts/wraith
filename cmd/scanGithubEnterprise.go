@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -66,7 +65,7 @@ var scanGithubEnterpriseCmd = &cobra.Command{
 		core.PrintSessionStats(sess)
 
 		if !sess.Silent {
-			sess.Out.Important("Press Ctrl+C to stop web server and exit.")
+			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
 			select {}
 		}
 	},

@@ -51,6 +51,7 @@ func AppendIfMissing(slice []string, s string) []string {
 	return append(slice, s)
 }
 
+// TODO Bring in the session var so we can use the built in logging
 // SetHomeDir will set the correct homedir.
 func SetHomeDir(h string) string {
 

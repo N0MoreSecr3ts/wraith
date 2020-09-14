@@ -23,42 +23,54 @@ var scanGithubEnterpriseCmd = &cobra.Command{
 	Long:  "Scan one or more github enterprise organizations and repos for secrets. - v" + version.AppVersion(),
 	Run: func(cmd *cobra.Command, args []string) {
 
+		// Set the scan type and start a new session
 		scanType := "github-enterprise"
 		sess := core.NewSession(viperScanGithubEnterprise, scanType)
 
-		sess.UserDirtyRepos = viperScanGithubEnterprise.GetString("github-enterprise-repos")
-		sess.UserDirtyOrgs = viperScanGithubEnterprise.GetString("github-enterprise-orgs")
-		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithubEnterprise.GetString("github-enterprise-api-token"), sess) //TODO can we clean this function up at all
+		// Ensure user input exists and validate it
+		sess.ValidateUserInput(viperScanGithubEnterprise)
 
-		//fmt.Println( viperScanGithubEnterprise.GetString("github-enterprise-repos")) //TODO remove me
-		//fmt.Println( viperScanGithubEnterprise.GetString("github-enterprise-orgs")) //TODO remove me
-
-		if sess.UserDirtyRepos == "" && sess.UserDirtyOrgs == "" {
-			fmt.Println("You must enter either an org or repo[s] to scan")
-			os.Exit(2)
-		}
-
-		if sess.UserDirtyOrgs != "" {
-			core.ValidateGHInput(sess)
-		}
-
-		fmt.Println(sess.UserOrgs)
-		if len(sess.UserRepos) >= 1 && len(sess.UserOrgs) < 1 {
-			fmt.Println("You need to specify an org that contains the repo(s).")
-			os.Exit(2)
-		}
+		// Check for a token. If no token is present we should default to scan but give a message
+		// that no token is available so only public repos will be scanned
+		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithubEnterprise.GetString("github-api-token"), sess)
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
-		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithubEnterprise.GetString("github-enterprise-api-token"), sess)
+		//Create a github client to be used for the session
 		sess.InitGitClient()
 
-		core.GatherOrgs(sess)
-		//fmt.Println(sess.Organizations) //TODO remove me
-		core.GatherGithubRepositories(sess)
+		// If we have github users and no orgs or repos then we default to scan
+		// the visible repos of that user.
+		if sess.UserLogins != nil {
+			if sess.UserOrgs == nil && sess.UserRepos == nil {
+				core.GatherUsers(sess)
+			}
+		}
+
+		// If the user has only given orgs then we grab all te repos from those orgs
+		if sess.UserOrgs != nil {
+			if sess.UserLogins == nil && sess.UserRepos == nil {
+				core.GatherOrgs(sess)
+			}
+		}
+
+		// If we have repo(s) given we need to ensure that we also have orgs or users. Wraith will then
+		// look for the repo in the user or login lists and scan it.
+		if sess.UserRepos != nil {
+			if sess.UserOrgs != nil {
+				core.GatherOrgs(sess)
+				core.GatherGithubOrgRepositories(sess)
+			} else if sess.UserLogins != nil {
+				core.GatherUsers(sess)
+				core.GetGithubRepositoriesFromOwner(sess)
+			} else {
+				sess.Out.Error("You need to specify an org or user that contains the repo(s).\n")
+			}
+		}
+
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 

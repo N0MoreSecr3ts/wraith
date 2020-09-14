@@ -95,12 +95,27 @@ func (s *Stats) IncrementRepositoriesScanned() {
 	s.RepositoriesScanned++
 }
 
+// IncrementUsers will bump the total number of users that have been enumerated
+func (s *Stats) IncrementUsers() {
+	s.Lock()
+	defer s.Unlock()
+	s.Users++
+}
+
 // IncrementCommitsScanned will bump the number of commits that have been scanned.
 // This is scan wide and not on a per repo/org basis
 func (s *Stats) IncrementCommitsScanned() {
 	s.Lock()
 	defer s.Unlock()
 	s.CommitsScanned++
+}
+
+// IncrementOrgs will bump the number of orgs that have been gathered.
+// This is scan wide and not on a per repo/org basis
+func (s *Stats) IncrementOrgs() {
+	s.Lock()
+	defer s.Unlock()
+	s.Organizations++
 }
 
 // IncrementCommitsDirty will bump the number of commits that have been found to be dirty,

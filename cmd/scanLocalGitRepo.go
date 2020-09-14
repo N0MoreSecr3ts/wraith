@@ -29,14 +29,16 @@ var scanLocalGitRepoCmd = &cobra.Command{
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
 
-		sess.UserDirtyRepos = viperScanLocalGitRepo.GetString("local-dirs")
+		// Ensure user input exists and validate it
+		sess.ValidateUserInput(viperScanLocalGitRepo)
 
-		if sess.UserDirtyRepos == "" {
-			fmt.Println("You must enter a repo[s] to scan")
-			os.Exit(1)
+		sess.UserDirtyRepos = viperScanLocalGitRepo.GetStringSlice("local-dirs")
+
+		if sess.UserDirtyRepos == nil {
+			sess.Out.Error("You need to specify a repo(s).\n")
+			//fmt.Println("You must enter a repo[s] to scan")
+			//os.Exit(1)
 		}
-
-		core.ValidateGHInput(sess)
 
 		core.GatherLocalRepositories(sess)
 		core.AnalyzeRepositories(sess)

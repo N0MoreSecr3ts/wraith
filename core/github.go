@@ -64,40 +64,83 @@ func (s *Session) addUser(user *github.User) {
 	defer s.Unlock()
 	h := md5.New()
 	_, _ = io.WriteString(h, *user.Login)                     // TODO handle error
+	_, _ = io.WriteString(h, strconv.FormatInt(*user.ID, 10)) // TODO handle error
+	userMD5 := fmt.Sprintf("%x", h.Sum(nil))
 
 	for _, o := range s.GithubUsers {
 		j := md5.New()
 		_, _ = io.WriteString(j, *o.Login)                     // TODO handle error
+		_, _ = io.WriteString(h, strconv.FormatInt(*o.ID, 10)) // TODO handle error
+		sessMD5 := fmt.Sprintf("%x", h.Sum(nil))
+
+		if userMD5 == sessMD5 {
+			return
 		}
+	}
+	s.GithubUsers = append(s.GithubUsers, user)
+}
 
 // GatherUsers will generate a list of users from github.com that can then be filtered down to a specific target range
+func GatherUsers(sess *Session) {
+	sess.Out.Important("Gathering users...\n")
+
+	ctx := context.Background()
+
+	var opts github.OrganizationsListOptions
+	opts.PerPage = 40
+	opts.Since = -1
+	for _, o := range sess.UserLogins {
+		u, _, err := sess.GithubClient.Users.Get(ctx, o)
+
+		if err != nil {
+			sess.Out.Error("Unable to collect user %s: %s\n", u, err)
 		}
 
 		// Add the user to the session and increment the user count
 		sess.addUser(u)
+		sess.Stats.IncrementUsers()
+		sess.Out.Debug("Added user %s\n", *u.Login)
+	}
+}
+
+// ValidateUserInput will check for special characters in the strings and make sure we
+// have at least one usr/repo/org to scan
+func (s *Session) ValidateUserInput(v *viper.Viper) {
+
+	// Raw user inputs
+	s.UserDirtyRepos = v.GetStringSlice("github-repos")
+	s.UserDirtyOrgs = v.GetStringSlice("github-orgs")
+	s.UserDirtyNames = v.GetStringSlice("github-users")
+	s.GithubAccessToken = CheckGithubAPIToken(v.GetString("github-api-token"), s)
+
+	// If no targets are given, fail fast
+	if s.UserDirtyRepos == nil && s.UserDirtyOrgs == nil && s.UserDirtyNames == nil {
+		s.Out.Error("You must enter either a user, org or repo[s] to scan")
 	}
 
-	orgs := strings.Split(s.UserDirtyOrgs, ",")
-	repos := strings.Split(s.UserDirtyRepos, ",")
-	users := strings.Split(s.UserDirtyNames, ",")
+	// validate the input does not contain any scary characters
+	exp := regexp.MustCompile(`[A-Za-z0-9,-_]*$`)
 
-	for _, o := range orgs {
-		if o != "" && o != "." {
+	for _, o := range s.UserDirtyOrgs {
+		if exp.MatchString(o) {
 			s.UserOrgs = append(s.UserOrgs, o)
+
 		}
 	}
 
-	for _, r := range repos {
-		if r != "" && r != "." {
+	for _, r := range s.UserDirtyRepos {
+		if exp.MatchString(r) {
 			s.UserRepos = append(s.UserRepos, r)
+
 		}
 	}
 
-	for _, u := range users {
-		if u != "" && u != "." {
+	for _, u := range s.UserDirtyNames {
+		if exp.MatchString(u) {
 			s.UserLogins = append(s.UserLogins, u)
 		}
 	}
+
 }
 
 // CheckAPIToken will ensure we have a valid github api token
@@ -138,6 +181,83 @@ func (c githubClient) GetUserOrganization(login string) (*Owner, error) {
 		Email:     user.Email,
 		Bio:       user.Bio,
 	}, nil
+}
+
+// GetRepositoriesFromOwner is used gather all the repos associated with a github user
+func GetGithubRepositoriesFromOwner(sess *Session) {
+	var allRepos []*Repository
+	ctx := context.Background()
+
+	// The defaults should be fine for a tool like this but if you want to customize
+	// settings like repo type (public, private, etc) or the amount of results returned
+	// per page this is where you do it.
+	opt := &github.RepositoryListOptions{}
+
+	for _, ul := range sess.UserLogins {
+		for {
+			repos, resp, err := sess.GithubClient.Repositories.List(ctx, ul, opt)
+			fmt.Println(resp.Header)
+			//fmt.Println()
+			if err != nil {
+				sess.Out.Error("Error gathering Github repos from %s: %s\n", ul, err)
+			}
+			for _, repo := range repos {
+				if sess.ScanFork && *repo.Fork {
+					r := Repository{
+						Owner:         repo.Owner.Login,
+						ID:            repo.ID,
+						Name:          repo.Name,
+						FullName:      repo.FullName,
+						CloneURL:      repo.CloneURL,
+						URL:           repo.HTMLURL,
+						DefaultBranch: repo.DefaultBranch,
+						Description:   repo.Description,
+						Homepage:      repo.Homepage,
+					}
+					allRepos = append(allRepos, &r)
+				}
+			}
+			if resp.NextPage == 0 {
+				break
+			}
+			opt.Page = resp.NextPage
+		}
+	}
+
+	// TODO what happens if no repos are recovered
+
+	// If we re only looking for a subset of the repos in an org we do a comparison
+	// of the repos gathered for the org and the list pf repos that we care about.
+	for _, repo := range allRepos {
+		if sess.UserRepos != nil {
+			for _, r := range sess.UserRepos {
+				if r == *repo.Name {
+					sess.Out.Debug(" Retrieved repository %s from user %s\n", *repo.FullName, *repo.Owner)
+
+					// Add the repo to the sess to be scanned
+					sess.AddRepository(repo)
+
+					// Increment the total count of repos found, regardless if it gets cloned or scanned
+					sess.Stats.IncrementRepositoriesTotal()
+				}
+			}
+			continue
+		}
+		sess.Out.Debug(" Retrieved repository %s from user %s\n", *repo.FullName, *repo.Owner)
+
+		// If we are not doing any filtering and simply grabbing all available repos we add the repos
+		// to the session to be scanned
+		sess.AddRepository(repo)
+
+		// Increment the total count of repos found, regardless if it gets cloned or scanned
+		sess.Stats.IncrementRepositoriesTotal()
+	}
+
+	for _, ul := range allRepos {
+		sess.AddRepository(ul)
+		sess.Stats.IncrementRepositoriesTotal()
+		sess.Out.Debug("Added repo %s\n", *ul.FullName)
+	}
 }
 
 // GetRepositoriesFromOwner is used gather all the repos associated with the org owner or other user
@@ -291,7 +411,7 @@ func (s *Session) addOrganization(organization *github.Organization) {
 
 // GatherGithubRepositories will walk a tree and create a repo object for each repository found. After the
 // object is completed is will increment the total number of repositories by 1.
-func GatherGithubRepositories(sess *Session) {
+func GatherGithubOrgRepositories(sess *Session) {
 
 	// Create a channel for each org in the list
 	var ch = make(chan *github.Organization, len(sess.Organizations))
@@ -310,15 +430,12 @@ func GatherGithubRepositories(sess *Session) {
 		threadNum = sess.Threads
 	}
 
-	fmt.Println("I am here") // TODO Remove me
-
 	wg.Add(threadNum)
 	sess.Out.Debug("Threads for repository gathering: %d\n", threadNum)
 
 	for i := 0; i < threadNum; i++ {
 		go func() {
 			for {
-				fmt.Println("I am in the first for loop")
 				var repos []*Repository
 				var err error
 				org, ok := <-ch
@@ -343,14 +460,16 @@ func GatherGithubRepositories(sess *Session) {
 				// If we re only looking for a subset of the repos in an org we do a comparison
 				// of the repos gathered for the org and the list pf repos that we care about.
 				for _, repo := range repos {
-					if len(sess.UserRepos) >= 1 && sess.UserRepos[0] != "" {
+					if sess.UserRepos != nil {
+						//if len(sess.UserRepos) >= 1 && sess.UserRepos[0] != "" {
 						for _, r := range sess.UserRepos {
 							if r == *repo.Name {
 
 								sess.Out.Debug(" Retrieved repository %s from org %s\n", *repo.FullName, *org.Login)
-								// Add the repo to the sess to be scanned
 
+								// Add the repo to the sess to be scanned
 								sess.AddRepository(repo)
+
 								// Increment the total count of repos found, regardless if it gets cloned or scanned
 								sess.Stats.IncrementRepositoriesTotal()
 							}

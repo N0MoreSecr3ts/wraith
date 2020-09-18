@@ -205,11 +205,11 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitAPIClient()
 
 	// check output options
-  if ((s.CSV == true && s.JSON == true) || (s.CSV == false && s.JSON == false)) && len(s.OutputFile) == 0 {
+	if ((s.CSV == true && s.JSON == true) && len(s.OutputFile) == 0 || (s.CSV == false && s.JSON == false)) && len(s.OutputFile) != 0 {
 		s.Out.Error("Ensure that either --json or --csv were specified and file path was specified with --output-file")
     os.Exit(1)
   }
-  
+
 	// checking enterprise parameters here so logger is initialized
 	if (s.EnterpriseScan == false && len(s.EnterpriseURL) > 0) || (s.EnterpriseScan == true && len(s.EnterpriseURL) == 0) {
 		s.Out.Error("To scan an enterprise instance, both --enterprise-scan and --enterprise-url parameters are required")

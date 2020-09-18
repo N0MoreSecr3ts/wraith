@@ -200,20 +200,20 @@ func GetGithubRepositoriesFromOwner(sess *Session) {
 				sess.Out.Error("Error gathering Github repos from %s: %s\n", ul, err)
 			}
 			for _, repo := range repos {
-				if sess.ScanFork && *repo.Fork {
-					r := Repository{
-						Owner:         repo.Owner.Login,
-						ID:            repo.ID,
-						Name:          repo.Name,
-						FullName:      repo.FullName,
-						CloneURL:      repo.CloneURL,
-						URL:           repo.HTMLURL,
-						DefaultBranch: repo.DefaultBranch,
-						Description:   repo.Description,
-						Homepage:      repo.Homepage,
-					}
-					allRepos = append(allRepos, &r)
+				//if sess.ScanFork && *repo.Fork {
+				r := Repository{
+					Owner:         repo.Owner.Login,
+					ID:            repo.ID,
+					Name:          repo.Name,
+					FullName:      repo.FullName,
+					CloneURL:      repo.CloneURL,
+					URL:           repo.HTMLURL,
+					DefaultBranch: repo.DefaultBranch,
+					Description:   repo.Description,
+					Homepage:      repo.Homepage,
 				}
+				allRepos = append(allRepos, &r)
+				//}
 			}
 			if resp.NextPage == 0 {
 				break

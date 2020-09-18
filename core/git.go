@@ -403,20 +403,20 @@ func getRepositoriesFromOrganization(login *string, client *github.Client, scanF
 		}
 		for _, repo := range repos {
 			// TODO: This needs to be implemented
-			if scanFork {
-				r := Repository{
-					Owner:         repo.Owner.Login,
-					ID:            repo.ID,
-					Name:          repo.Name,
-					FullName:      repo.FullName,
-					CloneURL:      repo.SSHURL,
-					URL:           repo.HTMLURL,
-					DefaultBranch: repo.DefaultBranch,
-					Description:   repo.Description,
-					Homepage:      repo.Homepage,
-				}
-				allRepos = append(allRepos, &r)
+			//if scanFork {
+			r := Repository{
+				Owner:         repo.Owner.Login,
+				ID:            repo.ID,
+				Name:          repo.Name,
+				FullName:      repo.FullName,
+				CloneURL:      repo.SSHURL,
+				URL:           repo.HTMLURL,
+				DefaultBranch: repo.DefaultBranch,
+				Description:   repo.Description,
+				Homepage:      repo.Homepage,
 			}
+			allRepos = append(allRepos, &r)
+			//}
 		}
 		if resp.NextPage == 0 {
 			break
@@ -440,20 +440,20 @@ func getRepositoriesFromOwner(login *string, client *github.Client, scanFork boo
 			return allRepos, err
 		}
 		for _, repo := range repos {
-			if scanFork {
-				r := githubRepository{
-					Owner:         repo.Owner.Login,
-					ID:            repo.ID,
-					Name:          repo.Name,
-					FullName:      repo.FullName,
-					CloneURL:      repo.CloneURL,
-					URL:           repo.HTMLURL,
-					DefaultBranch: repo.DefaultBranch,
-					Description:   repo.Description,
-					Homepage:      repo.Homepage,
-				}
-				allRepos = append(allRepos, &r)
+			//if scanFork {
+			r := githubRepository{
+				Owner:         repo.Owner.Login,
+				ID:            repo.ID,
+				Name:          repo.Name,
+				FullName:      repo.FullName,
+				CloneURL:      repo.CloneURL,
+				URL:           repo.HTMLURL,
+				DefaultBranch: repo.DefaultBranch,
+				Description:   repo.Description,
+				Homepage:      repo.Homepage,
 			}
+			allRepos = append(allRepos, &r)
+			//}
 		}
 		if resp.NextPage == 0 {
 			break

@@ -395,11 +395,10 @@ func getRepositoriesFromOrganization(login *string, client *github.Client, scanF
 		Type: "sources",
 	}
 
-	fmt.Println("org name (loginVal): ", orgName)
-
 	for {
 		repos, resp, err := client.Repositories.ListByOrg(ctx, orgName, opt)
 		if err != nil {
+			sess.Out.Error("Error listing repos for the org %s: %s\n", orgName, err)
 			return allRepos, err
 		}
 		for _, repo := range repos {

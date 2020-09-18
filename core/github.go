@@ -196,8 +196,6 @@ func GetGithubRepositoriesFromOwner(sess *Session) {
 	for _, ul := range sess.UserLogins {
 		for {
 			repos, resp, err := sess.GithubClient.Repositories.List(ctx, ul, opt)
-			fmt.Println(resp.Header)
-			//fmt.Println()
 			if err != nil {
 				sess.Out.Error("Error gathering Github repos from %s: %s\n", ul, err)
 			}
@@ -237,8 +235,6 @@ func GetGithubRepositoriesFromOwner(sess *Session) {
 					// Add the repo to the sess to be scanned
 					sess.AddRepository(repo)
 
-					// Increment the total count of repos found, regardless if it gets cloned or scanned
-					sess.Stats.IncrementRepositoriesTotal()
 				}
 			}
 			continue
@@ -248,16 +244,11 @@ func GetGithubRepositoriesFromOwner(sess *Session) {
 		// If we are not doing any filtering and simply grabbing all available repos we add the repos
 		// to the session to be scanned
 		sess.AddRepository(repo)
-
-		// Increment the total count of repos found, regardless if it gets cloned or scanned
-		sess.Stats.IncrementRepositoriesTotal()
 	}
 
-	for _, ul := range allRepos {
-		sess.AddRepository(ul)
-		sess.Stats.IncrementRepositoriesTotal()
-		sess.Out.Debug("Added repo %s\n", *ul.FullName)
-	}
+	//for _, ul := range allRepos {
+	//	sess.AddRepository(ul)
+	//}
 }
 
 // GetRepositoriesFromOwner is used gather all the repos associated with the org owner or other user
@@ -469,9 +460,6 @@ func GatherGithubOrgRepositories(sess *Session) {
 
 								// Add the repo to the sess to be scanned
 								sess.AddRepository(repo)
-
-								// Increment the total count of repos found, regardless if it gets cloned or scanned
-								sess.Stats.IncrementRepositoriesTotal()
 							}
 						}
 						continue

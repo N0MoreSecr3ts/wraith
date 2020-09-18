@@ -171,7 +171,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 	s.BindAddress = v.GetString("bind-address")
 	s.BindPort = v.GetInt("bind-port")
-	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
+	s.CommitDepth = setCommitDepth(v.GetFloat64("commit-depth"))
 	s.Debug = v.GetBool("debug")
 	s.ExpandOrgs = v.GetBool("expaand-orgs")
 	s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
@@ -251,11 +251,11 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 // setCommitDepth will set the commit depth to go to during a sess. This is an ugly way of doing it
 // but for the moment it works fine.
-func setCommitDepth(c int) int {
-	if c == 0 {
+func setCommitDepth(c float64) int {
+	if c == -1 {
 		return 9999999999
 	}
-	return c
+	return int(c)
 }
 
 // Finish is called at the end of a scan session and used to generate discrete data points

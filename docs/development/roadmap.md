@@ -3,12 +3,12 @@
 ## Scanning
 
 ### Targets
-- [ ] Scan Github Enterprise Org Repos (needs an org)
-- [ ] Scan Github Enterprise User Repos (needs a user)
-- [ ] Scan Github Enterprise Single Repo (needs a user/org and a repo)
+- [X] ~~Scan Github Enterprise Org Repos (needs an org)~~
+- [X] ~~Scan Github Enterprise User Repos (needs a user)~~
+- [X] ~~Scan Github Enterprise Single Repo (needs a user/org and a repo)~~
 - [X] ~~Scan Github.com Org Repos (needs an org)~~
 - [X] ~~Scan Github.com User Repos (needs a user)~~
-- [ ] Scan Github.com Single Repo (needs a repo and a user/org)
+- [X] ~~Scan Github.com Single Repo (needs a repo and a user/org)~~
 - [ ] Scan Github [Gists][1]
 
 
@@ -42,6 +42,7 @@
 - [ ] Scan Dropbox
 - [ ] Scan GoogleDrive
 - [ ] Scan iCloud
+- [ ] Scan S3 Buckets
 
 
 - [ ] Scan MS Office Docs
@@ -53,10 +54,10 @@
 ## Milestone 1
 
 ### Bugs
-- [X] ~~temp directories are not getting deleted~~
-- [X] ~~in-mem-clone is not working properly~~
-- [X] ~~there are no findings in a gitlab search~~
-- [X] ~~there are multiple generateID functions~~
+- [X] ~~Temp directories are not getting deleted~~
+- [X] ~~In-mem-clone is not working properly~~
+- [X] ~~There are no findings in a gitlab search~~
+- [X] ~~There are multiple generateID functions~~
 - [X] ~~Web Frontend For Output~~
 - [X] ~~Specific YAML Configuration File~~
 - [X] ~~Signatures in a seperate repo (signature uplift)~~
@@ -70,41 +71,54 @@
 - [X] ~~Can only find a single target~~
 - [X] ~~Silent still displays the gitlab logo~~
 - [X] ~~Slient does not print you need to hit Ctrl-C to stop the webserver~~
-- [X] ~~gitlab scans are failing~~
-- [X] ~~not consistently finding secrets for all sources~~
-- [X] ~~web interface links are broken for local files~~
-- [X] ~~no error when rules file is not found~~
-- [X] ~~there are no findings in a local git search~~
+- [X] ~~Gitlab scans are failing~~
+- [X] ~~Not consistently finding secrets for all sources~~
+- [X] ~~Web interface links are broken for local files~~
+- [X] ~~No error when rules file is not found~~
+- [X] ~~There are no findings in a local git search~~
 - [X] ~~Searching through a commit history is present but not effective~~
 - [X] ~~Secret ID's are possibly not unique~~
 - [X] ~~Findings with a line number of 0 are being displayed~~
 - [X] ~~Number of total commits was wrong~~
 - [X] ~~Line numbers are wrong in the patches being scanned~~
+- [X] ~~Path ~/ does not work in the config file due to a missing '/'~~
+- [X] ~~Yaml list does not work for github enterprise~~
+- [X] ~~Yaml list does not work for github~~
+- [X] ~~Yaml list does not work for local git~~
+- [X] ~~Not all user repos get pulled~~
+- [X] ~~In github you can have an org w/ no repo, this will error out~~
+- [X] ~~Scaning forks is not working~~
+- [X] ~~Change default commit depth to -1~~
+- [ ] Still havea lot of missing files when scanning (turn on debug)
+- [0] Change github orgs, repos, users to use a slice
+- [0] Change github enterprise orgs, repos, user, to use a slice
+- [0] Change ignore path to use a slice
+- [0] Change ignore extension to use a slice
+- [X] ~~Change match-level to confidence level~~
+- [X] ~~Change default thread count to -1~~
+- [0] In memory clone returns not findings (I think this has something to do with the path not being found)
+- [ ] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
+- [X] ~~Repo totals are getting counted twice~~
 - [ ] Gitlab client does not follow redirects
-- [ ] Gitlab client does not follow redirects
+- [ ] Github does not follow redirects
 - [ ] In gitlab you can have a project w/ no repo, this will error out
-- [ ] In github you can have an org w/ no repo, this will error out
 - [ ] Expanding orgs is not working
-- [ ] Scanning forks is not working
 - [ ] Not scanning tests is not working
 - [ ] Max file size is not working
 - [ ] Setting the number of commits to 1 does not scan anything
 - [ ] Number of dirty commits is wrong, it should be more than is showing
-- [ ] ~/ does not work in the config file due to a missing '/'
-- [ ] yaml list does not work for github enterprise 
-- [ ] yaml list does not work for github
-- [ ] yaml list does not work for local git 
+
 
 ### Documentation
-- [X] ~~**Document the differance between targets and repos**~~
-- [ ] **Document all flags**
-- [ ] **Document all code completely**
+- [X] ~~Document the differance between targets and repos~~
+- [X] ~~Document the tech debt using colors and a shell script~~
+- [0] Document all flags
+- [0] Document all code completely
 - [ ] Document how to add a new command or source
-- [ ] Document the tech debt using colors and a shell script
 - [ ] Document all stats
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
-    - [ ] wraith
+    - [X] ~~wraith~~
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [ ] README.md
@@ -123,7 +137,7 @@
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [X] ~~Label issues for begineer and hacktoberfest~~
-- [ ] **Go doc strings**
+- [0] Go doc strings
     - [ ] common
     - [ ] config
     - [ ] core
@@ -136,27 +150,29 @@
 - [ ] Call out individual contributers after N merges
     
 ### Testing
-- [ ] Copy existing tests to the new codebase
-
 - [X] ~~Confirm hide secrets~~
 - [X] ~~Update Code Climate for Wraith~~
 - [X] ~~Set unique secrets in the test~~
-- [ ] **Code review and remove debug statements**
+- [0] Code review and remove debug statements
+- [0] Ensure that an error status will exit the program, if not swap to a warning status so it does
+- [ ] Sanity check testing plan
+- [ ] Copy existing tests to the new codebase
+- [ ] Make sure we use https so keys are not necessary
 - [ ] Update CodeCov for Wraith
 - [ ] Golint needs to pass
 - [ ] Convert tests to testify
 - [ ] Review all flags to ensure they are needed
 
 ### Features
-- [X] ~~**Redo github enterprise bits to clean them up**~~
-- [X] ~~**Refactor the client to follow G's method**~~
-- [X] ~~**Set orgs and repos like G**~~
-- [X] ~~**Configure repos~~
-- [X] ~~**Configure Org~~
+- [X] ~~Redo github enterprise bits to clean them up~~
+- [X] ~~Refactor the client to follow G's method~~
+- [X] ~~Set orgs and repos like G~~
+- [X] ~~Configure repos~~
+- [X] ~~Configure Org~~
 - [X] ~~Change empty string defaults to nil~~
 - [X] ~~Add content to summary~~
 - [X] ~~Implement flag for setting the thread count manually~~
-- [X] ~~**Look at the clone configs**~~
+- [X] ~~Look at the clone configs~~
 - [X] ~~Make a single function to create a temp dir~~
 - [X] ~~Make sure we clean up the temp directories~~
 - [X] ~~Exclude files based on extension~~
@@ -168,16 +184,21 @@
 - [X] ~~Status output of a session~~
 - [X] ~~Ability to silence the output~~
 - [X] ~~Max file size to scan~~
-- [ ] **Need to find gitlab api endpoint**
-- [ ] **Port gitlab to match G**
-- [ ] **Set the debug like G**
-- [ ] **Exclude/Include Forks**
-- [ ] **Remove all print debugging statements**
-- [ ] **Remove all dead code**
+- [X] ~~Need to be able to scan all the repos for a specific user~~
+- [X] ~~Need to be able to scan a single repo for a specific user~~
+- [ ] -1 Confidence level loads all signatures
+- [ ] Signature file flag should be a slice
+- [0] Exclude/Include Forks 
+- [0] Need to drop in the org in the realtime output
+- [0] Add the status to all functions for use in the web interface*__*
+- [0] Need to find gitlab api endpoint
+- [0] Port gitlab to match G 
+- [0] Set the debug like G 
+- [0] Remove all print debugging statements
+- [0] Remove all dead code
+- [ ] Change id -> ID
 - [ ] Refactor how we do stats on commits
-- [ ] Need to be able to scan all the repos for a specific user
 - [ ] Need to be able to scan all the orgs a user is a member of
-- [ ] Need to be able to scan a single repo for a specific user
 - [ ] Need to be able to scan all the orgs a user is a member of
 - [ ] Need to be able to scan all the forks of a given repo
 - [ ] Set the csv and json like G

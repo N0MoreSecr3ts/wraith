@@ -116,7 +116,7 @@ type Session struct {
 	Targets             []*Owner
 	Threads             int
 	Version             string
-	MatchLevel          int
+	ConfidenceLevel     int
 	GithubURL           string
 	GitlabURL           string
 	UserDirtyNames      []string
@@ -182,7 +182,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InMemClone = v.GetBool("in-mem-clone")
 	s.LocalDirs = v.GetStringSlice("local-dirs")
 	s.MaxFileSize = v.GetInt64("max-file-size")
-	s.MatchLevel = v.GetInt("match-level")
+	s.ConfidenceLevel = v.GetInt("confidence-level")
 	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement
 	s.ScanTests = v.GetBool("scan-tests")
 	s.ScanType = scanType
@@ -241,7 +241,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 			f = strings.TrimSpace(f)
 			h := SetHomeDir(f)
 			if PathExists(h, s) {
-				curSig = LoadSignatures(h, s.MatchLevel, s)
+				curSig = LoadSignatures(h, s.ConfidenceLevel, s)
 				combinedSig = append(combinedSig, curSig...)
 			}
 		}

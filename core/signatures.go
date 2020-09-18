@@ -64,7 +64,7 @@ type Signature interface {
 	Description() string
 	Enable() int
 	ExtractMatch(file MatchFile, sess *Session, change *object.Change) (bool, map[string]int)
-	MatchLevel() int
+	ConfidenceLevel() int
 	Part() string
 	Signatureid() string // TODO change id -> ID
 }
@@ -78,50 +78,50 @@ type SignaturesMetaData struct {
 
 // SafeFunctionSignature holds the information about a safe function, that is used to detect and mitigate false positives
 type SafeFunctionSignature struct {
-	comment     string
-	description string
-	enable      int
-	entropy     float64
-	match       *regexp.Regexp
-	matchLevel  int
-	part        string
-	signatureid string
+	comment         string
+	description     string
+	enable          int
+	entropy         float64
+	match           *regexp.Regexp
+	confidenceLevel int
+	part            string
+	signatureid     string
 }
 
 // SimpleSignature holds the information about a simple signature which is used to match a path or filename
 type SimpleSignature struct {
-	comment     string
-	description string
-	enable      int
-	entropy     float64
-	match       string
-	matchLevel  int
-	part        string
-	signatureid string
+	comment         string
+	description     string
+	enable          int
+	entropy         float64
+	match           string
+	confidenceLevel int
+	part            string
+	signatureid     string
 }
 
 // PatternSignature holds the information about a pattern signature which is a regex used to match content within a file
 type PatternSignature struct {
-	comment     string
-	description string
-	enable      int
-	entropy     float64
-	match       *regexp.Regexp
-	matchLevel  int
-	part        string
-	signatureid string
+	comment         string
+	description     string
+	enable          int
+	entropy         float64
+	match           *regexp.Regexp
+	confidenceLevel int
+	part            string
+	signatureid     string
 }
 
 // SignatureDef maps to a signature within the yaml file
 type SignatureDef struct {
-	Comment     string  `yaml:"comment"`
-	Description string  `yaml:"description"`
-	Enable      int     `yaml:"enable"`
-	Entropy     float64 `yaml:"entropy"`
-	Match       string  `yaml:"match"`
-	MatchLevel  int     `yaml:"match-level"`
-	Part        string  `yaml:"part"`
-	Signatureid string  `yaml:"signatureid"`
+	Comment         string  `yaml:"comment"`
+	Description     string  `yaml:"description"`
+	Enable          int     `yaml:"enable"`
+	Entropy         float64 `yaml:"entropy"`
+	Match           string  `yaml:"match"`
+	ConfidenceLevel int     `yaml:"confidence-level"`
+	Part            string  `yaml:"part"`
+	Signatureid     string  `yaml:"signatureid"`
 }
 
 // SignatureConfig holds the base file structure for the signatures file
@@ -162,9 +162,9 @@ func (s SimpleSignature) Enable() int {
 	return s.enable
 }
 
-// MatchLevel sets the confidence level of the pattern
-func (s SimpleSignature) MatchLevel() int {
-	return s.matchLevel
+// ConfidenceLevel sets the confidence level of the pattern
+func (s SimpleSignature) ConfidenceLevel() int {
+	return s.confidenceLevel
 }
 
 // Part sets the part of the file/path that is matched [ filename content extension ]
@@ -328,9 +328,9 @@ func (s PatternSignature) Enable() int {
 	return s.enable
 }
 
-// MatchLevel sets the confidence level of the pattern
-func (s PatternSignature) MatchLevel() int {
-	return s.matchLevel
+// ConfidenceLevel sets the confidence level of the pattern
+func (s PatternSignature) ConfidenceLevel() int {
+	return s.confidenceLevel
 }
 
 // Part sets the part of the file/path that is matched [ filename content extension ]
@@ -353,9 +353,9 @@ func (s SafeFunctionSignature) Enable() int {
 	return s.enable
 }
 
-// MatchLevel sets the confidence level of the pattern
-func (s SafeFunctionSignature) MatchLevel() int {
-	return s.matchLevel
+// ConfidenceLevel sets the confidence level of the pattern
+func (s SafeFunctionSignature) ConfidenceLevel() int {
+	return s.confidenceLevel
 }
 
 // Part sets the part of the file/path that is matched [ filename content extension ]
@@ -404,7 +404,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 	var PatternSignatures []PatternSignature
 	for _, curSig := range c.SimpleSignatures {
 
-		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
+		if curSig.Enable > 0 && curSig.ConfidenceLevel >= mLevel {
 
 			var part string
 			switch strings.ToLower(curSig.Part) {
@@ -426,7 +426,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Enable,
 				curSig.Entropy,
 				curSig.Match,
-				curSig.MatchLevel,
+				curSig.ConfidenceLevel,
 				part,
 				curSig.Signatureid,
 			})
@@ -434,7 +434,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 	}
 
 	for _, curSig := range c.PatternSignatures {
-		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
+		if curSig.Enable > 0 && curSig.ConfidenceLevel >= mLevel {
 			var part string
 			switch strings.ToLower(curSig.Part) {
 			case "partpath":
@@ -456,14 +456,14 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Enable,
 				curSig.Entropy,
 				match,
-				curSig.MatchLevel,
+				curSig.ConfidenceLevel,
 				part,
 				curSig.Signatureid,
 			})
 		}
 	}
 	for _, curSig := range c.SafeFunctionSignatures {
-		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
+		if curSig.Enable > 0 && curSig.ConfidenceLevel >= mLevel {
 			var part string
 			switch strings.ToLower(curSig.Part) {
 			case "partpath":
@@ -485,7 +485,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Enable,
 				curSig.Entropy,
 				match,
-				curSig.MatchLevel,
+				curSig.ConfidenceLevel,
 				part,
 				curSig.Signatureid,
 			})

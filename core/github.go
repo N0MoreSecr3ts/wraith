@@ -435,7 +435,7 @@ func GatherGithubOrgRepositories(sess *Session) {
 					return
 				}
 				// Retrieve all the repos in an org regardless of public/private
-				repos, err = getRepositoriesFromOrganization(org.Login, sess.GithubClient, sess.ScanFork)
+				repos, err = getRepositoriesFromOrganization(org.Login, sess.GithubClient, sess.ScanFork, sess)
 
 				if err != nil {
 					sess.Out.Error(" Failed to retrieve repositories from %s: %s\n", *org.Login, err)
@@ -469,9 +469,6 @@ func GatherGithubOrgRepositories(sess *Session) {
 					// If we are not doing any filtering and simply grabbing all available repos we add the repos
 					// to the session to be scanned
 					sess.AddRepository(repo)
-
-					// Increment the total count of repos found, regardless if it gets cloned or scanned
-					sess.Stats.IncrementRepositoriesTotal()
 				}
 			}
 		}()

@@ -387,7 +387,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 }
 
 // getRepositoriesFromOrganization will generate a slice of github repo objects for an org. This has only been tested on github enterprise.
-func getRepositoriesFromOrganization(login *string, client *github.Client, scanFork bool) ([]*Repository, error) {
+func getRepositoriesFromOrganization(login *string, client *github.Client, scanFork bool, sess *Session) ([]*Repository, error) {
 	var allRepos []*Repository
 	orgName := *login
 	ctx := context.Background()

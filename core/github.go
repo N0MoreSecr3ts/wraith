@@ -243,7 +243,11 @@ func GetGithubRepositoriesFromOwner(sess *Session) {
 				sess.Out.Error("Error gathering Github repos from %s: %s\n", ul, err)
 			}
 			for _, repo := range repos {
-				//if sess.ScanFork && *repo.Fork {
+				// If we don't want to scan forked repos, we can use a flag to set this and the
+				// loop instance will stop here and go on to the next repo
+				if !sess.ScanFork && repo.GetFork() {
+					continue
+				}
 				r := Repository{
 					Owner:         repo.Owner.Login,
 					ID:            repo.ID,
@@ -256,7 +260,6 @@ func GetGithubRepositoriesFromOwner(sess *Session) {
 					Homepage:      repo.Homepage,
 				}
 				allRepos = append(allRepos, &r)
-				//}
 			}
 			if resp.NextPage == 0 {
 				break
@@ -292,44 +295,6 @@ func GetGithubRepositoriesFromOwner(sess *Session) {
 	//for _, ul := range allRepos {
 	//	sess.AddRepository(ul)
 	//}
-}
-
-// GetRepositoriesFromOwner is used gather all the repos associated with the org owner or other user
-func (c githubClient) GetRepositoriesFromOwner(target Owner) ([]*Repository, error) {
-	var allRepos []*Repository
-	ctx := context.Background()
-	opt := &github.RepositoryListOptions{
-		Type: "sources",
-	}
-
-	for {
-		repos, resp, err := c.apiClient.Repositories.List(ctx, *target.Login, opt)
-		if err != nil {
-			return allRepos, err
-		}
-		for _, repo := range repos {
-			if !*repo.Fork {
-				r := Repository{
-					Owner:         repo.Owner.Login,
-					ID:            repo.ID,
-					Name:          repo.Name,
-					FullName:      repo.FullName,
-					CloneURL:      repo.CloneURL,
-					URL:           repo.HTMLURL,
-					DefaultBranch: repo.DefaultBranch,
-					Description:   repo.Description,
-					Homepage:      repo.Homepage,
-				}
-				allRepos = append(allRepos, &r)
-			}
-		}
-		if resp.NextPage == 0 {
-			break
-		}
-		opt.Page = resp.NextPage
-	}
-
-	return allRepos, nil
 }
 
 // GetOrganizationMembers will gather all the members of a given organization

@@ -267,3 +267,42 @@ func (c gitlabClient) getGroupProjects(target Owner) ([]*Repository, error) {
 	}
 	return allGroupProjects, nil
 }
+
+// GetRepositoriesFromOwner is used gather all the repos associated with the org owner or other user.
+// This is only used by the gitlab client. The github client use a github specific function.
+func (c githubClient) GetRepositoriesFromOwner(target Owner) ([]*Repository, error) {
+	var allRepos []*Repository
+	ctx := context.Background()
+	opt := &github.RepositoryListOptions{
+		Type: "sources",
+	}
+
+	for {
+		repos, resp, err := c.apiClient.Repositories.List(ctx, *target.Login, opt)
+		if err != nil {
+			return allRepos, err
+		}
+		for _, repo := range repos {
+			if !*repo.Fork {
+				r := Repository{
+					Owner:         repo.Owner.Login,
+					ID:            repo.ID,
+					Name:          repo.Name,
+					FullName:      repo.FullName,
+					CloneURL:      repo.CloneURL,
+					URL:           repo.HTMLURL,
+					DefaultBranch: repo.DefaultBranch,
+					Description:   repo.Description,
+					Homepage:      repo.Homepage,
+				}
+				allRepos = append(allRepos, &r)
+			}
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+
+	return allRepos, nil
+}

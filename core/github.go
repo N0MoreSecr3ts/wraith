@@ -183,6 +183,49 @@ func (c githubClient) GetUserOrganization(login string) (*Owner, error) {
 	}, nil
 }
 
+// getRepositoriesFromOrganization will generate a slice of github repo objects for an org. This has only been tested on github enterprise.
+func getRepositoriesFromOrganization(login *string, client *github.Client, scanFork bool, sess *Session) ([]*Repository, error) {
+	var allRepos []*Repository
+	orgName := *login
+	ctx := context.Background()
+	opt := &github.RepositoryListByOrgOptions{
+		Type: "sources",
+	}
+
+	for {
+		repos, resp, err := client.Repositories.ListByOrg(ctx, orgName, opt)
+		if err != nil {
+			sess.Out.Error("Error listing repos for the org %s: %s\n", orgName, err)
+			return allRepos, err
+		}
+		for _, repo := range repos {
+			// If we don't want to scan forked repos, we can use a flag to set this and the
+			// loop instance will stop here and go on to the next repo
+			if !sess.ScanFork && repo.GetFork() {
+				continue
+			}
+			r := Repository{
+				Owner:         repo.Owner.Login,
+				ID:            repo.ID,
+				Name:          repo.Name,
+				FullName:      repo.FullName,
+				CloneURL:      repo.CloneURL,
+				URL:           repo.HTMLURL,
+				DefaultBranch: repo.DefaultBranch,
+				Description:   repo.Description,
+				Homepage:      repo.Homepage,
+			}
+			allRepos = append(allRepos, &r)
+		}
+
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+	return allRepos, nil
+}
+
 // GetRepositoriesFromOwner is used gather all the repos associated with a github user
 func GetGithubRepositoriesFromOwner(sess *Session) {
 	var allRepos []*Repository

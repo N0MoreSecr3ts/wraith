@@ -386,46 +386,6 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 	return clone, path, err
 }
 
-// getRepositoriesFromOrganization will generate a slice of github repo objects for an org. This has only been tested on github enterprise.
-func getRepositoriesFromOrganization(login *string, client *github.Client, scanFork bool, sess *Session) ([]*Repository, error) {
-	var allRepos []*Repository
-	orgName := *login
-	ctx := context.Background()
-	opt := &github.RepositoryListByOrgOptions{
-		Type: "sources",
-	}
-
-	for {
-		repos, resp, err := client.Repositories.ListByOrg(ctx, orgName, opt)
-		if err != nil {
-			sess.Out.Error("Error listing repos for the org %s: %s\n", orgName, err)
-			return allRepos, err
-		}
-		for _, repo := range repos {
-			// TODO: This needs to be implemented
-			//if scanFork {
-			r := Repository{
-				Owner:         repo.Owner.Login,
-				ID:            repo.ID,
-				Name:          repo.Name,
-				FullName:      repo.FullName,
-				CloneURL:      repo.SSHURL,
-				URL:           repo.HTMLURL,
-				DefaultBranch: repo.DefaultBranch,
-				Description:   repo.Description,
-				Homepage:      repo.Homepage,
-			}
-			allRepos = append(allRepos, &r)
-			//}
-		}
-		if resp.NextPage == 0 {
-			break
-		}
-		opt.Page = resp.NextPage
-	}
-	return allRepos, nil
-}
-
 func getRepositoriesFromOwner(login *string, client *github.Client, scanFork bool) ([]*githubRepository, error) {
 	var allRepos []*githubRepository
 	loginVal := *login

@@ -1,7 +1,9 @@
 package core
 
 import (
+	"context"
 	"fmt"
+	"github.com/google/go-github/github"
 	"github.com/xanzy/go-gitlab"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"

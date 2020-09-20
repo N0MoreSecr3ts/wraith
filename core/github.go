@@ -20,10 +20,12 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
+// cloneGithub will set the clone config and then either do a plain clone if it is going to disk
+// or a full clone if going ito memory.
 func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
-		URL:           *cloneConfig.Url,
+		URL:           *cloneConfig.URL,
 		Depth:         *cloneConfig.Depth,
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
 		SingleBranch:  true,
@@ -143,7 +145,7 @@ func (s *Session) ValidateUserInput(v *viper.Viper) {
 
 }
 
-// CheckAPIToken will ensure we have a valid github api token
+// CheckGithubAPIToken will ensure we have a valid github api token
 func CheckGithubAPIToken(t string, sess *Session) string {
 
 	// check to make sure the length is proper
@@ -226,7 +228,7 @@ func getRepositoriesFromOrganization(login *string, client *github.Client, scanF
 	return allRepos, nil
 }
 
-// GetRepositoriesFromOwner is used gather all the repos associated with a github user
+// GetGithubRepositoriesFromOwner is used gather all the repos associated with a github user
 func GetGithubRepositoriesFromOwner(sess *Session) {
 	var allRepos []*Repository
 	ctx := context.Background()
@@ -408,7 +410,7 @@ func (s *Session) addOrganization(organization *github.Organization) {
 	s.Organizations = append(s.Organizations, organization)
 }
 
-// GatherGithubRepositories will walk a tree and create a repo object for each repository found. After the
+// GatherGithubOrgRepositories will walk a tree and create a repo object for each repository found. After the
 // object is completed is will increment the total number of repositories by 1.
 func GatherGithubOrgRepositories(sess *Session) {
 

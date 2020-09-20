@@ -1,4 +1,3 @@
-// Package common contains functionality not critical to the core project but still essential.
 package core
 
 import (
@@ -12,7 +11,7 @@ import (
 	"wraith/version"
 )
 
-// pathExists will check if a path exists or not and is used to validate user input
+// PathExists will check if a path exists or not and is used to validate user input
 func PathExists(path string, sess *Session) bool {
 	_, err := os.Stat(path)
 
@@ -52,6 +51,7 @@ func AppendIfMissing(slice []string, s string) []string {
 }
 
 // TODO Bring in the session var so we can use the built in logging
+
 // SetHomeDir will set the correct homedir.
 func SetHomeDir(h string) string {
 
@@ -81,7 +81,7 @@ func realTimeOutput(finding *Finding, sess *Session) {
 	if !sess.Silent {
 
 		sess.Out.Warn(" %s\n", strings.ToUpper(finding.Description))
-		sess.Out.Info("  SignatureID..........: %s\n", finding.Signatureid)
+		sess.Out.Info("  SignatureID..........: %s\n", finding.SignatureID)
 		sess.Out.Info("  Repo.................: %s\n", finding.RepositoryName)
 		sess.Out.Info("  File Path............: %s\n", finding.FilePath)
 		sess.Out.Info("  Line Number..........: %s\n", finding.LineNumber)
@@ -119,7 +119,7 @@ func IsMaxFileSize(filename string, sess *Session) bool {
 	return false
 }
 
-// isTestFileorPath will run various regex's against a target to determine if it is a test file or contained in a test directory.
+// isTestFileOrPath will run various regex's against a target to determine if it is a test file or contained in a test directory.
 func isTestFileOrPath(fullPath string) bool {
 	fName := filepath.Base(fullPath)
 

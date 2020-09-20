@@ -6,13 +6,13 @@ import (
 	"wraith/core"
 )
 
-func TestCleanUrlSpaces(t *testing.T) {
+func TestCleanURLSpaces(t *testing.T) {
 
 	Convey("Given a string", t, func() {
 
 		Convey("When the strings have spaces", func() {
 			str := "This "
-			result := core.CleanUrlSpaces(str)
+			result := core.CleanURLSpaces(str)
 
 			Convey("The spaces should be replaced with dashes", func() {
 				for i, _ := range result {
@@ -38,7 +38,7 @@ func TestCleanUrlSpaces(t *testing.T) {
 
 		Convey("When the strings do not have spaces", func() {
 			str := "This"
-			result := core.CleanUrlSpaces(str)
+			result := core.CleanURLSpaces(str)
 
 			Convey("The spaces should be left alone", func() {
 				for i, _ := range result {

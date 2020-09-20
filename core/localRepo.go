@@ -1,4 +1,3 @@
-// Package localRepo represents github specific functionality
 package core
 
 import (
@@ -15,11 +14,11 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
-// CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
+// cloneLocal will create either an in memory clone of a given repository or clone to a temp dir.
 func cloneLocal(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
-		URL:           *cloneConfig.Url,
+		URL:           *cloneConfig.URL,
 		Depth:         *cloneConfig.Depth,
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
 		SingleBranch:  true,

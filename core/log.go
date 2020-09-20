@@ -1,4 +1,3 @@
-// Package common contains functionality not critical to the core project but still essential.
 package core
 
 import (

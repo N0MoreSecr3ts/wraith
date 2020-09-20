@@ -1,4 +1,4 @@
-// Package common contains functionality not critical to the core project but still essential.
+// Package core represents the core functionality of all commands
 package core
 
 import (
@@ -23,6 +23,8 @@ const (
 	TargetTypeOrganization = "Organization"
 )
 
+// GithubRepository holds the necessary information for a repository,
+// this data is specific to Github.
 type GithubRepository struct {
 	Owner         *string
 	ID            *int64
@@ -38,7 +40,7 @@ type GithubRepository struct {
 // CloneConfiguration holds the configurations for cloning a repo
 type CloneConfiguration struct {
 	InMemClone *bool
-	Url        *string
+	URL        *string
 	Username   *string
 	Token      *string
 	Branch     *string
@@ -75,14 +77,14 @@ type Repository struct {
 
 // EmptyTreeCommit is a dummy commit id used as a placeholder and for testing
 const (
-	EmptyTreeCommitId = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+	EmptyTreeCommitID = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 )
 
 // GetParentCommit will get the parent commit from a specific point. If the current commit
 // has no parents then it will create a dummy commit.
 func getParentCommit(commit *object.Commit, repo *git.Repository) (*object.Commit, error) {
 	if commit.NumParents() == 0 {
-		parentCommit, err := repo.CommitObject(plumbing.NewHash(EmptyTreeCommitId))
+		parentCommit, err := repo.CommitObject(plumbing.NewHash(EmptyTreeCommitID))
 		if err != nil {
 			return nil, err
 		}
@@ -140,6 +142,7 @@ func GetChanges(commit *object.Commit, repo *git.Repository) (object.Changes, er
 	return changes, nil
 }
 
+// GetChangeAction returns a more condensed and user friendly action for further reference
 func GetChangeAction(change *object.Change) string {
 	action, err := change.Action()
 	if err != nil {
@@ -157,7 +160,7 @@ func GetChangeAction(change *object.Change) string {
 	}
 }
 
-// GetChangeAction will set the action of the commit to something that is more easily readable.
+// GetChangePath will set the action of the commit for further action
 func GetChangePath(change *object.Change) string {
 	action, err := change.Action()
 	if err != nil {
@@ -166,9 +169,9 @@ func GetChangePath(change *object.Change) string {
 
 	if action == merkletrie.Delete {
 		return change.From.Name
-	} else {
-		return change.To.Name
 	}
+
+	return change.To.Name
 }
 
 // GetChangeContent will get the contents of a git change or patch.
@@ -194,7 +197,7 @@ func GetChangeContent(change *object.Change) (result string, contentError error)
 	return result, nil
 }
 
-// Gather Repositories will gather all repositories associated with a given target during a scan session.
+// GatherGitlabRepositories will gather all repositories associated with a given target during a scan session.
 // This is done using threads, whose count is set via commandline flag. Care much be taken to avoid rate
 // limiting associated with suspected DOS attacks.
 func GatherGitlabRepositories(sess *Session) {
@@ -242,7 +245,7 @@ func GatherGitlabRepositories(sess *Session) {
 	wg.Wait()
 }
 
-// InitGithubClient will create a new github client of the type given by the input string. Currently Enterprise and github.com are supported
+// InitGitClient will create a new github client of the type given by the input string. Currently Enterprise and github.com are supported
 func (s *Session) InitGitClient() {
 
 	// TODO need to make this a switch
@@ -306,16 +309,16 @@ func (s *Session) InitGitClient() {
 	}
 }
 
-//	sess.Out.Debug("[THREAD #%d][%s] Skipping %s\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me
+//	sess.Out.Debug("[THREAD #%d][%s] Skipping %s\n", threadID, *repo.CloneURL, matchTarget.Path) // TODO implement me
 //
-//sess.Out.Debug("[THREAD #%d][%s] Inspecting file: %s...\n", threadId, *repo.CloneURL, matchTarget.Path) // TODO implement me
+//sess.Out.Debug("[THREAD #%d][%s] Inspecting file: %s...\n", threadID, *repo.CloneURL, matchTarget.Path) // TODO implement me
 //
 //			sess.Out.Error(fmt.Sprintf("Error while performing file match: %s\n", err))
 
 // cloneRepository will clone a given repository based upon a configured set or options a user provides.
 // This is a catchall for all different types of repos and create a single entry point for cloning a repo.
-func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Repository, string, error) {
-	sess.Out.Debug("[THREAD #%d][%s] Cloning repository...\n", threadId, *repo.CloneURL)
+func cloneRepository(sess *Session, repo *Repository, threadID int) (*git.Repository, string, error) {
+	sess.Out.Debug("[THREAD #%d][%s] Cloning repository...\n", threadID, *repo.CloneURL)
 
 	var clone *git.Repository
 	var path string
@@ -324,7 +327,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 	switch sess.ScanType {
 	case "github":
 		cloneConfig := CloneConfiguration{
-			Url:        repo.CloneURL,
+			URL:        repo.CloneURL,
 			Branch:     repo.DefaultBranch,
 			Depth:      &sess.CommitDepth,
 			InMemClone: &sess.InMemClone,
@@ -335,7 +338,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 
 	case "github-enterprise":
 		cloneConfig := CloneConfiguration{
-			Url:        repo.CloneURL,
+			URL:        repo.CloneURL,
 			Branch:     repo.DefaultBranch,
 			Depth:      &sess.CommitDepth,
 			InMemClone: &sess.InMemClone,
@@ -347,7 +350,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 	case "gitlab":
 		userName := "oauth2"
 		cloneConfig := CloneConfiguration{
-			Url:        repo.CloneURL,
+			URL:        repo.CloneURL,
 			Branch:     repo.DefaultBranch,
 			Depth:      &sess.CommitDepth,
 			Token:      &sess.GitlabAccessToken, // TODO Is this need since we already have a client?
@@ -358,7 +361,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 		clone, path, err = cloneGitlab(&cloneConfig)
 	case "localGit":
 		cloneConfig := CloneConfiguration{
-			Url:        repo.CloneURL,
+			URL:        repo.CloneURL,
 			Branch:     repo.DefaultBranch,
 			Depth:      &sess.CommitDepth,
 			InMemClone: &sess.InMemClone,
@@ -382,7 +385,7 @@ func cloneRepository(sess *Session, repo *Repository, threadId int) (*git.Reposi
 	}
 	sess.Stats.IncrementRepositoriesCloned()
 	//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
-	sess.Out.Debug("[THREAD #%d][%s] Cloned repository to: %s\n", threadId, *repo.CloneURL, path)
+	sess.Out.Debug("[THREAD #%d][%s] Cloned repository to: %s\n", threadID, *repo.CloneURL, path)
 	return clone, path, err
 }
 
@@ -423,15 +426,3 @@ func getRepositoriesFromOwner(login *string, client *github.Client, scanFork boo
 
 	return allRepos, nil
 }
-
-//sess.Out.Debug("Threads for repository analysis: %d\n", threadNum)
-//sess.Out.Important("Analyzing %d %s...\n", len(sess.Repositories), Pluralize(len(sess.Repositories), "repository", "repositories"))
-//				sess.Out.Debug("[THREAD #%d] No more tasks, marking WaitGroup as done\n", tid)
-
-//					sess.Out.Debug("[THREAD #%d][%s] Analyzing commit: %s\n", tid, *repo.CloneURL, commit.Hash)
-//					sess.Out.Debug("[THREAD #%d][%s] %s changes in %d\n", tid, *repo.CloneURL, commit.Hash, len(changes))
-//
-//					sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)
-//
-//				sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
-//				sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)

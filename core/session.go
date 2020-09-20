@@ -22,7 +22,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// These are varios environment variables and tool statuses used in auth and displaying messages
+// These are various environment variables and tool statuses used in auth and displaying messages
 const (
 	StatusInitializing = "initializing"
 	StatusGathering    = "gathering"
@@ -30,13 +30,14 @@ const (
 	StatusFinished     = "finished"
 )
 
-// skippableExtensions is an array of extensions that if they match a file that file will be excluded
+// defaultIgnoreExtensions is an array of extensions that if they match a file that file will be excluded
 var defaultIgnoreExtensions = []string{".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff",
 	".tif", ".psd", ".xcf"}
 
-// skippablePathIndicators is an array of directories that will be excluded from all types of scans.
+// defaultIgnorePaths is an array of directories that will be excluded from all types of scans.
 var defaultIgnorePaths = []string{"node_modules/", "vendor/bundle", "vendor/cache", "/proc/"}
 
+// DefaultValues is a map of all flag default values and other mutable variables
 var DefaultValues = map[string]interface{}{
 	"bind-address":                "127.0.0.1",
 	"bind-port":                   9393,
@@ -127,6 +128,7 @@ type Session struct {
 	UserRepos           []string
 }
 
+// githubRepository is the holds the necessary fields in a simpler structure
 type githubRepository struct {
 	Owner         *string
 	ID            *int64
@@ -139,7 +141,7 @@ type githubRepository struct {
 	Homepage      *string
 }
 
-// setConfig will set the defaults, and load a config file and environment variables if they are present
+// SetConfig will set the defaults, and load a config file and environment variables if they are present
 func SetConfig() *viper.Viper {
 
 	v := viper.New()
@@ -325,11 +327,11 @@ func (s *Session) InitRouter() {
 
 // SaveToFile will save a json representation of the session output to a file
 func (s *Session) SaveToFile(location string) error {
-	sessionJson, err := json.Marshal(s)
+	sessionJSON, err := json.Marshal(s)
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(location, sessionJson, 0644)
+	err = ioutil.WriteFile(location, sessionJSON, 0644)
 	if err != nil {
 		return err
 	}

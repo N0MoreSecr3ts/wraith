@@ -1,4 +1,3 @@
-// Package matching contains specific functionality elated to scanning and detecting secrets within the given input.
 package core
 
 import (
@@ -13,7 +12,7 @@ import (
 	"strings"
 )
 
-// this are the various items that we are attempting to match against using either regex's or simple pattern matches.
+// These are the various items that we are attempting to match against using either regex's or simple pattern matches.
 const (
 	PartExtension = "extension" // file extension
 	PartFilename  = "filename"  // file name
@@ -66,7 +65,7 @@ type Signature interface {
 	ExtractMatch(file MatchFile, sess *Session, change *object.Change) (bool, map[string]int)
 	ConfidenceLevel() int
 	Part() string
-	Signatureid() string // TODO change id -> ID
+	SignatureID() string // TODO change id -> ID
 }
 
 // SignaturesMetaData is used by updateSignatures to determine if/how to update the signatures
@@ -121,7 +120,7 @@ type SignatureDef struct {
 	Match           string  `yaml:"match"`
 	ConfidenceLevel int     `yaml:"confidence-level"`
 	Part            string  `yaml:"part"`
-	Signatureid     string  `yaml:"signatureid"`
+	SignatureID     string  `yaml:"signatureid"`
 }
 
 // SignatureConfig holds the base file structure for the signatures file
@@ -178,7 +177,7 @@ func (s SimpleSignature) Description() string {
 }
 
 // Sugnatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
-func (s SimpleSignature) Signatureid() string {
+func (s SimpleSignature) SignatureID() string {
 	return s.signatureid
 }
 
@@ -343,8 +342,8 @@ func (s PatternSignature) Description() string {
 	return s.description
 }
 
-// Signatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
-func (s PatternSignature) Signatureid() string {
+// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+func (s PatternSignature) SignatureID() string {
 	return s.signatureid
 }
 
@@ -368,8 +367,8 @@ func (s SafeFunctionSignature) Description() string {
 	return s.description
 }
 
-// Signatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
-func (s SafeFunctionSignature) Signatureid() string {
+// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+func (s SafeFunctionSignature) SignatureID() string {
 	return s.signatureid
 }
 
@@ -428,7 +427,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Match,
 				curSig.ConfidenceLevel,
 				part,
-				curSig.Signatureid,
+				curSig.SignatureID,
 			})
 		}
 	}
@@ -458,7 +457,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				match,
 				curSig.ConfidenceLevel,
 				part,
-				curSig.Signatureid,
+				curSig.SignatureID,
 			})
 		}
 	}
@@ -487,7 +486,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				match,
 				curSig.ConfidenceLevel,
 				part,
-				curSig.Signatureid,
+				curSig.SignatureID,
 			})
 		}
 	}

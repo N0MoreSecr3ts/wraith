@@ -5,10 +5,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
-	"os"
 
 	"github.com/spf13/cobra"
 )

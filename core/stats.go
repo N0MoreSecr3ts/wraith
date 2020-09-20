@@ -41,7 +41,7 @@ func (s *Stats) IncrementFilesTotal() {
 	s.Files++
 }
 
-// IncrementFilesTotal will bump the count of files that have been discovered. This does not reflect
+// IncrementFilesDirty will bump the count of files that have been discovered. This does not reflect
 // if the file was scanned/skipped. It is simply a count of files that were found.
 func (s *Stats) IncrementFilesDirty() {
 	s.Lock()
@@ -148,7 +148,7 @@ func (s *Session) InitStats() {
 	}
 }
 
-/// PrintSessionStats will print the performance and sessions stats to stdout at the conclusion of a session scan
+// PrintSessionStats will print the performance and sessions stats to stdout at the conclusion of a session scan
 func PrintSessionStats(sess *Session) {
 
 	sess.Out.Important("\n--------Results--------\n")

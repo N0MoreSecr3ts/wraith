@@ -70,7 +70,9 @@ func GatherTargets(sess *Session) {
 	}
 }
 
-// AnalyzeRepositiores will clone the repos and grab their history fo analysis of files and content.
+// TODO write a better description here
+
+// AnalyzeRepositories will clone the repos, grab their history for analysis of files and content.
 func AnalyzeRepositories(sess *Session) {
 	sess.Stats.Status = StatusAnalyzing
 	if len(sess.Repositories) == 0 {
@@ -265,7 +267,7 @@ func AnalyzeRepositories(sess *Session) {
 										LineNumber:        strconv.Itoa(v),
 										RepositoryName:    *repo.Name,
 										RepositoryOwner:   *repo.Owner,
-										Signatureid:       signature.Signatureid(),
+										SignatureID:       signature.SignatureID(),
 										SignaturesVersion: sess.SignatureVersion,
 										SecretID:          generateID(),
 									}

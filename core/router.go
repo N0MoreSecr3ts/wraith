@@ -1,4 +1,3 @@
-// Package core represents the core functionality of all commands
 package core
 
 import (
@@ -15,18 +14,18 @@ import (
 
 // Set various internal values used by the web interface
 const (
-	GithubBaseUri   = "https://raw.githubusercontent.com"
+	GithubBaseURI   = "https://raw.githubusercontent.com"
 	MaximumFileSize = 153600
-	GitLabBaseUri   = "https://gitlab.com"
+	GitLabBaseURL   = "https://gitlab.com"
 	CspPolicy       = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'"
 	ReferrerPolicy  = "no-referrer"
 )
 
 // Is this a github repo/org
-var IsGithub bool
+var isGithub bool
 
 // binaryFileSystem  holds a filesystem handle
-type binaryFileSystem struct {
+type binaryFileSystem struct { // TODO fix this
 	fs http.FileSystem
 }
 
@@ -58,7 +57,7 @@ func BinaryFileSystem(root string) *binaryFileSystem {
 func NewRouter(s *Session) *gin.Engine {
 
 	if s.ScanType == "github" {
-		IsGithub = true
+		isGithub = true
 	}
 
 	if s.Debug == true {
@@ -98,15 +97,15 @@ func NewRouter(s *Session) *gin.Engine {
 // TODO this will fail for other target types and must be converted to a switch for scalability
 // fetchFile returns a given path to a file that can be cicked on by a user
 func fetchFile(c *gin.Context) {
-	fileUrl := func() string {
-		if IsGithub {
-			return fmt.Sprintf("%s/%s/%s/%s%s", GithubBaseUri, c.Param("owner"), c.Param("repo"), c.Param("commit"), c.Param("path"))
-		} else {
-			results := CleanUrlSpaces(c.Param("owner"), c.Param("repo"), c.Param("commit"), c.Param("path"))
-			return fmt.Sprintf("%s/%s/%s/%s/%s%s", GitLabBaseUri, results[0], results[1], "/-/raw/", results[2], results[3])
+	fileURL := func() string {
+		if isGithub {
+			return fmt.Sprintf("%s/%s/%s/%s%s", GithubBaseURI, c.Param("owner"), c.Param("repo"), c.Param("commit"), c.Param("path"))
 		}
+		results := CleanURLSpaces(c.Param("owner"), c.Param("repo"), c.Param("commit"), c.Param("path"))
+		return fmt.Sprintf("%s/%s/%s/%s/%s%s", GitLabBaseURL, results[0], results[1], "/-/raw/", results[2], results[3])
+
 	}()
-	resp, err := http.Head(fileUrl)
+	resp, err := http.Head(fileURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err,
@@ -128,7 +127,7 @@ func fetchFile(c *gin.Context) {
 		return
 	}
 
-	resp, err = http.Get(fileUrl)
+	resp, err = http.Get(fileURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err,

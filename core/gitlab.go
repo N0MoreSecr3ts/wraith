@@ -19,7 +19,7 @@ import (
 func cloneGitlab(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
-		URL:           *cloneConfig.Url,
+		URL:           *cloneConfig.URL,
 		Depth:         *cloneConfig.Depth,
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
 		SingleBranch:  true,
@@ -67,7 +67,7 @@ func (c gitlabClient) NewClient(token string, logger *Logger) (gitlabClient, err
 	return c, nil
 }
 
-// CheckAPIToken will ensure we have a valid github api token
+// CheckGitlabAPIToken will ensure we have a valid github api token
 func CheckGitlabAPIToken(t string, sess *Session) string {
 
 	// check to make sure the length is proper
@@ -102,22 +102,22 @@ func (c gitlabClient) GetUserOrganization(login string) (*Owner, error) {
 			Email:     gitlab.String(user.PublicEmail),
 			Bio:       gitlab.String(user.Bio),
 		}, nil
-	} else {
-		id := int64(org.ID)
-		return &Owner{
-			Login:     gitlab.String(org.Name),
-			ID:        &id,
-			Type:      gitlab.String(TargetTypeOrganization),
-			Name:      gitlab.String(org.Name),
-			AvatarURL: gitlab.String(org.AvatarURL),
-			URL:       gitlab.String(org.WebURL),
-			Company:   gitlab.String(org.FullName),
-			Blog:      emptyString,
-			Location:  emptyString,
-			Email:     emptyString,
-			Bio:       gitlab.String(org.Description),
-		}, nil
 	}
+	id := int64(org.ID)
+	return &Owner{
+		Login:     gitlab.String(org.Name),
+		ID:        &id,
+		Type:      gitlab.String(TargetTypeOrganization),
+		Name:      gitlab.String(org.Name),
+		AvatarURL: gitlab.String(org.AvatarURL),
+		URL:       gitlab.String(org.WebURL),
+		Company:   gitlab.String(org.FullName),
+		Blog:      emptyString,
+		Location:  emptyString,
+		Email:     emptyString,
+		Bio:       gitlab.String(org.Description),
+	}, nil
+
 }
 
 // GetOrganizationMembers will gather all the members of a given organization

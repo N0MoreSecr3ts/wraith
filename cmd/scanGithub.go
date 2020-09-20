@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
-	"os"
 )
 
 var viperScanGithub *viper.Viper

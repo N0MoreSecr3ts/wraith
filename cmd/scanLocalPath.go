@@ -8,6 +8,7 @@ import (
 	"time"
 	"wraith/core"
 	"wraith/version"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -49,8 +50,12 @@ var scanLocalPathCmd = &cobra.Command{
 			if pth != "" {
 				if !core.PathExists(pth, sess) {
 					sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)
-				} else {
+					os.Exit(1)
+				} else if pth == "" {
 					core.ScanDir(pth, sess)
+				} else {
+					sess.Out.Error("You need to enter a path to scan\n")
+					os.Exit(1)
 				}
 			}
 		}

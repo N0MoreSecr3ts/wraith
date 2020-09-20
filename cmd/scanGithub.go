@@ -9,6 +9,7 @@ import (
 	"time"
 	"wraith/core"
 	"wraith/version"
+	"os"
 )
 
 var viperScanGithub *viper.Viper
@@ -74,6 +75,7 @@ var scanGithubCmd = &cobra.Command{
 			core.GetGithubRepositoriesFromOwner(sess)
 		} else {
 			sess.Out.Error("You need to specify an org or user that contains the repo(s).\n")
+			os.Exit(1)
 		}
 
 		core.AnalyzeRepositories(sess)

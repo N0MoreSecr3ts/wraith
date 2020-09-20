@@ -9,6 +9,7 @@ import (
 	"wraith/version"
 
 	"github.com/spf13/viper"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -68,6 +69,7 @@ var scanGithubEnterpriseCmd = &cobra.Command{
 				core.GetGithubRepositoriesFromOwner(sess)
 			} else {
 				sess.Out.Error("You need to specify an org or user that contains the repo(s).\n")
+				os.Exit(1)
 			}
 		}
 

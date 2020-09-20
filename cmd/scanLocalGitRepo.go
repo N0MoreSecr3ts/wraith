@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"github.com/spf13/viper"
+	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -36,8 +37,7 @@ var scanLocalGitRepoCmd = &cobra.Command{
 
 		if sess.UserDirtyRepos == nil {
 			sess.Out.Error("You need to specify a repo(s).\n")
-			//fmt.Println("You must enter a repo[s] to scan")
-			//os.Exit(1)
+			os.Exit(1)
 		}
 
 		core.GatherLocalRepositories(sess)

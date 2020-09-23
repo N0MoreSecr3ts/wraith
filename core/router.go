@@ -24,18 +24,18 @@ const (
 // Is this a github repo/org
 var isGithub bool
 
-// binaryFileSystem  holds a filesystem handle
-type binaryFileSystem struct { // TODO fix this
+// binaryFS  holds a filesystem handle
+type binaryFS struct { // TODO fix this
 	fs http.FileSystem
 }
 
 // Open will return an http file object that refers to a given file
-func (b *binaryFileSystem) Open(name string) (http.File, error) {
+func (b *binaryFS) Open(name string) (http.File, error) {
 	return b.fs.Open(name)
 }
 
 // Exists checks if a given file with a given prefix exists and attempts to open it
-func (b *binaryFileSystem) Exists(prefix string, filepath string) bool {
+func (b *binaryFS) Exists(prefix string, filepath string) bool {
 	if p := strings.TrimPrefix(filepath, prefix); len(p) < len(filepath) {
 		if _, err := b.fs.Open(p); err != nil {
 			return false
@@ -45,10 +45,10 @@ func (b *binaryFileSystem) Exists(prefix string, filepath string) bool {
 	return false
 }
 
-// BinaryFileSystem returns a binary file system object used by the web frontend
-func BinaryFileSystem(root string) *binaryFileSystem {
+// binaryFileSystem returns a binary file system object used by the web frontend
+func binaryFileSystem(root string) *binaryFS {
 	fs := &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: root}
-	return &binaryFileSystem{
+	return &binaryFS{
 		fs,
 	}
 }
@@ -67,7 +67,7 @@ func NewRouter(s *Session) *gin.Engine {
 	}
 
 	router := gin.New()
-	router.Use(static.Serve("/", BinaryFileSystem("static")))
+	router.Use(static.Serve("/", binaryFileSystem("static")))
 	router.Use(secure.New(secure.Config{
 		SSLRedirect:           false,
 		IsDevelopment:         false,

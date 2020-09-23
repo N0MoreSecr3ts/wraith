@@ -5,7 +5,6 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"fmt"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	"gopkg.in/src-d/go-git.v4"
@@ -179,7 +178,7 @@ func GetChangeContent(change *object.Change) (result string, contentError error)
 	//temporary response to:  https://github.com/sergi/go-diff/issues/89
 	defer func() {
 		if err := recover(); err != nil {
-			contentError = errors.New(fmt.Sprintf("Panic occurred while retrieving change content: %s", err))
+			contentError = errors.New("panic occurred while retrieving change content: ")
 		}
 	}()
 	patch, err := change.Patch()

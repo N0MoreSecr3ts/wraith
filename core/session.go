@@ -53,7 +53,7 @@ var DefaultValues = map[string]interface{}{
 	"ignore-extension":            nil,
 	"ignore-path":                 nil,
 	"in-mem-clone":                false,
-	"max-file-size":               50,
+	"max-file-size":               10,
 	"num-threads":                 -1,
 	"local-dirs":                  nil,
 	"local-files":                 nil,

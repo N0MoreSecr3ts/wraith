@@ -84,7 +84,7 @@ func init() {
 	scanLocalPathCmd.Flags().Bool("hide-secrets", false, "Hide secrets from any supported output")
 	scanLocalPathCmd.Flags().StringSlice("ignore-extension", nil, "List of extensions to ignore")
 	scanLocalPathCmd.Flags().StringSlice("ignore-path", nil, "List of paths to ignore")
-	scanLocalPathCmd.Flags().Int("max-file-size", 50, "Max file size to scan in MB")
+	scanLocalPathCmd.Flags().Int("max-file-size", 10, "Max file size to scan in MB")
 	scanLocalPathCmd.Flags().Int("num-threads", -1, "Number of threads to execute with")
 	scanLocalPathCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanLocalPathCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")

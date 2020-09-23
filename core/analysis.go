@@ -166,6 +166,7 @@ func AnalyzeRepositories(sess *Session) {
 						fPath := GetChangePath(change)
 
 						// TODO Add an example of this
+						// FIXME This is where I have tracked the in-mem-clone issue to
 						fullFilePath := path + "/" + fPath
 
 						sess.Stats.IncrementFilesTotal()
@@ -194,13 +195,13 @@ func AnalyzeRepositories(sess *Session) {
 
 						// Check the file size of the file. If it is greater than the default size then
 						// then we increment the ignored file count and pass on through.
-						//if IsMaxFileSize(fullFilePath, sess) {
-						//
-						//	sess.Stats.IncrementFilesIgnored()
-						//	sess.Out.Debug("%s is too large and being ignored\n", fPath)
-						//
-						//	continue
-						//}
+						if IsMaxFileSize(fullFilePath, sess) {
+
+							sess.Stats.IncrementFilesIgnored()
+							sess.Out.Debug("%s is too large and being ignored\n", fPath)
+
+							continue
+						}
 
 						// Break a file name up into its composite pieces including the extension and base name
 						matchFile := newMatchFile(fullFilePath)

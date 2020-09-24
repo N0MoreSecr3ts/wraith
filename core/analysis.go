@@ -70,9 +70,11 @@ func GatherTargets(sess *Session) {
 	}
 }
 
-// TODO write a better description here
-
 // AnalyzeRepositories will clone the repos, grab their history for analysis of files and content.
+//  Before the analysis is done we also check various conditions that can be thought of as filters and
+//  are controlled by flags. If a directory, file, or the content pass through all of the filters then
+//  it is scanned once per each signature which may lead to a specific secret matching multiple rules
+//  and then generating multiple findings.
 func AnalyzeRepositories(sess *Session) {
 	sess.Stats.Status = StatusAnalyzing
 	if len(sess.Repositories) == 0 {
@@ -118,22 +120,23 @@ func AnalyzeRepositories(sess *Session) {
 					continue
 				}
 
+				// If we have cloned the repository successfully then we can increment the count
+				sess.Stats.IncrementRepositoriesCloned()
+
 				// Get the full commit history for the repo
 				history, err := GetRepositoryHistory(clone)
 				if err != nil {
 					sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", tid, *repo.CloneURL, err)
-					if sess.InMemClone {
-						err := os.RemoveAll(path)
-						sess.Out.Error("[THREAD #%d][%s] Error removing path from memory: %s\n", tid, *repo.CloneURL, err)
-					} else {
-						err := os.RemoveAll(path)
-						sess.Out.Error("[THREAD #%d][%s] Error removing path from disk: %s\n", tid, *repo.CloneURL, err)
-					}
+					err := os.RemoveAll(path)
+					sess.Out.Error("[THREAD #%d][%s] Error removing path from disk: %s\n", tid, *repo.CloneURL, err)
+
 					continue
 				}
-				//sess.Stats.IncrementRepositories()
-				//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
+
 				sess.Out.Debug("[THREAD #%d][%s] Number of commits: %d\n", tid, *repo.CloneURL, len(history))
+
+				// Add in the commits found to the repo into the running total of all commits found
+				sess.Stats.CommitsTotal = sess.Stats.CommitsTotal + len(history)
 
 				// For every commit in the history we want to look through it for any changes
 				// there is a known bug in here related to files that have changed paths from the most
@@ -147,7 +150,7 @@ func AnalyzeRepositories(sess *Session) {
 					// Increment the total number of commits. This needs to be used in conjunction with
 					// the total number of commits scanned as a commit may have issues and not be scanned once
 					// it is found.
-					sess.Stats.IncrementCommits()
+					sess.Stats.IncrementCommitsScanned()
 
 					// This will be used to increment the dirty commit stat if any matches are found. A dirty commit
 					// means that a secret was found in that commit. This provides an easier way to manually to look
@@ -155,9 +158,12 @@ func AnalyzeRepositories(sess *Session) {
 					dirtyCommit := false
 
 					changes, _ := GetChanges(commit, clone)
-					sess.Out.Debug("[THREAD #%d][%s] %s changes in %d\n", tid, *repo.CloneURL, commit.Hash, len(changes))
+					sess.Out.Debug("[THREAD #%d][%s] %d changes in %s\n", tid, *repo.CloneURL, len(changes), commit.Hash)
 
 					for _, change := range changes {
+
+						// The total number of files that were evaluated
+						sess.Stats.IncrementFilesTotal()
 
 						// TODO Is this need for the finding object, why are we saving this?
 						changeAction := GetChangeAction(change)
@@ -168,8 +174,6 @@ func AnalyzeRepositories(sess *Session) {
 						// TODO Add an example of this
 						// FIXME This is where I have tracked the in-mem-clone issue to
 						fullFilePath := path + "/" + fPath
-
-						sess.Stats.IncrementFilesTotal()
 
 						// required as that is a map of interfaces.
 						scanTests := DefaultValues["scan-tests"]
@@ -188,17 +192,18 @@ func AnalyzeRepositories(sess *Session) {
 						if likelyTestFile {
 							// If we are not scanning the file then by definition we are ignoring it
 							sess.Stats.IncrementFilesIgnored()
-							sess.Out.Debug("%s is a test file and being ignored\n", fPath)
+							sess.Out.Debug("[THREAD #%d][%s] %s is a test file and being ignored\n", tid, *repo.CloneURL, fPath)
 
 							continue
 						}
 
 						// Check the file size of the file. If it is greater than the default size then
 						// then we increment the ignored file count and pass on through.
-						if IsMaxFileSize(fullFilePath, sess) {
+						val, msg := IsMaxFileSize(fullFilePath, sess)
+						if val {
 
 							sess.Stats.IncrementFilesIgnored()
-							sess.Out.Debug("%s is too large and being ignored\n", fPath)
+							sess.Out.Debug("[THREAD #%d][%s] %s %s\n", tid, *repo.CloneURL, fPath, msg)
 
 							continue
 						}
@@ -210,17 +215,19 @@ func AnalyzeRepositories(sess *Session) {
 						// it from a scan we increment the ignored files count and pass on through.
 						if matchFile.isSkippable(sess) {
 							sess.Stats.IncrementFilesIgnored()
-							sess.Out.Debug("%s is skippable and being ignored\n", fPath)
+							sess.Out.Debug("[THREAD #%d][%s] %s is skippable and being ignored\n", tid, *repo.CloneURL, fPath)
 
 							continue
 						}
 
-						// The total number of files that were evaluated
-						sess.Stats.IncrementFilesTotal()
-
 						// We are now finally at the point where we are going to scan a file so we implement
 						// that count.
 						sess.Stats.IncrementFilesScanned()
+
+						// We set this to a default of fale and will be used at the end of matching to
+						// increment the file count. If we try and do this in the loop it will hit for every
+						// signature and give us a false count.
+						dirtyFile := false
 
 						// for each signature that is loaded scan the file as a whole and generate a map of
 						// the match and the line number the match was found on
@@ -229,8 +236,8 @@ func AnalyzeRepositories(sess *Session) {
 							bMatched, matchMap := signature.ExtractMatch(matchFile, sess, change)
 							if bMatched {
 
-								// Incremented the count of files that contain secrets
-								sess.Stats.IncrementFilesDirty()
+								dirtyFile = true
+								dirtyCommit = true
 
 								// content will hold the secret found within the target
 								var content string
@@ -274,41 +281,25 @@ func AnalyzeRepositories(sess *Session) {
 									}
 									// Set the urls for the finding
 									finding.Initialize(sess)
-									//fNew := true
 
-									//for _, f := range sess.Findings { // TODO this is for de-duping if needed
-									//	if f.CommitHash == finding.CommitHash && f.SecretID == finding.SecretID && f.Description == finding.Description {
-									//		fNew = false
-									//		continue
-									//	}
-									//}
+									// Add it to the session
+									sess.AddFinding(finding)
+									sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)
 
-									if true {
-										// Add it to the session
-										sess.AddFinding(finding)
-										sess.Out.Debug("[THREAD #%d][%s] Done analyzing changes in %s\n", tid, *repo.CloneURL, commit.Hash)
-
-										dirtyCommit = true
-
-										// Print realtime data to stdout
-										realTimeOutput(finding, sess)
-									}
-
+									// Print realtime data to stdout
+									realTimeOutput(finding, sess)
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
-								if sess.InMemClone {
-									err = os.RemoveAll(path)
-									if err != nil {
-										sess.Out.Error("Could not remove path from memory: %s", err.Error())
-									}
-								}
 								sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
-								//sess.Stats.IncrementRepositoriesScanned()
 								//sess.Stats.UpdateProgress(sess.Stats.RepositoriesScanned, len(sess.Repositories))
 							}
 						}
+						if dirtyFile {
+							sess.Out.Debug("this is the file getting added: %s \n", fullFilePath)
+							sess.Stats.IncrementFilesDirty()
+						}
 					}
-					// Increment the number of commits that were found t be dirty
+					// Increment the number of commits that were found to be dirty
 					if dirtyCommit {
 						sess.Stats.IncrementCommitsDirty()
 					}

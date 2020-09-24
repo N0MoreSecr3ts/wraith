@@ -30,6 +30,7 @@ var scanGithubCmd = &cobra.Command{
 
 		// Check for a token. If no token is present we should default to scan but give a message
 		// that no token is available so only public repos will be scanned
+		// TODO do not exit out if no token but drop a message saying only public repos will be scanned
 		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithub.GetString("github-api-token"), sess)
 
 		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
@@ -47,33 +48,30 @@ var scanGithubCmd = &cobra.Command{
 		// If we have github users and no orgs or repos then we default to scan
 		// the visible repos of that user.
 		if sess.UserLogins != nil && sess.UserOrgs == nil && sess.UserRepos == nil {
-			//fmt.Println("I should not be here in the user") // TODO remove me
-			//if sess.UserOrgs == nil && sess.UserRepos == nil {
-			//sess.Out.Debug("I am scanning all the repos for the user(s) %s.\n", sess.UserLogins) // TODO remove me
+
 			core.GatherUsers(sess)
-			core.GetGithubRepositoriesFromOwner(sess)
-			//}
+			core.GatherGithubRepositoriesFromOwner(sess)
+
 		} else if sess.UserOrgs != nil && sess.UserLogins == nil && sess.UserRepos == nil {
-			//fmt.Println("I should not be here in the org") // TODO remove me
+
 			// If the user has only given orgs then we grab all te repos from those orgs
-			//if sess.UserLogins == nil && sess.UserRepos == nil {
-			//sess.Out.Debug("I am scanning all the repos for the org(s) %s.\n", sess.UserOrgs) // TODO remove me
 			core.GatherOrgs(sess)
 			core.GatherGithubOrgRepositories(sess)
-			//}
+
 		} else if sess.UserRepos != nil && sess.UserOrgs != nil {
-			//fmt.Println("I should be here in the first step") // TODO remove me
+
 			// If we have repo(s) given we need to ensure that we also have orgs or users. Wraith will then
 			// look for the repo in the user or login lists and scan it.
-			//if sess.UserOrgs != nil {
-			//sess.Out.Debug("I am scanning the repo(s) %s in the org(s) %s.\n", sess.UserRepos, sess.UserOrgs) // TODO remove me
 			core.GatherOrgs(sess)
 			core.GatherGithubOrgRepositories(sess)
 		} else if sess.UserRepos != nil && sess.UserLogins != nil {
-			//sess.Out.Debug("I am scanning the repo(s) %s for the user(s) %s.\n", sess.UserRepos, sess.UserLogins) // TODO remove me
+
+			// If we have repos and users then we are going to scan for the repo in that users account
 			core.GatherUsers(sess)
-			core.GetGithubRepositoriesFromOwner(sess)
+			core.GatherGithubRepositoriesFromOwner(sess)
 		} else {
+			// Catchall for not being able to scan any as either we have no information or
+			// we don't have the rights kinds of information
 			sess.Out.Error("You need to specify an org or user that contains the repo(s).\n")
 			os.Exit(1)
 		}

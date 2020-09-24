@@ -25,7 +25,7 @@ const (
 var isGithub bool
 
 // binaryFS  holds a filesystem handle
-type binaryFS struct { // TODO fix this
+type binaryFS struct {
 	fs http.FileSystem
 }
 

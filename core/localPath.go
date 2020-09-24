@@ -85,10 +85,14 @@ func DoFileScan(filename string, sess *Session) {
 		return
 	}
 
-	if IsMaxFileSize(filename, sess) {
-		sess.Out.Debug("%s is too large and being ignored\n", filename)
+	// Check the file size of the file. If it is greater than the default size then
+	// then we increment the ignored file count and pass on through.
+	val, msg := IsMaxFileSize(filename, sess)
+	if val {
 
 		sess.Stats.IncrementFilesIgnored()
+		sess.Out.Debug("%s %s\n", filename, msg)
+
 		return
 	}
 

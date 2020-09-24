@@ -27,7 +27,7 @@ type Stats struct { // TODO alpha sort this
 	Users               int // Github users
 	Targets             int // The number of dirs, people, orgs, etc on the command line or config file (what do you want wraith to enumerate on)
 	Repositories        int // This will point to Repositories Scanned
-	Commits             int // This will point to commits scanned
+	CommitsTotal        int // This will point to commits scanned
 	Findings            int // This will point to findings total
 	Files               int // This will point to FilesScanned
 }
@@ -142,7 +142,7 @@ func (s *Session) InitStats() {
 		Users:         0,
 		Targets:       0,
 		Repositories:  0,
-		Commits:       0,
+		CommitsTotal:  0,
 		Findings:      0,
 		Files:         0,
 	}
@@ -166,7 +166,8 @@ func PrintSessionStats(sess *Session) {
 	sess.Out.Info("Repos Found.........: %d\n", sess.Stats.RepositoriesTotal)
 	sess.Out.Info("Repos Cloned........: %d\n", sess.Stats.RepositoriesCloned)
 	sess.Out.Info("Repos Scanned.......: %d\n", sess.Stats.RepositoriesScanned)
-	sess.Out.Info("Commits Scanned.....: %d\n", sess.Stats.Commits)
+	sess.Out.Info("Commits Total.......: %d\n", sess.Stats.CommitsTotal)
+	sess.Out.Info("Commits Scanned.....: %d\n", sess.Stats.CommitsScanned)
 	sess.Out.Info("Commits Dirty.......: %d\n", sess.Stats.CommitsDirty)
 	sess.Out.Important("\n")
 	sess.Out.Important("-------General-------\n")

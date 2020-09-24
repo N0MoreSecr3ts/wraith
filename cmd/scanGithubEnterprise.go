@@ -66,7 +66,7 @@ var scanGithubEnterpriseCmd = &cobra.Command{
 				core.GatherGithubOrgRepositories(sess)
 			} else if sess.UserLogins != nil {
 				core.GatherUsers(sess)
-				core.GetGithubRepositoriesFromOwner(sess)
+				core.GatherGithubRepositoriesFromOwner(sess)
 			} else {
 				sess.Out.Error("You need to specify an org or user that contains the repo(s).\n")
 				os.Exit(1)

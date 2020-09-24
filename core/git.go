@@ -308,12 +308,6 @@ func (s *Session) InitGitClient() {
 	}
 }
 
-//	sess.Out.Debug("[THREAD #%d][%s] Skipping %s\n", threadID, *repo.CloneURL, matchTarget.Path) // TODO implement me
-//
-//sess.Out.Debug("[THREAD #%d][%s] Inspecting file: %s...\n", threadID, *repo.CloneURL, matchTarget.Path) // TODO implement me
-//
-//			sess.Out.Error(fmt.Sprintf("Error while performing file match: %s\n", err))
-
 // cloneRepository will clone a given repository based upon a configured set or options a user provides.
 // This is a catchall for all different types of repos and create a single entry point for cloning a repo.
 func cloneRepository(sess *Session, repo *Repository, threadID int) (*git.Repository, string, error) {
@@ -382,7 +376,7 @@ func cloneRepository(sess *Session, repo *Repository, threadID int) (*git.Reposi
 			return nil, "", err
 		}
 	}
-	sess.Stats.IncrementRepositoriesCloned()
+	//sess.Stats.IncrementRepositoriesCloned()
 	//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 	sess.Out.Debug("[THREAD #%d][%s] Cloned repository to: %s\n", threadID, *repo.CloneURL, path)
 	return clone, path, err

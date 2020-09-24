@@ -383,7 +383,7 @@ func (s SafeFunctionSignature) ExtractMatch(file MatchFile, sess *Session, chang
 func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { // TODO we don't need to bring in session here
 
 	// ensure that we have the proper home directory
-	filePath = SetHomeDir(filePath)
+	filePath = SetHomeDir(filePath, sess)
 
 	c, err := loadSignatureSet(filePath)
 	if err != nil {

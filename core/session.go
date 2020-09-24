@@ -185,7 +185,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.LocalDirs = v.GetStringSlice("local-dirs")
 	s.MaxFileSize = v.GetInt64("max-file-size")
 	s.ConfidenceLevel = v.GetInt("confidence-level")
-	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement
+	s.ScanFork = v.GetBool("scan-forks")
 	s.ScanTests = v.GetBool("scan-tests")
 	s.ScanType = scanType
 	s.Silent = v.GetBool("silent")
@@ -199,14 +199,9 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	}
 
 	// add any additional paths the user requested to exclude to the pre-defined slice
-	userIgnorePath := v.GetString("ignore-path")
-	if userIgnorePath != "" {
-		p := strings.Split(v.GetString("ignore-path"), ",") // TODO make slice
-
-		for _, e := range p {
-			e = strings.TrimSpace(e)
-			s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
-		}
+	for _, e := range v.GetStringSlice("ignore-path") {
+		e = strings.TrimSpace(e)
+		s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
 	}
 
 	// the default ignorable extensions
@@ -215,14 +210,9 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	}
 
 	// add any additional extensions the user requested to ignore
-	userIgnoreExtensions := v.GetString("ignore-extension")
-	if userIgnoreExtensions != "" {
-		e := strings.Split(userIgnoreExtensions, ",") // TODO make slice
-
-		for _, f := range e {
-			f = strings.TrimSpace(f)
-			s.SkippableExt = AppendIfMissing(s.SkippableExt, f)
-		}
+	for _, f := range v.GetStringSlice("ignore-extension") {
+		f = strings.TrimSpace(f)
+		s.SkippableExt = AppendIfMissing(s.SkippableExt, f)
 	}
 
 	s.InitStats()
@@ -235,19 +225,16 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 	var curSig []Signature
 	var combinedSig []Signature
-	SignaturesFile := v.GetString("signature-file")
-	if SignaturesFile != "" {
-		Signatures := strings.Split(SignaturesFile, ",") // TODO make slice
 
-		for _, f := range Signatures {
-			f = strings.TrimSpace(f)
-			h := SetHomeDir(f)
-			if PathExists(h, s) {
-				curSig = LoadSignatures(h, s.ConfidenceLevel, s)
-				combinedSig = append(combinedSig, curSig...)
-			}
+	// TODO need to catch this error here
+	for _, f := range v.GetStringSlice("signature-file") {
+		f = strings.TrimSpace(f)
+		h := SetHomeDir(f, s)
+		if PathExists(h, s) {
+			curSig = LoadSignatures(h, s.ConfidenceLevel, s)
+			combinedSig = append(combinedSig, curSig...)
 		}
-	} // TODO need to catch this error here
+	}
 	Signatures = combinedSig
 }
 
@@ -291,7 +278,6 @@ func (s *Session) AddRepository(repository *Repository) {
 		}
 	}
 	s.Repositories = append(s.Repositories, repository)
-	s.Stats.IncrementRepositoriesTotal()
 
 }
 
@@ -352,11 +338,11 @@ func (s *Stats) IncrementRepositories() {
 	s.Repositories++
 }
 
-// IncrementCommits will add one to the running count of commits during the target discovery phase of a session
-func (s *Stats) IncrementCommits() {
+// IncrementCommitsTotal will add one to the running count of commits during the target discovery phase of a session
+func (s *Stats) IncrementCommitsTotal() {
 	s.Lock()
 	defer s.Unlock()
-	s.Commits++
+	s.CommitsTotal++
 }
 
 // IncrementFiles will add one to the running count of files during the target discovery phase of a session

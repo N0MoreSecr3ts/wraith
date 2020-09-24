@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"github.com/mitchellh/go-homedir"
 	"os"
 	"path/filepath"
@@ -50,15 +49,13 @@ func AppendIfMissing(slice []string, s string) []string {
 	return append(slice, s)
 }
 
-// TODO Bring in the session var so we can use the built in logging
-
 // SetHomeDir will set the correct homedir.
-func SetHomeDir(h string) string {
+func SetHomeDir(h string, sess *Session) string {
 
 	if strings.Contains(h, "$HOME") {
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
+			sess.Out.Error(err.Error())
 			os.Exit(2)
 		}
 
@@ -68,7 +65,7 @@ func SetHomeDir(h string) string {
 	if strings.Contains(h, "~") {
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
+			sess.Out.Error(err.Error())
 			os.Exit(2)
 		}
 		h = strings.Replace(h, "~", home, -1)
@@ -101,22 +98,22 @@ func realTimeOutput(finding *Finding, sess *Session) {
 }
 
 // IsMaxFileSize will determine if the file size is under the max limit set by maxFileSize
-func IsMaxFileSize(filename string, sess *Session) bool {
+func IsMaxFileSize(filename string, sess *Session) (bool, string) {
 
 	fi, err := os.Stat(filename)
 
 	if err != nil {
-		return true
+		return true, "does not exist"
 	}
 
 	fileSize := fi.Size()
-	var FileMaxSize int64
-	FileMaxSize = sess.MaxFileSize * 1024 * 1024
+	var maxFileSize int64
+	maxFileSize = sess.MaxFileSize * 1024 * 1024
 
-	if fileSize > FileMaxSize {
-		return true
+	if fileSize > maxFileSize {
+		return true, "is too large"
 	}
-	return false
+	return false, ""
 }
 
 // isTestFileOrPath will run various regex's against a target to determine if it is a test file or contained in a test directory.

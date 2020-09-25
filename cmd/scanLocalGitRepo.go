@@ -33,7 +33,9 @@ var scanLocalGitRepoCmd = &cobra.Command{
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
-		core.WriteOutput(sess)
+		if sess.JSONOutput || sess.CSVOutput {
+			core.WriteOutput(sess)
+		}
 
 		core.PrintSessionStats(sess)
 
@@ -65,7 +67,8 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
 	scanLocalGitRepoCmd.Flags().Bool("no-expand-orgs", false, "Don't add members to targets when processing organizations")
 	scanLocalGitRepoCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
-	scanLocalGitRepoCmd.Flags().String("output-file", "", "File to write results as CSV or JSON. Must specify format with --json or --csv")
+	scanLocalGitRepoCmd.Flags().String("output-dir", "./", "Write csv and/or json files to directory")
+	scanLocalGitRepoCmd.Flags().String("output-prefix", "wraith", "Prefix to prepend to datetime stamp for output files")
 	scanLocalGitRepoCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanLocalGitRepoCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 	scanLocalGitRepoCmd.Flags().Bool("silent", false, "No output")
@@ -85,7 +88,8 @@ func init() {
 	err = viperScanLocalGitRepo.BindPFlag("match-level", scanLocalGitRepoCmd.Flags().Lookup("match-level"))
 	err = viperScanLocalGitRepo.BindPFlag("max-file-size", scanLocalGitRepoCmd.Flags().Lookup("max-file-size"))
 	err = viperScanLocalGitRepo.BindPFlag("no-expand-orgs", scanLocalGitRepoCmd.Flags().Lookup("no-expand-orgs"))
-	err = viperScanLocalGitRepo.BindPFlag("output-file", scanLocalGitRepoCmd.Flags().Lookup("output-file"))
+	err = viperScanLocalGitRepo.BindPFlag("output-dir", scanGithubCmd.Flags().Lookup("output-dir"))
+	err = viperScanLocalGitRepo.BindPFlag("output-prefix", scanGithubCmd.Flags().Lookup("output-prefix"))
 	err = viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
 	err = viperScanLocalGitRepo.BindPFlag("scan-tests", scanLocalGitRepoCmd.Flags().Lookup("scan-tests"))
 	err = viperScanLocalGitRepo.BindPFlag("signature-file", scanLocalGitRepoCmd.Flags().Lookup("signature-file"))

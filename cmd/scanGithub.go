@@ -35,7 +35,9 @@ var scanGithubCmd = &cobra.Command{
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
-		core.WriteOutput(sess)
+		if sess.JSONOutput || sess.CSVOutput {
+			core.WriteOutput(sess)
+		}
 
 		core.PrintSessionStats(sess)
 
@@ -69,7 +71,8 @@ func init() {
 	scanGithubCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
 	scanGithubCmd.Flags().Bool("no-expand-orgs", false, "Don't add members to targets when processing organizations")
 	scanGithubCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
-	scanGithubCmd.Flags().String("output-file", "", "File to write results as CSV or JSON. Must specify format with --json or --csv")
+	scanGithubCmd.Flags().String("output-dir", "./", "Write csv and/or json files to directory")
+	scanGithubCmd.Flags().String("output-prefix", "wraith", "Prefix to prepend to datetime stamp for output files")
 	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 	scanGithubCmd.Flags().Bool("silent", false, "No output")
@@ -92,7 +95,8 @@ func init() {
 	err = viperScanGithub.BindPFlag("max-file-size", scanGithubCmd.Flags().Lookup("max-file-size"))
 	err = viperScanGithub.BindPFlag("no-expand-orgs", scanGithubCmd.Flags().Lookup("no-expand-orgs"))
 	err = viperScanGithub.BindPFlag("num-threads", scanGithubCmd.Flags().Lookup("num-threads"))
-	err = viperScanGithub.BindPFlag("output-file", scanGithubCmd.Flags().Lookup("output-file"))
+	err = viperScanGithub.BindPFlag("output-dir", scanGithubCmd.Flags().Lookup("output-dir"))
+	err = viperScanGithub.BindPFlag("output-prefix", scanGithubCmd.Flags().Lookup("output-prefix"))
 	err = viperScanGithub.BindPFlag("scan-tests", scanGithubCmd.Flags().Lookup("scan-tests"))
 	err = viperScanGithub.BindPFlag("signature-file", scanGithubCmd.Flags().Lookup("signature-file"))
 	err = viperScanGithub.BindPFlag("silent", scanGithubCmd.Flags().Lookup("silent"))

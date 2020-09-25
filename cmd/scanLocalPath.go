@@ -57,7 +57,9 @@ var scanLocalPathCmd = &cobra.Command{
 
 		sess.Finish()
 
-		core.WriteOutput(sess)
+		if sess.JSONOutput || sess.CSVOutput {
+			core.WriteOutput(sess)
+		}
 
 		core.PrintSessionStats(sess)
 
@@ -82,7 +84,8 @@ func init() {
 	scanLocalPathCmd.Flags().Bool("json", false, "Write results to --output-file in JSON format")
 	scanLocalPathCmd.Flags().Int64("max-file-size", 50, "Max file size to scan")
 	scanLocalPathCmd.Flags().Int("match-level", 3, "The match level of the expressions used to find matches")
-	scanLocalPathCmd.Flags().String("output-file", "", "File to write results as CSV or JSON. Must specify format with --json or --csv")
+	scanLocalPathCmd.Flags().String("output-dir", "./", "Write csv and/or json files to directory")
+	scanLocalPathCmd.Flags().String("output-prefix", "wraith", "Prefix to prepend to datetime stamp for output files")
 	scanLocalPathCmd.Flags().String("scan-dir", "", "scan a directory of files not from a git project")
 	scanLocalPathCmd.Flags().String("scan-file", "", "scan a single file")
 	scanLocalPathCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
@@ -98,7 +101,8 @@ func init() {
 	err = viperScanLocalPath.BindPFlag("json", scanLocalPathCmd.Flags().Lookup("json"))
 	err = viperScanLocalPath.BindPFlag("max-file-size", scanLocalPathCmd.Flags().Lookup("max-file-size"))
 	err = viperScanLocalPath.BindPFlag("match-level", scanLocalPathCmd.Flags().Lookup("match-level"))
-	err = viperScanLocalPath.BindPFlag("output-file", scanLocalPathCmd.Flags().Lookup("output-file"))
+	err = viperScanLocalPath.BindPFlag("output-dir", scanGithubCmd.Flags().Lookup("output-dir"))
+	err = viperScanLocalPath.BindPFlag("output-prefix", scanGithubCmd.Flags().Lookup("output-prefix"))
 	err = viperScanLocalPath.BindPFlag("scan-dir", scanLocalPathCmd.Flags().Lookup("scan-dir"))
 	err = viperScanLocalPath.BindPFlag("scan-file", scanLocalPathCmd.Flags().Lookup("scan-file"))
 	err = viperScanLocalPath.BindPFlag("scan-tests", scanLocalPathCmd.Flags().Lookup("scan-tests"))

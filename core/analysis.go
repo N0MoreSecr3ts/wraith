@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -534,40 +535,45 @@ func AnalyzeRepositories(sess *Session) {
 
 // WriteOutput will write a csv or json file to disk based on user specified options containing discovered findings
 func WriteOutput(sess *Session) {
+	t := time.Now()
+	f := fmt.Sprintf("%s_%s", sess.OutputPrefix, t.Format("20060102150405"))
+	outFile :=  strings.ReplaceAll(path.Join(sess.OutputDir,f),"\\","/")
+	sess.Out.Info("Preparing to write results to %s. CSV: %t; JSON: %t\n", outFile, sess.CSVOutput, sess.JSONOutput)
 	if len(sess.Findings) > 0 {
-		if len(sess.OutputFile) != 0 {
-			f, err := os.Create(sess.OutputFile)
+		if sess.CSVOutput == true {
+			csvFile := fmt.Sprintf("%s.%s",outFile,"csv")
+			sess.Out.Info("Writing results in CSV format to: %s\n", csvFile)
+			f, err := os.Create(csvFile)
 			if err != nil {
 				sess.Out.Error("Failed writing to csv with error:\n%s\n", err)
 			}
 			defer f.Close()
-			if sess.CSV == true {
-				sess.Out.Info("Writing results in CSV format to: %s\n", sess.OutputFile)
-				w := csv.NewWriter(f)
-				defer w.Flush()
-
-				fields := sess.Findings[0].getFieldNames()
-				w.Write(fields)
-				for _, v := range sess.Findings {
-					_ = w.Write(v.getValues())
-				}
-				w.Flush()
-				f.Close()
-			} else if sess.JSON == true {
-				sess.Out.Info("Writing results in JSON format to: %s\n", sess.OutputFile)
-				b, err := json.MarshalIndent(sess.Findings, "", "    ")
-				if err != nil {
-					sess.Out.Error("Encountered error marshaling findings to json: %s\n",err)
-					return
-				}
-				c := string(b)
-				f.WriteString(c)
-				f.Close()
-			} else {
-				sess.Out.Debug("Didn't specify --csv or --json, no results written to disk\n")
+			w := csv.NewWriter(f)
+			defer w.Flush()
+			fields := sess.Findings[0].getFieldNames()
+			w.Write(fields)
+			for _, v := range sess.Findings {
+				_ = w.Write(v.getValues())
 			}
-		} else {
-			sess.Out.Debug("Didn't specify --output-file to write to, no results written to disk\n")
+			w.Flush()
+			f.Close()
+		}
+		if sess.JSONOutput == true {
+			jsonFile := fmt.Sprintf("%s.%s",outFile,"json")
+			sess.Out.Info("Writing results in JSON format to: %s\n", jsonFile)
+			f, err := os.Create(jsonFile)
+			if err != nil {
+				sess.Out.Error("Failed writing to json with error:\n%s\n", err)
+			}
+			defer f.Close()
+			b, err := json.MarshalIndent(sess.Findings, "", "    ")
+			if err != nil {
+				sess.Out.Error("Encountered error marshaling findings to json: %s\n",err)
+				return
+			}
+			c := string(b)
+			f.WriteString(c)
+			f.Close()
 		}
 	} else {
 		sess.Out.Info("No findings\n")

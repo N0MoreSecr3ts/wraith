@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"github.com/spf13/viper"
+	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -28,6 +29,15 @@ var scanLocalGitRepoCmd = &cobra.Command{
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
+
+		sess.UserDirtyRepos = viperScanLocalGitRepo.GetString("local-dirs")
+
+		if sess.UserDirtyRepos == "" {
+			fmt.Println("You must enter a repo[s] to scan")
+			os.Exit(1)
+		}
+
+		core.ValidateGHInput(sess)
 
 		core.GatherLocalRepositories(sess)
 		core.AnalyzeRepositories(sess)
@@ -88,9 +98,9 @@ func init() {
 	err = viperScanLocalGitRepo.BindPFlag("match-level", scanLocalGitRepoCmd.Flags().Lookup("match-level"))
 	err = viperScanLocalGitRepo.BindPFlag("max-file-size", scanLocalGitRepoCmd.Flags().Lookup("max-file-size"))
 	err = viperScanLocalGitRepo.BindPFlag("no-expand-orgs", scanLocalGitRepoCmd.Flags().Lookup("no-expand-orgs"))
+  err = viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
 	err = viperScanLocalGitRepo.BindPFlag("output-dir", scanGithubCmd.Flags().Lookup("output-dir"))
 	err = viperScanLocalGitRepo.BindPFlag("output-prefix", scanGithubCmd.Flags().Lookup("output-prefix"))
-	err = viperScanLocalGitRepo.BindPFlag("num-threads", scanLocalGitRepoCmd.Flags().Lookup("num-threads"))
 	err = viperScanLocalGitRepo.BindPFlag("scan-tests", scanLocalGitRepoCmd.Flags().Lookup("scan-tests"))
 	err = viperScanLocalGitRepo.BindPFlag("signature-file", scanLocalGitRepoCmd.Flags().Lookup("signature-file"))
 	err = viperScanLocalGitRepo.BindPFlag("silent", scanLocalGitRepoCmd.Flags().Lookup("silent"))

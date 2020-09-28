@@ -29,8 +29,13 @@ var scanGitlabCmd = &cobra.Command{
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
+		// TODO need to validate this
+		sess.GitlabAccessToken = viperScanGitlab.GetString("gitlab-api-token")
+
+		sess.InitGitClient()
+
 		core.GatherTargets(sess)
-		core.GatherRepositories(sess)
+		core.GatherGitlabRepositories(sess)
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
@@ -90,7 +95,7 @@ func init() {
 	err = viperScanGitlab.BindPFlag("json", scanGitlabCmd.Flags().Lookup("json"))
 	err = viperScanGitlab.BindPFlag("match-level", scanGitlabCmd.Flags().Lookup("match-level"))
 	err = viperScanGitlab.BindPFlag("max-file-size", scanGitlabCmd.Flags().Lookup("max-file-size"))
-	err = viperScanGitlab.BindPFlag("no-expand-orgs", scanGitlabCmd.Flags().Lookup("no-expand-orgs"))
+	err = viperScanGitlab.BindPFlag("expand-orgs", scanGitlabCmd.Flags().Lookup("expand-orgs"))
 	err = viperScanGitlab.BindPFlag("num-threads", scanGitlabCmd.Flags().Lookup("num-threads"))
 	err = viperScanGitlab.BindPFlag("output-dir", scanGithubCmd.Flags().Lookup("output-dir"))
 	err = viperScanGitlab.BindPFlag("output-prefix", scanGithubCmd.Flags().Lookup("output-prefix"))

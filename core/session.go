@@ -3,8 +3,12 @@ package core
 
 import (
 	"encoding/json"
+	//"context"
 	"fmt"
+	"github.com/google/go-github/github"
+	//"golang.org/x/oauth2"
 	"io/ioutil"
+	//"net/url"
 	"os"
 	"runtime"
 	"strings"
@@ -40,7 +44,7 @@ var DefaultValues = map[string]interface{}{
 	"config-file":      "$HOME/.wraith/config.yaml",
 	"debug":            false,
 	"enterprise-scan":	false,
-	"enterprise-url":	"",
+	"enterprise-url":	  "",
 	"github-targets":   "",
 	"github-api-token": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXVZabcd",
 	"gitlab-targets":   "",
@@ -59,14 +63,20 @@ var DefaultValues = map[string]interface{}{
 	"CSVOutput":        false,
 	"JSONOutput":       false,
 	"match-level":      3,
-	"output-dir":		"./",
-	"output-prefix":	"wraith",
+	"output-dir":		    "./",
+	"output-prefix":	  "wraith",
 	"signature-file":   "$HOME/.wraith/signatures/default.yml",
 	"signature-path":   "$HOME/.wraith/signatures/",
 	"signature-url":    "",
 	"scan-dir":         "",
 	"scan-file":        "",
 	"hide-secrets":     false,
+	"github-url":       "https://api.github.com",
+	"gitlab-url":       "", // TODO set the default
+	"rules-url":        "git@example.com:foo/bar.git",
+	"github-orgs":      "",
+	"github-repos":     "",
+	"github-users":     "",
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -79,13 +89,17 @@ type Session struct {
 	CommitDepth       int
 	CSVOutput         bool
 	Debug             bool
+	ExpandOrgs        bool
 	Findings          []*Finding
 	GithubAccessToken string
 	EnterpriseScan    bool
 	EnterpriseURL     string
+  Organizations     []*github.Organization
+	GithubClient        *github.Client `json:"-"`
 	GithubTargets     []string
 	GitlabAccessToken string
 	GitlabTargets     []string
+  GithubUsers         []*github.User
 	HideSecrets       bool
 	InMemClone        bool
 	JSONOutput        bool
@@ -111,6 +125,25 @@ type Session struct {
 	Threads           int
 	Version           string
 	MatchLevel        int
+  GithubURL           string
+	GitlabURL           string
+	UserDirtyNames      string
+	UserDirtyOrgs       string
+	UserDirtyRepos      string
+	UserLogins          []string
+	UserOrgs            []string
+	UserRepos           []string
+
+type githubRepository struct {
+	Owner         *string
+	ID            *int64
+	Name          *string
+	FullName      *string
+	CloneURL      *string
+	URL           *string
+	DefaultBranch *string
+	Description   *string
+	Homepage      *string
 }
 
 // setConfig will set the defaults, and load a config file and environment variables if they are present
@@ -148,8 +181,8 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
 	s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
-	s.EnterpriseScan = v.GetBool("enterprise-scan")
-	s.EnterpriseURL = v.GetString("enterprise-url")
+	s.ExpandOrgs = v.GetBool("expaand-orgs")
+	s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")
@@ -207,13 +240,6 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitStats()
 	s.InitLogger()
 	s.InitThreads()
-	s.InitAPIClient()
-
-	// checking enterprise parameters here so logger is initialized
-	if (s.EnterpriseScan == false && len(s.EnterpriseURL) > 0) || (s.EnterpriseScan == true && len(s.EnterpriseURL) == 0) {
-		s.Out.Error("To scan an enterprise instance, both --enterprise-scan and --enterprise-url parameters are required")
-		os.Exit(1)
-	}
 
 	if !s.Silent {
 		s.InitRouter()
@@ -290,53 +316,55 @@ func (s *Session) AddFinding(finding *Finding) {
 	s.Stats.IncrementFindingsTotal()
 }
 
-// InitStats will set the initial values for a session
-func (s *Session) InitStats() {
-	if s.Stats != nil {
-		return
-	}
-	s.Stats = &Stats{
-		FilesIgnored:  0,
-		FilesScanned:  0,
-		FindingsTotal: 0,
-		Organizations: 0,
-		Progress:      0.0,
-		StartedAt:     time.Now(),
-		Status:        StatusFinished,
-		Users:         0,
-		Targets:       0,
-		Repositories:  0,
-		Commits:       0,
-		Findings:      0,
-		Files:         0,
-	}
-}
-
-// InitLogger will initialize the logger for the session
-func (s *Session) InitLogger() {
-	s.Out = &Logger{}
-	s.Out.SetDebug(s.Debug)
-	s.Out.SetSilent(s.Silent)
-}
+// InitGithubClient will create a new github client of the type given by the input string. Currently Enterprise and github.com are supported
+//func (s *Session) InitAPIClient() {
+//	ctx := context.Background()
+//	ts := oauth2.StaticTokenSource(
+//		&oauth2.Token{AccessToken: s.GithubAccessToken},
+//	)
+//	tc := oauth2.NewClient(ctx, ts)
+//
+//	if s.ScanType == "github-enterprise" {
+//
+//		if s.GithubEnterpriseURL != "" {
+//
+//			_, err := url.Parse(s.GithubEnterpriseURL)
+//			if err != nil {
+//				s.Out.Error("Unable to parse --github-enterprise-url: <%s>", s.GithubEnterpriseURL)
+//			}
+//		}
+//		s.GithubClient, _ = github.NewEnterpriseClient(s.GithubEnterpriseURL, "", tc)
+//	}
+//
+//	if t == "github" {
+//		if s.GithubURL != "" {
+//			_, err := url.Parse(s.GithubURL)
+//			if err != nil {
+//				s.Out.Error("Unable to parse --github-url: <%s>", s.GithubURL)
+//			}
+//		}
+//		s.GithubClient = github.NewClient(tc)
+//	}
+//}
 
 // InitAPIClient will create a new gitlab or github api client based on the session identifier
-func (s *Session) InitAPIClient() {
-
-	switch s.ScanType {
-	case "github":
-		CheckGithubAPIToken(s.GithubAccessToken, s)
-		s.Client = githubClient.NewClient(githubClient{}, s)
-	case "gitlab":
-		CheckGitlabAPIToken(s.GitlabAccessToken, s)
-		var err error
-		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out)
-		if err != nil {
-			s.Out.Fatal("Error initializing GitLab client: %s", err)
-		}
-	default:
-		// TODO put something in here when needed
-	}
-}
+//func (s *Session) InitAPIClient() {
+//
+//	switch s.ScanType {
+//	case "github":
+//		CheckGithubAPIToken(s.GithubAccessToken, s)
+//		s.Client = githubClient.NewClient(githubClient{}, s)
+//	case "gitlab":
+//		CheckGitlabAPIToken(s.GitlabAccessToken, s)
+//		var err error
+//		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out)
+//		if err != nil {
+//			s.Out.Fatal("Error initializing GitLab client: %s", err)
+//		}
+//	default:
+//		// TODO put something in here when needed
+//	}
+//}
 
 // InitThreads will set the correct number of threads based on the commandline flags
 func (s *Session) InitThreads() {
@@ -418,7 +446,7 @@ func (s *Stats) UpdateProgress(current int, total int) {
 }
 
 // NewSession  is the entry point for starting a new scan session
-func NewSession(v *viper.Viper, scanType string) *Session {
+func NewSession(v *viper.Viper, scanType string) *Session { // TODO refactor out this function
 	var session Session
 
 	session.Initialize(v, scanType)

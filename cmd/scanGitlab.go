@@ -74,7 +74,7 @@ func init() {
 	scanGitlabCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
 	scanGitlabCmd.Flags().Bool("no-expand-orgs", false, "Don't add members to targets when processing organizations")
 	scanGitlabCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
-	scanGitlabCmd.Flags().String("output-dir", "./", "Write csv and/or json files to directory")
+	scanGitlabCmd.Flags().String("output-dir", "$HOME/.wraith/", "Write csv and/or json files to directory")
 	scanGitlabCmd.Flags().String("output-prefix", "wraith", "Prefix to prepend to datetime stamp for output files")
 	scanGitlabCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanGitlabCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")

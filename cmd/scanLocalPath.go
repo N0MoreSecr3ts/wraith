@@ -84,7 +84,7 @@ func init() {
 	scanLocalPathCmd.Flags().Bool("json", false, "Write results to --output-file in JSON format")
 	scanLocalPathCmd.Flags().Int64("max-file-size", 50, "Max file size to scan")
 	scanLocalPathCmd.Flags().Int("match-level", 3, "The match level of the expressions used to find matches")
-	scanLocalPathCmd.Flags().String("output-dir", "./", "Write csv and/or json files to directory")
+	scanLocalPathCmd.Flags().String("output-dir", "$HOME/.wraith/", "Write csv and/or json files to directory")
 	scanLocalPathCmd.Flags().String("output-prefix", "wraith", "Prefix to prepend to datetime stamp for output files")
 	scanLocalPathCmd.Flags().String("scan-dir", "", "scan a directory of files not from a git project")
 	scanLocalPathCmd.Flags().String("scan-file", "", "scan a single file")

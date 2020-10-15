@@ -95,7 +95,7 @@ func init() {
 	scanGithubCmd.Flags().Int("match-level", 3, "Signature match level")
 	scanGithubCmd.Flags().Int("max-file-size", 50, "Max file size to scan")
 	scanGithubCmd.Flags().Int("num-threads", 0, "The number of threads to execute with")
-	scanGithubCmd.Flags().String("output-dir", "./", "Write csv and/or json files to directory")
+	scanGithubCmd.Flags().String("output-dir", "$HOME/.wraith/", "Write csv and/or json files to directory")
 	scanGithubCmd.Flags().String("output-prefix", "wraith", "Prefix to prepend to datetime stamp for output files")
 	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")

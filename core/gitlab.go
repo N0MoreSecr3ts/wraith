@@ -2,15 +2,17 @@ package core
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"strconv"
+	"strings"
+	"sync"
+
 	"github.com/xanzy/go-gitlab"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
-	"io/ioutil"
-	"os"
-	"strconv"
-	"strings"
 )
 
 // CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
@@ -210,34 +212,49 @@ func (c gitlabClient) getOrganization(login string) (*gitlab.Group, error) {
 func (c gitlabClient) getUserProjects(id int) ([]*Repository, error) {
 	var allUserProjects []*Repository
 	listUserProjectsOps := &gitlab.ListProjectsOptions{}
+
+	var wg sync.WaitGroup
+	var mut sync.Mutex
+
 	for {
 		projects, response, err := c.apiClient.Projects.ListUserProjects(id, listUserProjectsOps)
 		if err != nil {
 			return nil, err
 		}
-		for _, project := range projects {
-			//don't capture forks
-			if project.ForkedFromProject == nil {
-				id := int64(project.ID)
-				p := Repository{
-					Owner:         gitlab.String(project.Owner.Username),
-					ID:            &id,
-					Name:          gitlab.String(project.Name),
-					FullName:      gitlab.String(project.NameWithNamespace),
-					CloneURL:      gitlab.String(project.HTTPURLToRepo),
-					URL:           gitlab.String(project.WebURL),
-					DefaultBranch: gitlab.String(project.DefaultBranch),
-					Description:   gitlab.String(project.Description),
-					Homepage:      gitlab.String(project.WebURL),
+
+		wg.Add(1)
+
+		go func() {
+			for _, project := range projects {
+				//don't capture forks
+				if project.ForkedFromProject == nil {
+					id := int64(project.ID)
+					p := Repository{
+						Owner:         gitlab.String(project.Owner.Username),
+						ID:            &id,
+						Name:          gitlab.String(project.Name),
+						FullName:      gitlab.String(project.NameWithNamespace),
+						CloneURL:      gitlab.String(project.HTTPURLToRepo),
+						URL:           gitlab.String(project.WebURL),
+						DefaultBranch: gitlab.String(project.DefaultBranch),
+						Description:   gitlab.String(project.Description),
+						Homepage:      gitlab.String(project.WebURL),
+					}
+					mut.Lock()
+					allUserProjects = append(allUserProjects, &p)
+					mut.Unlock()
 				}
-				allUserProjects = append(allUserProjects, &p)
 			}
-		}
+			wg.Done()
+		}()
+
 		if response.NextPage == 0 {
 			break
 		}
 		listUserProjectsOps.Page = response.NextPage
 	}
+	wg.Wait()
+
 	return allUserProjects, nil
 }
 
@@ -246,33 +263,48 @@ func (c gitlabClient) getGroupProjects(target Owner) ([]*Repository, error) {
 	var allGroupProjects []*Repository
 	listGroupProjectsOps := &gitlab.ListGroupProjectsOptions{}
 	id := strconv.FormatInt(*target.ID, 10)
+
+	var wg sync.WaitGroup
+	var mut sync.Mutex
+
 	for {
 		projects, response, err := c.apiClient.Groups.ListGroupProjects(id, listGroupProjectsOps)
 		if err != nil {
 			return nil, err
 		}
-		for _, project := range projects {
-			//don't capture forks
-			if project.ForkedFromProject == nil {
-				id := int64(project.ID)
-				p := Repository{
-					Owner:         gitlab.String(project.Namespace.FullPath),
-					ID:            &id,
-					Name:          gitlab.String(project.Name),
-					FullName:      gitlab.String(project.NameWithNamespace),
-					CloneURL:      gitlab.String(project.HTTPURLToRepo),
-					URL:           gitlab.String(project.WebURL),
-					DefaultBranch: gitlab.String(project.DefaultBranch),
-					Description:   gitlab.String(project.Description),
-					Homepage:      gitlab.String(project.WebURL),
+
+		wg.Add(1)
+
+		go func() {
+			for _, project := range projects {
+				//don't capture forks
+				if project.ForkedFromProject == nil {
+					id := int64(project.ID)
+					p := Repository{
+						Owner:         gitlab.String(project.Namespace.FullPath),
+						ID:            &id,
+						Name:          gitlab.String(project.Name),
+						FullName:      gitlab.String(project.NameWithNamespace),
+						CloneURL:      gitlab.String(project.HTTPURLToRepo),
+						URL:           gitlab.String(project.WebURL),
+						DefaultBranch: gitlab.String(project.DefaultBranch),
+						Description:   gitlab.String(project.Description),
+						Homepage:      gitlab.String(project.WebURL),
+					}
+					mut.Lock()
+					allGroupProjects = append(allGroupProjects, &p)
+					mut.Unlock()
 				}
-				allGroupProjects = append(allGroupProjects, &p)
 			}
-		}
+			wg.Done()
+		}()
+
 		if response.NextPage == 0 {
 			break
 		}
 		listGroupProjectsOps.Page = response.NextPage
 	}
+	wg.Wait()
+
 	return allGroupProjects, nil
 }

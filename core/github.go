@@ -4,6 +4,11 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"github.com/google/go-github/github"
+	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
+	"gopkg.in/src-d/go-git.v4/storage/memory"
 	"io"
 	"io/ioutil"
 	"os"
@@ -11,11 +16,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"gopkg.in/src-d/go-git.v4/storage/memory"
-	"github.com/google/go-github/github"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
 //<<<<<<< HEAD

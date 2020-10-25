@@ -11,9 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-
 	"gopkg.in/src-d/go-git.v4/storage/memory"
-
 	"github.com/google/go-github/github"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
@@ -151,37 +149,52 @@ func (c githubClient) GetUserOrganization(login string) (*Owner, error) {
 // GetRepositoriesFromOwner is used gather all the repos associated with the org owner or other user
 func (c githubClient) GetRepositoriesFromOwner(target Owner) ([]*Repository, error) {
 	var allRepos []*Repository
+
 	ctx := context.Background()
 	opt := &github.RepositoryListOptions{
 		Type: "sources",
 	}
+
+	var wg sync.WaitGroup
+	var mut sync.Mutex
 
 	for {
 		repos, resp, err := c.apiClient.Repositories.List(ctx, *target.Login, opt)
 		if err != nil {
 			return allRepos, err
 		}
-		for _, repo := range repos {
-			if !*repo.Fork {
-				r := Repository{
-					Owner:         repo.Owner.Login,
-					ID:            repo.ID,
-					Name:          repo.Name,
-					FullName:      repo.FullName,
-					CloneURL:      repo.CloneURL,
-					URL:           repo.HTMLURL,
-					DefaultBranch: repo.DefaultBranch,
-					Description:   repo.Description,
-					Homepage:      repo.Homepage,
+
+		wg.Add(1)
+
+		go func() {
+			for _, repo := range repos {
+				if !*repo.Fork {
+					r := Repository{
+						Owner:         repo.Owner.Login,
+						ID:            repo.ID,
+						Name:          repo.Name,
+						FullName:      repo.FullName,
+						CloneURL:      repo.CloneURL,
+						URL:           repo.HTMLURL,
+						DefaultBranch: repo.DefaultBranch,
+						Description:   repo.Description,
+						Homepage:      repo.Homepage,
+					}
+					mut.Lock()
+					allRepos = append(allRepos, &r)
+					mut.Unlock()
 				}
-				allRepos = append(allRepos, &r)
 			}
-		}
+			wg.Done()
+		}()
+
 		if resp.NextPage == 0 {
 			break
 		}
+
 		opt.Page = resp.NextPage
 	}
+	wg.Wait()
 
 	return allRepos, nil
 }
@@ -191,19 +204,34 @@ func (c githubClient) GetOrganizationMembers(target Owner) ([]*Owner, error) {
 	var allMembers []*Owner
 	ctx := context.Background()
 	opt := &github.ListMembersOptions{}
+
+	var wg sync.WaitGroup
+	var mut sync.Mutex
+
 	for {
 		members, resp, err := c.apiClient.Organizations.ListMembers(ctx, *target.Login, opt)
 		if err != nil {
 			return allMembers, err
 		}
-		for _, member := range members {
-			allMembers = append(allMembers, &Owner{Login: member.Login, ID: member.ID, Type: member.Type})
-		}
+
+		wg.Add(1)
+
+		go func() {
+			for _, member := range members {
+				mut.Lock()
+				allMembers = append(allMembers, &Owner{Login: member.Login, ID: member.ID, Type: member.Type})
+				mut.Unlock()
+			}
+			wg.Done()
+		}()
+
 		if resp.NextPage == 0 {
 			break
 		}
 		opt.Page = resp.NextPage
 	}
+	wg.Wait()
+
 	return allMembers, nil
 }
 

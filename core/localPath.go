@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"golang.org/x/sync/errgroup"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -10,6 +9,8 @@ import (
 	"sync"
 	"time"
 	"wraith/version"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // search will walk the path or a given directory and append each viable path to an array
@@ -103,8 +104,7 @@ func DoFileScan(filename string, sess *Session) {
 	for _, signature := range Signatures {
 		bMatched, matchMap := signature.ExtractMatch(matchFile, sess, nil)
 
-		var content string   // this is because file matches are puking
-		var genericID string // the generic id used in the finding
+		var content string // this is because file matches are puking
 
 		// for every instance of the secret that matched the specific rule create a new finding
 		for k, v := range matchMap {
@@ -114,13 +114,7 @@ func DoFileScan(filename string, sess *Session) {
 
 			cleanK := strings.SplitAfterN(k, "_", 2)
 
-			if matchMap == nil {
-				content = ""
-				genericID = "not-a-repo://" + filename + "_" + generateGenericID(content)
-			} else {
-				content = cleanK[1]
-				genericID = "not-a-repo://" + filename + "_" + generateGenericID(content)
-			}
+			content = cleanK[1]
 
 			// destroy the secret if the flag is set
 			if sess.HideSecrets {
@@ -133,20 +127,20 @@ func DoFileScan(filename string, sess *Session) {
 					Action:            `File Scan`,
 					Description:       signature.Description(),
 					Signatureid:       signature.Signatureid(),
-					Comment:           content,
+					Content:           content,
 					RepositoryOwner:   `not-a-repo`,
 					RepositoryName:    `not-a-repo`,
 					CommitHash:        ``,
 					CommitMessage:     ``,
 					CommitAuthor:      ``,
 					LineNumber:        strconv.Itoa(v),
-					SecretID:          genericID,
+					SecretID:          generateID(),
 					WraithVersion:     version.AppVersion(),
 					SignaturesVersion: sess.SignatureVersion,
 				}
 
 				// Add a new finding and increment the total
-				newFinding.Initialize(sess.ScanType)
+				newFinding.Initialize(sess)
 				sess.AddFinding(newFinding)
 
 				// print the current finding to stdout

@@ -96,7 +96,7 @@ ignore-path:
   - static/
   - docs/
 in-mem-clone: false
-local-dirs:
+repo-paths:
   - ../wraith-test
 match-level: 3
 num-threads: 0

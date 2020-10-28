@@ -182,7 +182,6 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
-	s.LocalDirs = v.GetStringSlice("local-dirs")
 	s.MaxFileSize = v.GetInt64("max-file-size")
 	s.ConfidenceLevel = v.GetInt("confidence-level")
 	s.ScanFork = v.GetBool("scan-forks")
@@ -191,6 +190,12 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
 	s.Version = version.AppVersion()
+
+	if s.ScanType == "localGit" {
+		s.LocalDirs = v.GetStringSlice("local-repos")
+	} else if s.ScanType == "localPath" {
+		s.LocalDirs = v.GetStringSlice("local-dirs")
+	}
 
 	// Add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {

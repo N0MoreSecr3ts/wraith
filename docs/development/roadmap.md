@@ -96,16 +96,16 @@
 - [X] ~~Change ignore extension to use a slice~~
 - [X] ~~Change match-level to confidence level~~
 - [X] ~~Change default thread count to -1~~
-- [ ] In memory clone returns not findings (I think this has something to do with the path not being found)
+- [ ] In memory clone returns no findings (I think this has something to do with the path not being found)
 - [ ] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
 - [X] ~~Repo totals are getting counted twice~~
 - [ ] Gitlab client does not follow redirects
 - [ ] Github does not follow redirects
 - [ ] In gitlab you can have a project w/ no repo, this will error out
 - [ ] Expanding orgs is not working
-- [ ] Not scanning tests is not working
-- [ ] Max file size is not working
-- [ ] Setting the number of commits to 1 does not scan anything
+- [X] Not scanning tests is not working
+- [X] Max file size is not working
+- [X] Setting the number of commits to 1 does not scan anything
 - [ ] Number of dirty commits is wrong, it should be more than is showing
 
 
@@ -188,7 +188,7 @@
 - [X] ~~Need to be able to scan a single repo for a specific user~~
 - [ ] -1 Confidence level loads all signatures
 - [ ] Signature file flag should be a slice
-- [0] Exclude/Include Forks 
+- [X] Exclude/Include Forks 
 - [0] Need to drop in the org in the realtime output
 - [0] Add the status to all functions for use in the web interface*__*
 - [0] Need to find gitlab api endpoint
@@ -199,8 +199,7 @@
 - [ ] Change id -> ID
 - [ ] Refactor how we do stats on commits
 - [ ] Need to be able to scan all the orgs a user is a member of
-- [ ] Need to be able to scan all the orgs a user is a member of
-- [ ] Need to be able to scan all the forks of a given repo
+- [ ] Need to be able to scan all the forks of a given repo that we can reach
 - [ ] Set the csv and json like G
 - [ ] Change name from threads to go routines or make that clear
 - [ ] Refactor how threads are calculated
@@ -208,12 +207,11 @@
 - [ ] Enforce https for all connections
 - [ ] Enforce https for the site
 - [ ] Fully Instrumented with Performance Stats
-- [ ] JSON or CSV Output
 - [ ] Entrophy Checks
-- [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
+- [0] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
 - [ ] Cleanup issues in summary output
 - [ ] Add more debuging info
-- [ ] Alpha sort structs, functions, flags
+- [X] ~~Alpha sort structs, functions, flags~~
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen
 - [ ] Only export the functions and variables necessary
@@ -240,7 +238,7 @@
 - [ ] Scan since a given commit
 - [ ] Update Signatures command
 - [ ] Implement threading for local path scans
-- [ ] Ability to use the .gitignoe when scanning for ingoring paths and files
+- [ ] Ability to use the .gitignore when scanning for ignoring paths and files
 
 ### Testing
 - [ ] Make tech debt fail build process

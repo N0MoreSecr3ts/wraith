@@ -395,8 +395,11 @@ func getRepositoriesFromOwner(login *string, client *github.Client, scanFork boo
 		if err != nil {
 			return allRepos, err
 		}
+
 		for _, repo := range repos {
-			//if scanFork {
+			if !scanFork && repo.GetFork() {
+				continue
+			}
 			r := githubRepository{
 				Owner:         repo.Owner.Login,
 				ID:            repo.ID,
@@ -409,7 +412,6 @@ func getRepositoriesFromOwner(login *string, client *github.Client, scanFork boo
 				Homepage:      repo.Homepage,
 			}
 			allRepos = append(allRepos, &r)
-			//}
 		}
 		if resp.NextPage == 0 {
 			break

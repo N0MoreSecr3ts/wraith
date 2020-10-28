@@ -301,7 +301,8 @@ func (s *Session) InitGitClient() {
 		CheckGitlabAPIToken(s.GitlabAccessToken, s) // TODO move this out
 		var err error
 		// TODO need to add in the bits to parse the url here as well
-		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out) // TODO set this to some sort of consistent client, look to github for ideas
+		// TODO set this to some sort of consistent client, look to github for ideas
+		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out)
 		if err != nil {
 			s.Out.Fatal("Error initializing GitLab client: %s", err)
 		}

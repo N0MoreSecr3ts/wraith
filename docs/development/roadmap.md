@@ -90,13 +90,13 @@
 - [X] ~~Scaning forks is not working~~
 - [X] ~~Change default commit depth to -1~~
 - [ ] Still havea lot of missing files when scanning (turn on debug)
-- [0] Change github orgs, repos, users to use a slice
-- [0] Change github enterprise orgs, repos, user, to use a slice
-- [0] Change ignore path to use a slice
-- [0] Change ignore extension to use a slice
+- [X] ~~Change github orgs, repos, users to use a slice~~
+- [X] ~~Change github enterprise orgs, repos, user, to use a slice~~
+- [X] ~~Change ignore path to use a slice~~
+- [X] ~~Change ignore extension to use a slice~~
 - [X] ~~Change match-level to confidence level~~
 - [X] ~~Change default thread count to -1~~
-- [0] In memory clone returns not findings (I think this has something to do with the path not being found)
+- [ ] In memory clone returns not findings (I think this has something to do with the path not being found)
 - [ ] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
 - [X] ~~Repo totals are getting counted twice~~
 - [ ] Gitlab client does not follow redirects

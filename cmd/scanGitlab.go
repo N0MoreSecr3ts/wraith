@@ -67,7 +67,7 @@ func init() {
 	//scanGitlabCmd.Flags().Bool("in-mem-clone", false, "Clone repos in memory")
 	scanGitlabCmd.Flags().Int("max-file-size", 10, "Max file size to scan in MB")
 	scanGitlabCmd.Flags().Int("num-threads", -1, "Number of threads to execute with")
-	scanGitlabCmd.Flags().Bool("scan-forks", true, "Scan repositories forked by users or orgs")
+	scanGitlabCmd.Flags().Bool("scan-forks", false, "Scan repositories forked by users or orgs")
 	scanGitlabCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanGitlabCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 	scanGitlabCmd.Flags().String("signature-path", "$HOME/.wraith/signatures", "path containing detection signatures.")

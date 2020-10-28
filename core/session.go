@@ -57,7 +57,7 @@ var DefaultValues = map[string]interface{}{
 	"num-threads":                 -1,
 	"local-dirs":                  nil,
 	"local-files":                 nil,
-	"scan-forks":                  true,
+	"scan-forks":                  false,
 	"scan-tests":                  false,
 	"scan-type":                   "",
 	"silent":                      false,

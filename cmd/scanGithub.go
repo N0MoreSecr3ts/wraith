@@ -109,7 +109,7 @@ func init() {
 	//scanGithubCmd.Flags().Bool("in-mem-clone", false, "Clone repos in memory")
 	scanGithubCmd.Flags().Int("max-file-size", 10, "Max file size to scan in MB")
 	scanGithubCmd.Flags().Int("num-threads", -1, "Number of threads to execute with")
-	scanGithubCmd.Flags().Bool("scan-forks", true, "Scan repositories forked by users or orgs")
+	scanGithubCmd.Flags().Bool("scan-forks", false, "Scan repositories forked by users or orgs")
 	scanGithubCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanGithubCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 	scanGithubCmd.Flags().String("signature-path", "$HOME/.wraith/signatures", "path containing detection signatures.")

@@ -3,12 +3,7 @@
 ## Scanning
 
 ### Targets
-- [X] ~~Scan Github Enterprise Org Repos (needs an org)~~
-- [X] ~~Scan Github Enterprise User Repos (needs a user)~~
-- [X] ~~Scan Github Enterprise Single Repo (needs a user/org and a repo)~~
-- [X] ~~Scan Github.com Org Repos (needs an org)~~
-- [X] ~~Scan Github.com User Repos (needs a user)~~
-- [X] ~~Scan Github.com Single Repo (needs a repo and a user/org)~~
+
 - [ ] Scan Github [Gists][1]
 
 
@@ -23,10 +18,6 @@
 - [ ] Scan Bitbucket.com User Repos
 - [ ] Scan Bitbucket On-Prem Org Repos
 - [ ] Scan Bitbucket On-Prem User Repos
-
-
-- [X] ~~Scan Local Files~~
-- [X] ~~Scan Local Git Repos~~
 
 
 - [ ] Scan AWS Code Commit
@@ -54,51 +45,10 @@
 ## Milestone 1
 
 ### Bugs
-- [X] ~~Temp directories are not getting deleted~~
-- [X] ~~In-mem-clone is not working properly~~
-- [X] ~~There are no findings in a gitlab search~~
-- [X] ~~There are multiple generateID functions~~
-- [X] ~~Web Frontend For Output~~
-- [X] ~~Specific YAML Configuration File~~
-- [X] ~~Signatures in a seperate repo (signature uplift)~~
-- [X] ~~Signatures in either yaml or json format (signature uplift)~~
-- [X] ~~Finding should have an ID (Hash)~~
-- [X] ~~Ability to configure via environment variables~~
-- [X] ~~Ability to version signatures (signature uplift)~~
-- [X] ~~When running silent, no webserver is started~~
-- [X] ~~DB Code is smelly (reomved feature)~~
-- [X] ~~Web interface line in stdio is borked~~
-- [X] ~~Can only find a single target~~
-- [X] ~~Silent still displays the gitlab logo~~
-- [X] ~~Slient does not print you need to hit Ctrl-C to stop the webserver~~
-- [X] ~~Gitlab scans are failing~~
-- [X] ~~Not consistently finding secrets for all sources~~
-- [X] ~~Web interface links are broken for local files~~
-- [X] ~~No error when rules file is not found~~
-- [X] ~~There are no findings in a local git search~~
-- [X] ~~Searching through a commit history is present but not effective~~
-- [X] ~~Secret ID's are possibly not unique~~
-- [X] ~~Findings with a line number of 0 are being displayed~~
-- [X] ~~Number of total commits was wrong~~
-- [X] ~~Line numbers are wrong in the patches being scanned~~
-- [X] ~~Path ~/ does not work in the config file due to a missing '/'~~
-- [X] ~~Yaml list does not work for github enterprise~~
-- [X] ~~Yaml list does not work for github~~
-- [X] ~~Yaml list does not work for local git~~
-- [X] ~~Not all user repos get pulled~~
-- [X] ~~In github you can have an org w/ no repo, this will error out~~
-- [X] ~~Scaning forks is not working~~
-- [X] ~~Change default commit depth to -1~~
+
 - [ ] Still havea lot of missing files when scanning (turn on debug)
-- [X] ~~Change github orgs, repos, users to use a slice~~
-- [X] ~~Change github enterprise orgs, repos, user, to use a slice~~
-- [X] ~~Change ignore path to use a slice~~
-- [X] ~~Change ignore extension to use a slice~~
-- [X] ~~Change match-level to confidence level~~
-- [X] ~~Change default thread count to -1~~
 - [ ] In memory clone returns no findings (I think this has something to do with the path not being found)
 - [ ] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
-- [X] ~~Repo totals are getting counted twice~~
 - [ ] Gitlab client does not follow redirects
 - [ ] Github does not follow redirects
 - [ ] In gitlab you can have a project w/ no repo, this will error out
@@ -110,8 +60,7 @@
 
 
 ### Documentation
-- [X] ~~Document the differance between targets and repos~~
-- [X] ~~Document the tech debt using colors and a shell script~~
+
 - [0] Document all flags
 - [0] Document all code completely
 - [ ] Document how to add a new command or source
@@ -131,12 +80,10 @@
     - [ ] wraith-signatures
 - [ ] Initial blog post
 - [ ] Detailed documentation published on the net and with source control
-- [X] ~~Cleanup issues~~
 - [ ] Changelog.md
     - [ ] wraith
     - [ ] wraith-tests
     - [ ] wraith-signatures
-- [X] ~~Label issues for begineer and hacktoberfest~~
 - [0] Go doc strings
     - [ ] common
     - [ ] config
@@ -150,9 +97,6 @@
 - [ ] Call out individual contributers after N merges
     
 ### Testing
-- [X] ~~Confirm hide secrets~~
-- [X] ~~Update Code Climate for Wraith~~
-- [X] ~~Set unique secrets in the test~~
 - [0] Code review and remove debug statements
 - [0] Ensure that an error status will exit the program, if not swap to a warning status so it does
 - [ ] Sanity check testing plan
@@ -164,28 +108,6 @@
 - [ ] Review all flags to ensure they are needed
 
 ### Features
-- [X] ~~Redo github enterprise bits to clean them up~~
-- [X] ~~Refactor the client to follow G's method~~
-- [X] ~~Set orgs and repos like G~~
-- [X] ~~Configure repos~~
-- [X] ~~Configure Org~~
-- [X] ~~Change empty string defaults to nil~~
-- [X] ~~Add content to summary~~
-- [X] ~~Implement flag for setting the thread count manually~~
-- [X] ~~Look at the clone configs~~
-- [X] ~~Make a single function to create a temp dir~~
-- [X] ~~Make sure we clean up the temp directories~~
-- [X] ~~Exclude files based on extension~~
-- [X] ~~Exclude Test Files~~
-- [X] ~~Ability to set commit depth of scan~~
-- [X] ~~Confidence level for regexes (signature uplift)~~
-- [X] ~~Should clone to memory, not disk~~
-- [X] ~~Exclude  paths~~
-- [X] ~~Status output of a session~~
-- [X] ~~Ability to silence the output~~
-- [X] ~~Max file size to scan~~
-- [X] ~~Need to be able to scan all the repos for a specific user~~
-- [X] ~~Need to be able to scan a single repo for a specific user~~
 - [ ] -1 Confidence level loads all signatures
 - [ ] Signature file flag should be a slice
 - [X] Exclude/Include Forks 
@@ -211,7 +133,6 @@
 - [0] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
 - [ ] Cleanup issues in summary output
 - [ ] Add more debuging info
-- [X] ~~Alpha sort structs, functions, flags~~
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen
 - [ ] Only export the functions and variables necessary

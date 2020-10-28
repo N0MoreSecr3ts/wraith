@@ -1,14 +1,19 @@
 ---
-commit-depth: 0
-debug: false
-github-api-token: <token>>
-github-targets:
+commit-depth: 1
+debug: true
+github-api-token: <token>
+github-orgs:
+# - N0MoreSecr3ts
+github-repos:
+# - wraith
+# - wraith-test
+github-users:
   - mattyjones
-  - sensu-plugins
-gitlab-api-token: <token>>
+gitlab-api-token: <token>
 gitlab-targets:
   - 5034914
   - mattyjones
+scan-forks: false
 ignore-extension:
   - .html
   - .css
@@ -17,12 +22,14 @@ ignore-path:
   - static/
   - docs/
 in-mem-clone: false
-repo-paths:
-  - ../wraith-test
+local-dirs:
+  - ../wraith-signatures
+local-files:
+  - ../wraith-test/performance_stats.md
 match-level: 3
 num-threads: 0
-repo-dirs:
-  - relative/path/to/repo
-  - absolute/path/to/repo
-signature-file: ../wraith-signatures/signatures/default.yml
+local-repos:
+   - ../wraith-signatures
+  - ../wraith
+signature-file: ~/.wraith/signatures/default.yml
 silent: false

@@ -48,7 +48,7 @@ var DefaultValues = map[string]interface{}{
 	"github-enterprise-url":       "",
 	"github-api-token":            "",
 	"github-enterprise-api-token": "",
-	"gitlab-targets":              "",
+	"gitlab-targets":              nil,
 	"gitlab-api-token":            "",
 	"ignore-extension":            nil,
 	"ignore-path":                 nil,

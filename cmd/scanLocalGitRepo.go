@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"github.com/spf13/viper"
-	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -29,16 +28,6 @@ var scanLocalGitRepoCmd = &cobra.Command{
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
-
-		// Ensure user input exists and validate it
-		sess.ValidateUserInput(viperScanLocalGitRepo)
-
-		sess.UserDirtyRepos = viperScanLocalGitRepo.GetStringSlice("local-dirs")
-
-		if sess.UserDirtyRepos == nil {
-			sess.Out.Error("You need to specify a repo(s).\n")
-			os.Exit(1)
-		}
 
 		core.GatherLocalRepositories(sess)
 		core.AnalyzeRepositories(sess)
@@ -73,7 +62,7 @@ func init() {
 	scanLocalGitRepoCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 	scanLocalGitRepoCmd.Flags().String("signature-path", "$HOME/.wraith/signatures", "path containing detection signatures.")
 	scanLocalGitRepoCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
-	scanLocalGitRepoCmd.Flags().StringSlice("local-repo", nil, "List of local git repos to scan")
+	scanLocalGitRepoCmd.Flags().StringSlice("local-repos", nil, "List of local git repos to scan")
 
 	err := viperScanLocalGitRepo.BindPFlag("bind-address", scanLocalGitRepoCmd.Flags().Lookup("bind-address"))
 	err = viperScanLocalGitRepo.BindPFlag("bind-port", scanLocalGitRepoCmd.Flags().Lookup("bind-port"))
@@ -89,7 +78,7 @@ func init() {
 	err = viperScanLocalGitRepo.BindPFlag("signature-file", scanLocalGitRepoCmd.Flags().Lookup("signature-file"))
 	err = viperScanLocalGitRepo.BindPFlag("signature-path", scanLocalGitRepoCmd.Flags().Lookup("signature-path"))
 	err = viperScanLocalGitRepo.BindPFlag("silent", scanLocalGitRepoCmd.Flags().Lookup("silent"))
-	err = viperScanLocalGitRepo.BindPFlag("local-repo", scanLocalGitRepoCmd.Flags().Lookup("local-repo"))
+	err = viperScanLocalGitRepo.BindPFlag("local-repos", scanLocalGitRepoCmd.Flags().Lookup("local-repos"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

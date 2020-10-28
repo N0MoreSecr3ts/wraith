@@ -53,9 +53,6 @@
 - [ ] Github does not follow redirects
 - [ ] In gitlab you can have a project w/ no repo, this will error out
 - [ ] Expanding orgs is not working
-- [X] Not scanning tests is not working
-- [X] Max file size is not working
-- [X] Setting the number of commits to 1 does not scan anything
 - [ ] Number of dirty commits is wrong, it should be more than is showing
 
 
@@ -109,14 +106,11 @@
 
 ### Features
 - [ ] -1 Confidence level loads all signatures
-- [ ] Signature file flag should be a slice
-- [X] Exclude/Include Forks 
 - [0] Need to drop in the org in the realtime output
 - [0] Add the status to all functions for use in the web interface*__*
 - [0] Need to find gitlab api endpoint
 - [0] Port gitlab to match G 
 - [0] Set the debug like G 
-- [0] Remove all print debugging statements
 - [0] Remove all dead code
 - [ ] Change id -> ID
 - [ ] Refactor how we do stats on commits

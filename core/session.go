@@ -55,26 +55,26 @@ var DefaultValues = map[string]interface{}{
 	"in-mem-clone":                false,
 	"max-file-size":               10,
 	"num-threads":                 -1,
-	"local-dirs":                  nil,
-	"local-files":                 nil,
-	"scan-forks":                  false,
-	"scan-tests":                  false,
-	"scan-type":                   "",
-	"silent":                      false,
-	"confidence-level":            3,
-	"signature-file":              "$HOME/.wraith/signatures/default.yml",
-	"signature-path":              "$HOME/.wraith/signatures/",
-	"scan-dir":                    nil,
-	"scan-file":                   nil,
-	"hide-secrets":                false,
-	"github-url":                  "https://api.github.com",
-	"gitlab-url":                  "", // TODO set the default
-	"rules-url":                   "",
-	"github-enterprise-orgs":      nil,
-	"github-enterprise-repos":     nil,
-	"github-orgs":                 nil,
-	"github-repos":                nil,
-	"github-users":                nil,
+	"local-paths":                 nil,
+	//"local-files":                 nil, // TODO remove me
+	"scan-forks":              false,
+	"scan-tests":              false,
+	"scan-type":               "",
+	"silent":                  false,
+	"confidence-level":        3,
+	"signature-file":          "$HOME/.wraith/signatures/default.yml",
+	"signature-path":          "$HOME/.wraith/signatures/",
+	"scan-dir":                nil,
+	"scan-file":               nil,
+	"hide-secrets":            false,
+	"github-url":              "https://api.github.com",
+	"gitlab-url":              "", // TODO set the default
+	"rules-url":               "",
+	"github-enterprise-orgs":  nil,
+	"github-enterprise-repos": nil,
+	"github-orgs":             nil,
+	"github-repos":            nil,
+	"github-users":            nil,
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -101,31 +101,31 @@ type Session struct {
 	JSON                bool
 	MaxFileSize         int64
 	Out                 *Logger `json:"-"`
-	LocalDirs           []string
-	LocalFiles          []string
-	Repositories        []*Repository
-	Router              *gin.Engine `json:"-"`
-	SignatureVersion    string
-	ScanFork            bool
-	ScanTests           bool
-	ScanType            string
-	Signatures          []*Signature
-	Silent              bool
-	SkippableExt        []string
-	SkippablePath       []string
-	Stats               *Stats
-	Targets             []*Owner
-	Threads             int
-	Version             string
-	ConfidenceLevel     int
-	GithubURL           string
-	GitlabURL           string
-	UserDirtyNames      []string
-	UserDirtyOrgs       []string
-	UserDirtyRepos      []string
-	UserLogins          []string
-	UserOrgs            []string
-	UserRepos           []string
+	LocalPaths          []string
+	//LocalFiles          []string // TODO remove me
+	Repositories     []*Repository
+	Router           *gin.Engine `json:"-"`
+	SignatureVersion string
+	ScanFork         bool
+	ScanTests        bool
+	ScanType         string
+	Signatures       []*Signature
+	Silent           bool
+	SkippableExt     []string
+	SkippablePath    []string
+	Stats            *Stats
+	Targets          []*Owner
+	Threads          int
+	Version          string
+	ConfidenceLevel  int
+	GithubURL        string
+	GitlabURL        string
+	UserDirtyNames   []string
+	UserDirtyOrgs    []string
+	UserDirtyRepos   []string
+	UserLogins       []string
+	UserOrgs         []string
+	UserRepos        []string
 }
 
 // githubRepository is the holds the necessary fields in a simpler structure
@@ -192,9 +192,9 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.Version = version.AppVersion()
 
 	if s.ScanType == "localGit" {
-		s.LocalDirs = v.GetStringSlice("local-repos")
+		s.LocalPaths = v.GetStringSlice("local-repos")
 	} else if s.ScanType == "localPath" {
-		s.LocalDirs = v.GetStringSlice("local-dirs")
+		s.LocalPaths = v.GetStringSlice("local-paths")
 	}
 
 	// Add the default directories to the sess if they don't already exist

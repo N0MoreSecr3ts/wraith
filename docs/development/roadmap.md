@@ -46,7 +46,7 @@
 
 ### Bugs
 
-- [ ] Still havea lot of missing files when scanning (turn on debug)
+- [ ] Still have a lot of missing files when scanning (turn on debug)
 - [ ] In memory clone returns no findings (I think this has something to do with the path not being found)
 - [ ] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
 - [ ] Gitlab client does not follow redirects

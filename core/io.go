@@ -22,7 +22,7 @@ func PathExists(path string, sess *Session) bool {
 		return true
 	}
 	if os.IsNotExist(err) {
-		sess.Out.Debug("File does not exist: %s\n", err.Error())
+		sess.Out.Debug("Path does not exist: %s\n", err.Error())
 		return false
 	}
 

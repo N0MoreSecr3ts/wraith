@@ -50,11 +50,11 @@ func GatherLocalRepositories(sess *Session) {
 	// This is the number of targets as we don't do forks or anything else.
 	// It will contain directorys, that will then be added to the repo count
 	// if they contain a .git directory
-	sess.Stats.Targets = len(sess.LocalDirs)
+	sess.Stats.Targets = len(sess.LocalPaths)
 	sess.Stats.Status = StatusGathering
 	sess.Out.Important("Gathering Local Repositories...\n")
 
-	for _, pth := range sess.LocalDirs {
+	for _, pth := range sess.LocalPaths {
 
 		if !PathExists(pth, sess) {
 			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)

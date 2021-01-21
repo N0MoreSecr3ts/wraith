@@ -5,7 +5,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"os"
 	"time"
 	"wraith/core"
 	"wraith/version"
@@ -25,7 +24,7 @@ var scanLocalPathCmd = &cobra.Command{
 		scanType := "localPath"
 		sess := core.NewSession(viperScanLocalPath, scanType)
 
-		core.CheckArgs(sess.LocalFiles, sess.LocalDirs, sess)
+		//core.CheckArgs(sess.LocalFiles, sess.LocalDirs, sess)
 
 		// exclude the .git directory from local scans as it is not handled properly here
 		sess.SkippablePath = core.AppendIfMissing(sess.SkippablePath, ".git/")
@@ -35,30 +34,44 @@ var scanLocalPathCmd = &cobra.Command{
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
 
+		for _, p := range sess.LocalPaths {
+			if core.PathExists(p, sess) {
+				last := p[len(p)-1:]
+				if last == "/" {
+					fmt.Println("Last: ", last) // TODO remove me
+					fmt.Println("Directory")    // TODO remove me
+					core.ScanDir(p, sess)
+				} else {
+					fmt.Println("Last: ", last) // TODO remove me
+					fmt.Println("File: ", p)    // TODO remove me
+					core.DoFileScan(p, sess)
+				}
+			}
+		}
 		// Run either a file scan directly, or if it is a directory then walk the path and gather eligible files and then run a scan against each of them
-		for _, fl := range sess.LocalFiles {
-			if fl != "" {
-				if !core.PathExists(fl, sess) {
-					sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", fl)
-				} else {
-					core.DoFileScan(fl, sess)
-				}
-			}
-		}
-
-		for _, pth := range sess.LocalDirs {
-			if pth != "" {
-				if !core.PathExists(pth, sess) {
-					sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)
-					os.Exit(1)
-				} else if pth == "" {
-					core.ScanDir(pth, sess)
-				} else {
-					sess.Out.Error("You need to enter a path to scan\n")
-					os.Exit(1)
-				}
-			}
-		}
+		//for _, fl := range sess.LocalFiles {
+		//	if fl != "" {
+		//		if !core.PathExists(fl, sess) {
+		//			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", fl)
+		//		} else {
+		//			core.DoFileScan(fl, sess)
+		//		}
+		//	}
+		//}
+		//
+		//for _, pth := range sess.LocalDirs {
+		//	if pth != "" {
+		//		if !core.PathExists(pth, sess) {
+		//			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)
+		//			os.Exit(1)
+		//		} else if pth == "" {
+		//			core.ScanDir(pth, sess)
+		//		} else {
+		//			sess.Out.Error("You need to enter a path to scan\n")
+		//			os.Exit(1)
+		//		}
+		//	}
+		//}
 
 		sess.Finish()
 
@@ -90,12 +103,11 @@ func init() {
 	scanLocalPathCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yml", "file(s) containing detection signatures.")
 	scanLocalPathCmd.Flags().String("signature-path", "$HOME/.wraith/signatures", "path containing detection signatures.")
 	scanLocalPathCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
-	scanLocalPathCmd.Flags().StringSlice("local-file", nil, "List oof local filss to scan")
-	scanLocalPathCmd.Flags().StringSlice("local-path", nil, "List of local paths to scan")
+	//scanLocalPathCmd.Flags().StringSlice("local-file", nil, "List oof local files to scan")
+	scanLocalPathCmd.Flags().StringSlice("local-paths", nil, "List of local paths to scan")
 
 	err := viperScanLocalPath.BindPFlag("bind-address", scanLocalPathCmd.Flags().Lookup("bind-address"))
 	err = viperScanLocalPath.BindPFlag("bind-port", scanLocalPathCmd.Flags().Lookup("bind-port"))
-	err = viperScanLocalPath.BindPFlag("commit-depth", scanLocalPathCmd.Flags().Lookup("commit-depth"))
 	err = viperScanLocalPath.BindPFlag("debug", scanLocalPathCmd.Flags().Lookup("debug"))
 	err = viperScanLocalPath.BindPFlag("hide-secrets", scanLocalPathCmd.Flags().Lookup("hide-secrets"))
 	err = viperScanLocalPath.BindPFlag("ignore-extension", scanLocalPathCmd.Flags().Lookup("ignore-extension"))
@@ -106,8 +118,8 @@ func init() {
 	err = viperScanLocalPath.BindPFlag("scan-tests", scanLocalPathCmd.Flags().Lookup("scan-tests"))
 	err = viperScanLocalPath.BindPFlag("signature-file", scanLocalPathCmd.Flags().Lookup("signature-file"))
 	err = viperScanLocalPath.BindPFlag("signature-path", scanLocalPathCmd.Flags().Lookup("signature-path"))
-	err = viperScanLocalPath.BindPFlag("local-path", scanLocalPathCmd.Flags().Lookup("local-file"))
-	err = viperScanLocalPath.BindPFlag("local-file", scanLocalPathCmd.Flags().Lookup("local-path"))
+	err = viperScanLocalPath.BindPFlag("local-paths", scanLocalPathCmd.Flags().Lookup("local-paths"))
+	//err = viperScanLocalPath.BindPFlag("local-file", scanLocalPathCmd.Flags().Lookup("local-path"))
 	err = viperScanLocalPath.BindPFlag("silent", scanLocalPathCmd.Flags().Lookup("silent"))
 
 	if err != nil {

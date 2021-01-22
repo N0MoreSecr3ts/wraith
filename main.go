@@ -21,7 +21,9 @@ THE SOFTWARE.
 */
 package main
 
-import "wraith/cmd"
+import (
+	"wraith/cmd"
+)
 
 func main() {
 	cmd.Execute()

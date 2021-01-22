@@ -33,7 +33,7 @@ var scanGithubCmd = &cobra.Command{
 		// TODO do not exit out if no token but drop a message saying only public repos will be scanned
 		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithub.GetString("github-api-token"), sess)
 
-		//sess.Out.Info("%s\n\n", common.ASCIIBanner)
+		sess.Out.Warn("%s\n\n", core.ASCIIBanner)
 		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
 		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
 		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)

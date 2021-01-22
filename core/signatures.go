@@ -267,33 +267,37 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 					}
 				}
 
-				content, err := GetChangeContent(change)
-				if err != nil {
-					sess.Out.Error("Error retrieving content in commit %s, change %s:  %s\n", "commit.String()", change.String(), err)
-				}
+				if sess.ScanType != "localPath" {
 
-				if r.Match([]byte(content)) {
-					for _, curRegexMatch := range r.FindAll([]byte(content), -1) {
-						contextMatches = append(contextMatches, string(curRegexMatch))
+					content, err := GetChangeContent(change)
+					if err != nil {
+						sess.Out.Error("Error retrieving content in commit %s, change %s:  %s\n", "commit.String()", change.String(), err)
 					}
-					if len(contextMatches) > 0 {
-						bResult = true
-						for i, curMatch := range contextMatches {
-							thisMatch := string(curMatch[:])
-							thisMatch = strings.TrimSuffix(thisMatch, "\n")
 
-							bResult = confirmEntropy(thisMatch, s.entropy)
-
-							if bResult {
-								linesOfScannedFile := strings.Split(content, "\n")
-
-								num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
-								results[strconv.Itoa(i)+"_"+thisMatch] = num
-							}
+					if r.Match([]byte(content)) {
+						for _, curRegexMatch := range r.FindAll([]byte(content), -1) {
+							contextMatches = append(contextMatches, string(curRegexMatch))
 						}
-						return bResult, results
+						if len(contextMatches) > 0 {
+							bResult = true
+							for i, curMatch := range contextMatches {
+								thisMatch := string(curMatch[:])
+								thisMatch = strings.TrimSuffix(thisMatch, "\n")
+
+								bResult = confirmEntropy(thisMatch, s.entropy)
+
+								if bResult {
+									linesOfScannedFile := strings.Split(content, "\n")
+
+									num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
+									results[strconv.Itoa(i)+"_"+thisMatch] = num
+								}
+							}
+							return bResult, results
+						}
 					}
 				}
+
 			}
 		}
 	default: // TODO We need to do something with this

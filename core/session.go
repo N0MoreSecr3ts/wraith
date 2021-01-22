@@ -22,7 +22,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// These are varios environment variables and tool statuses used in auth and displaying messages
+// These are various environment variables and tool statuses used in auth and displaying messages
 const (
 	StatusInitializing = "initializing"
 	StatusGathering    = "gathering"
@@ -30,74 +30,68 @@ const (
 	StatusFinished     = "finished"
 )
 
-// skippableExtensions is an array of extensions that if they match a file that file will be excluded
+// defaultIgnoreExtensions is an array of extensions that if they match a file that file will be excluded
 var defaultIgnoreExtensions = []string{".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff",
 	".tif", ".psd", ".xcf"}
 
-// skippablePathIndicators is an array of directories that will be excluded from all types of scans.
+// defaultIgnorePaths is an array of directories that will be excluded from all types of scans.
 var defaultIgnorePaths = []string{"node_modules/", "vendor/bundle", "vendor/cache", "/proc/"}
 
+// DefaultValues is a map of all flag default values and other mutable variables
 var DefaultValues = map[string]interface{}{
 	"bind-address":                "127.0.0.1",
 	"bind-port":                   9393,
-	"commit-depth":                0,
+	"commit-depth":                -1,
 	"config-file":                 "$HOME/.wraith/config.yaml",
 	"debug":                       false,
-	"expand-orgs":                 false,
+	"gather-org-members":          false,
 	"github-enterprise-url":       "",
-	"github-targets":              "",
-	"github-api-token":            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXVZabcd",
-	"github-enterprise-api-token": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXVZabcd",
-	"gitlab-targets":              "",
-	"gitlab-api-token":            "0123456789ABCDEFGHIJ",
-	"ignore-extension":            "",
-	"ignore-path":                 "",
+	"github-api-token":            "",
+	"github-enterprise-api-token": "",
+	"gitlab-targets":              nil,
+	"gitlab-api-token":            "",
+	"ignore-extension":            nil,
+	"ignore-path":                 nil,
 	"in-mem-clone":                false,
-	"max-file-size":               50,
+	"max-file-size":               10,
 	"num-threads":                 -1,
-	"local-dirs":                  nil,
-	"local-files":                 nil,
-	"scan-forks":                  true,
+	"local-paths":                 nil,
+	"scan-forks":                  false,
 	"scan-tests":                  false,
 	"scan-type":                   "",
 	"silent":                      false,
-	"csv":                         false,
-	"json":                        false,
-	"match-level":                 3,
+	"confidence-level":            3,
 	"signature-file":              "$HOME/.wraith/signatures/default.yml",
 	"signature-path":              "$HOME/.wraith/signatures/",
-	"signature-url":               "",
-	"scan-dir":                    "",
-	"scan-file":                   "",
+	"scan-dir":                    nil,
+	"scan-file":                   nil,
 	"hide-secrets":                false,
 	"github-url":                  "https://api.github.com",
 	"gitlab-url":                  "", // TODO set the default
-	"rules-url":                   "git@example.com:foo/bar.git",
-	"github-enterprise-orgs":      "",
-	"github-enterprise-repos":     "",
-	"github-orgs":                 "",
-	"github-repos":                "",
-	"github-users":                "",
+	"rules-url":                   "",
+	"github-enterprise-orgs":      nil,
+	"github-enterprise-repos":     nil,
+	"github-orgs":                 nil,
+	"github-repos":                nil,
+	"github-users":                nil,
 }
 
 // Session contains all the necessary values and parameters used during a scan
 type Session struct {
 	sync.Mutex
 
-	BindAddress       string
-	BindPort          int
-	Client            IClient `json:"-"`
-	CommitDepth       int
-	CSV               bool
-	Debug             bool
-	ExpandOrgs        bool
-	Findings          []*Finding
-	GithubAccessToken string
-	Organizations     []*github.Organization
-	//EnterpriseScan    bool
+	BindAddress         string
+	BindPort            int
+	Client              IClient `json:"-"`
+	CommitDepth         int
+	CSV                 bool
+	Debug               bool
+	ExpandOrgs          bool
+	Findings            []*Finding
+	GithubAccessToken   string
+	Organizations       []*github.Organization
 	GithubClient        *github.Client `json:"-"`
 	GithubEnterpriseURL string
-	GithubTargets       []string
 	GitlabAccessToken   string
 	GitlabTargets       []string
 	GithubUsers         []*github.User
@@ -106,8 +100,7 @@ type Session struct {
 	JSON                bool
 	MaxFileSize         int64
 	Out                 *Logger `json:"-"`
-	LocalDirs           []string
-	LocalFiles          []string
+	LocalPaths          []string
 	Repositories        []*Repository
 	Router              *gin.Engine `json:"-"`
 	SignatureVersion    string
@@ -122,17 +115,18 @@ type Session struct {
 	Targets             []*Owner
 	Threads             int
 	Version             string
-	MatchLevel          int
+	ConfidenceLevel     int
 	GithubURL           string
 	GitlabURL           string
-	UserDirtyNames      string
-	UserDirtyOrgs       string
-	UserDirtyRepos      string
+	UserDirtyNames      []string
+	UserDirtyOrgs       []string
+	UserDirtyRepos      []string
 	UserLogins          []string
 	UserOrgs            []string
 	UserRepos           []string
 }
 
+// githubRepository is the holds the necessary fields in a simpler structure
 type githubRepository struct {
 	Owner         *string
 	ID            *int64
@@ -145,7 +139,7 @@ type githubRepository struct {
 	Homepage      *string
 }
 
-// setConfig will set the defaults, and load a config file and environment variables if they are present
+// SetConfig will set the defaults, and load a config file and environment variables if they are present
 func SetConfig() *viper.Viper {
 
 	v := viper.New()
@@ -177,43 +171,40 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 	s.BindAddress = v.GetString("bind-address")
 	s.BindPort = v.GetInt("bind-port")
-	s.CommitDepth = setCommitDepth(v.GetInt("commit-depth"))
+	s.CommitDepth = setCommitDepth(v.GetFloat64("commit-depth"))
 	s.Debug = v.GetBool("debug")
 	s.ExpandOrgs = v.GetBool("expaand-orgs")
 	s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")
-	s.GithubTargets = v.GetStringSlice("github-targets")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
-	s.LocalDirs = v.GetStringSlice("local-dirs")
 	s.MaxFileSize = v.GetInt64("max-file-size")
-	s.MatchLevel = v.GetInt("match-level")
-	s.ScanFork = v.GetBool("scan-forks") //TODO Need to implement
+	s.ConfidenceLevel = v.GetInt("confidence-level")
+	s.ScanFork = v.GetBool("scan-forks")
 	s.ScanTests = v.GetBool("scan-tests")
 	s.ScanType = scanType
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
 	s.Version = version.AppVersion()
-	v.GetStringSlice("scan-dir")
-	v.GetStringSlice("scan-file")
 
-	// add the default directories to the sess if they don't already exist
+	if s.ScanType == "localGit" {
+		s.LocalPaths = v.GetStringSlice("local-repos")
+	} else if s.ScanType == "localPath" {
+		s.LocalPaths = v.GetStringSlice("local-paths")
+	}
+
+	// Add the default directories to the sess if they don't already exist
 	for _, e := range defaultIgnorePaths {
 		e = strings.TrimSpace(e)
 		s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
 	}
 
 	// add any additional paths the user requested to exclude to the pre-defined slice
-	userIgnorePath := v.GetString("ignore-path")
-	if userIgnorePath != "" {
-		p := strings.Split(v.GetString("ignore-path"), ",") // TODO make slice
-
-		for _, e := range p {
-			e = strings.TrimSpace(e)
-			s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
-		}
+	for _, e := range v.GetStringSlice("ignore-path") {
+		e = strings.TrimSpace(e)
+		s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
 	}
 
 	// the default ignorable extensions
@@ -222,14 +213,9 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	}
 
 	// add any additional extensions the user requested to ignore
-	userIgnoreExtensions := v.GetString("ignore-extension")
-	if userIgnoreExtensions != "" {
-		e := strings.Split(userIgnoreExtensions, ",") // TODO make slice
-
-		for _, f := range e {
-			f = strings.TrimSpace(f)
-			s.SkippableExt = AppendIfMissing(s.SkippableExt, f)
-		}
+	for _, f := range v.GetStringSlice("ignore-extension") {
+		f = strings.TrimSpace(f)
+		s.SkippableExt = AppendIfMissing(s.SkippableExt, f)
 	}
 
 	s.InitStats()
@@ -242,28 +228,26 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 	var curSig []Signature
 	var combinedSig []Signature
-	SignaturesFile := v.GetString("signature-file")
-	if SignaturesFile != "" {
-		Signatures := strings.Split(SignaturesFile, ",") // TODO make slice
 
-		for _, f := range Signatures {
-			f = strings.TrimSpace(f)
-			h := SetHomeDir(f)
-			if PathExists(h, s) {
-				curSig = LoadSignatures(h, s.MatchLevel, s)
-				combinedSig = append(combinedSig, curSig...)
-			}
+	// TODO need to catch this error here
+	for _, f := range v.GetStringSlice("signature-file") {
+		f = strings.TrimSpace(f)
+		h := SetHomeDir(f, s)
+		if PathExists(h, s) {
+			curSig = LoadSignatures(h, s.ConfidenceLevel, s)
+			combinedSig = append(combinedSig, curSig...)
 		}
-	} // TODO need to catch this error here
+	}
 	Signatures = combinedSig
 }
 
-// setCommitDepth will set the commit depth to go to during a sess. This is an ugly way of doing it but for the moment it works fine.
-func setCommitDepth(c int) int {
-	if c == 0 {
+// setCommitDepth will set the commit depth to go to during a sess. This is an ugly way of doing it
+// but for the moment it works fine.
+func setCommitDepth(c float64) int {
+	if c == -1 {
 		return 9999999999
 	}
-	return c
+	return int(c)
 }
 
 // Finish is called at the end of a scan session and used to generate discrete data points
@@ -297,7 +281,6 @@ func (s *Session) AddRepository(repository *Repository) {
 		}
 	}
 	s.Repositories = append(s.Repositories, repository)
-	s.Stats.IncrementRepositoriesTotal()
 
 }
 
@@ -310,56 +293,6 @@ func (s *Session) AddFinding(finding *Finding) {
 	s.Findings = append(s.Findings, finding)
 	s.Stats.IncrementFindingsTotal()
 }
-
-// InitGithubClient will create a new github client of the type given by the input string. Currently Enterprise and github.com are supported
-//func (s *Session) InitAPIClient() {
-//	ctx := context.Background()
-//	ts := oauth2.StaticTokenSource(
-//		&oauth2.Token{AccessToken: s.GithubAccessToken},
-//	)
-//	tc := oauth2.NewClient(ctx, ts)
-//
-//	if s.ScanType == "github-enterprise" {
-//
-//		if s.GithubEnterpriseURL != "" {
-//
-//			_, err := url.Parse(s.GithubEnterpriseURL)
-//			if err != nil {
-//				s.Out.Error("Unable to parse --github-enterprise-url: <%s>", s.GithubEnterpriseURL)
-//			}
-//		}
-//		s.GithubClient, _ = github.NewEnterpriseClient(s.GithubEnterpriseURL, "", tc)
-//	}
-//
-//	if t == "github" {
-//		if s.GithubURL != "" {
-//			_, err := url.Parse(s.GithubURL)
-//			if err != nil {
-//				s.Out.Error("Unable to parse --github-url: <%s>", s.GithubURL)
-//			}
-//		}
-//		s.GithubClient = github.NewClient(tc)
-//	}
-//}
-
-// InitAPIClient will create a new gitlab or github api client based on the session identifier
-//func (s *Session) InitAPIClient() {
-//
-//	switch s.ScanType {
-//	case "github":
-//		CheckGithubAPIToken(s.GithubAccessToken, s)
-//		s.Client = githubClient.NewClient(githubClient{}, s)
-//	case "gitlab":
-//		CheckGitlabAPIToken(s.GitlabAccessToken, s)
-//		var err error
-//		s.Client, err = gitlabClient.NewClient(gitlabClient{}, s.GitlabAccessToken, s.Out)
-//		if err != nil {
-//			s.Out.Fatal("Error initializing GitLab client: %s", err)
-//		}
-//	default:
-//		// TODO put something in here when needed
-//	}
-//}
 
 // InitThreads will set the correct number of threads based on the commandline flags
 func (s *Session) InitThreads() {
@@ -383,11 +316,11 @@ func (s *Session) InitRouter() {
 
 // SaveToFile will save a json representation of the session output to a file
 func (s *Session) SaveToFile(location string) error {
-	sessionJson, err := json.Marshal(s)
+	sessionJSON, err := json.Marshal(s)
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(location, sessionJson, 0644)
+	err = ioutil.WriteFile(location, sessionJSON, 0644)
 	if err != nil {
 		return err
 	}
@@ -408,11 +341,11 @@ func (s *Stats) IncrementRepositories() {
 	s.Repositories++
 }
 
-// IncrementCommits will add one to the running count of commits during the target discovery phase of a session
-func (s *Stats) IncrementCommits() {
+// IncrementCommitsTotal will add one to the running count of commits during the target discovery phase of a session
+func (s *Stats) IncrementCommitsTotal() {
 	s.Lock()
 	defer s.Unlock()
-	s.Commits++
+	s.CommitsTotal++
 }
 
 // IncrementFiles will add one to the running count of files during the target discovery phase of a session
@@ -441,7 +374,7 @@ func (s *Stats) UpdateProgress(current int, total int) {
 }
 
 // NewSession  is the entry point for starting a new scan session
-func NewSession(v *viper.Viper, scanType string) *Session { // TODO refactor out this function
+func NewSession(v *viper.Viper, scanType string) *Session {
 	var session Session
 
 	session.Initialize(v, scanType)

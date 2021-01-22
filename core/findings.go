@@ -1,4 +1,4 @@
-// Package matching contains specific functionality elated to scanning and detecting secrets within the given input.
+// Package core represents the core functionality of all commands
 package core
 
 import (
@@ -16,41 +16,41 @@ type Finding struct {
 	CommitAuthor      string
 	CommitHash        string
 	CommitMessage     string
-	CommitUrl         string
+	CommitURL         string
 	Description       string
 	FilePath          string
-	FileUrl           string
+	FileURL           string
 	WraithVersion     string
 	Hash              string
 	LineNumber        string
 	RepositoryName    string
 	RepositoryOwner   string
-	RepositoryUrl     string
-	Signatureid       string
+	RepositoryURL     string
+	SignatureID       string
 	SignaturesVersion string
 	SecretID          string
 }
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
 func (f *Finding) setupUrls(sess *Session) {
-	baseUrl := ""
+	baseURL := ""
 	if sess.ScanType == "github-enterprise" {
-		baseUrl = sess.GithubEnterpriseURL
+		baseURL = sess.GithubEnterpriseURL
 	} else if sess.ScanType == "github" {
-		baseUrl = "https://github.com"
+		baseURL = "https://github.com"
 	} else {
-		baseUrl = "https://gitlab.com"
+		baseURL = "https://gitlab.com"
 	}
 	switch sess.ScanType {
 	case "github":
-		f.RepositoryUrl = fmt.Sprintf("%s/%s/%s", baseUrl, f.RepositoryOwner, f.RepositoryName)
-		f.FileUrl = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryUrl, f.CommitHash, f.FilePath)
-		f.CommitUrl = fmt.Sprintf("%s/commit/%s", f.RepositoryUrl, f.CommitHash)
+		f.RepositoryURL = fmt.Sprintf("%s/%s/%s", baseURL, f.RepositoryOwner, f.RepositoryName)
+		f.FileURL = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryURL, f.CommitHash, f.FilePath)
+		f.CommitURL = fmt.Sprintf("%s/commit/%s", f.RepositoryURL, f.CommitHash)
 	case "gitlab":
-		results := CleanUrlSpaces(f.RepositoryOwner, f.RepositoryName)
-		f.RepositoryUrl = fmt.Sprintf("%s/%s/%s", baseUrl, results[0], results[1])
-		f.FileUrl = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryUrl, f.CommitHash, f.FilePath)
-		f.CommitUrl = fmt.Sprintf("%s/commit/%s", f.RepositoryUrl, f.CommitHash)
+		results := CleanURLSpaces(f.RepositoryOwner, f.RepositoryName)
+		f.RepositoryURL = fmt.Sprintf("%s/%s/%s", baseURL, results[0], results[1])
+		f.FileURL = fmt.Sprintf("%s/blob/%s/%s", f.RepositoryURL, f.CommitHash, f.FilePath)
+		f.CommitURL = fmt.Sprintf("%s/commit/%s", f.RepositoryURL, f.CommitHash)
 	}
 
 }

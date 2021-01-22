@@ -13,7 +13,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// search will walk the path or a given directory and append each viable path to an array
+// Search will walk the path or a given directory and append each viable path to an array
 func Search(ctx context.Context, root string, skippablePath []string, sess *Session) ([]string, error) {
 	sess.Out.Important("Enumerating Paths\n")
 	g, ctx := errgroup.WithContext(ctx)
@@ -55,7 +55,7 @@ func Search(ctx context.Context, root string, skippablePath []string, sess *Sess
 	return m, g.Wait()
 }
 
-// doFileScan with create a match object and then test for various criteria necessary in order to determine if it should be scanned. This includes if it should be skipped due to a default or user supplied extension, if it matches a test regex, or is in a protected directory or is itself protected. This will only run when doing scanLocalPath.
+// DoFileScan with create a match object and then test for various criteria necessary in order to determine if it should be scanned. This includes if it should be skipped due to a default or user supplied extension, if it matches a test regex, or is in a protected directory or is itself protected. This will only run when doing scanLocalPath.
 func DoFileScan(filename string, sess *Session) {
 
 	// Set default values for all pre-requisites for a file scan
@@ -85,10 +85,14 @@ func DoFileScan(filename string, sess *Session) {
 		return
 	}
 
-	if IsMaxFileSize(filename, sess) {
-		sess.Out.Debug("%s is too large and being ignored\n", filename)
+	// Check the file size of the file. If it is greater than the default size then
+	// then we increment the ignored file count and pass on through.
+	val, msg := IsMaxFileSize(filename, sess)
+	if val {
 
 		sess.Stats.IncrementFilesIgnored()
+		sess.Out.Debug("%s %s\n", filename, msg)
+
 		return
 	}
 
@@ -126,7 +130,7 @@ func DoFileScan(filename string, sess *Session) {
 					FilePath:          filename,
 					Action:            `File Scan`,
 					Description:       signature.Description(),
-					Signatureid:       signature.Signatureid(),
+					SignatureID:       signature.SignatureID(),
 					Content:           content,
 					RepositoryOwner:   `not-a-repo`,
 					RepositoryName:    `not-a-repo`,
@@ -150,7 +154,7 @@ func DoFileScan(filename string, sess *Session) {
 	}
 }
 
-// scanDir will scan a directory for all the files and then kick a file scan on each of them
+// ScanDir will scan a directory for all the files and then kick a file scan on each of them
 func ScanDir(path string, sess *Session) {
 
 	ctx, cf := context.WithTimeout(context.Background(), 3600*time.Second)
@@ -186,12 +190,12 @@ func ScanDir(path string, sess *Session) {
 // CheckArgs will ensure that both a directory and file are not defined at the same time
 func CheckArgs(sFile []string, sDir []string, sess *Session) {
 	if sFile != nil && sDir != nil {
-		sess.Out.Error("You cannot set both scan-file and scan-dir at the same time")
+		sess.Out.Error("You cannot set both scan-file and scan-dir at the same time\n")
 		os.Exit(1)
 	}
 
 	if sFile == nil && sDir == nil {
-		sess.Out.Error("You must set either a path or file to scan")
+		sess.Out.Error("You must set either a path or file to scan\n")
 		os.Exit(1)
 	}
 }

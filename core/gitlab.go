@@ -1,7 +1,9 @@
 package core
 
 import (
+	"context"
 	"fmt"
+	"github.com/google/go-github/github"
 	"sync"
 
 	"github.com/xanzy/go-gitlab"
@@ -19,7 +21,7 @@ import (
 func cloneGitlab(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
-		URL:           *cloneConfig.Url,
+		URL:           *cloneConfig.URL,
 		Depth:         *cloneConfig.Depth,
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
 		SingleBranch:  true,
@@ -67,8 +69,7 @@ func (c gitlabClient) NewClient(token string, logger *Logger) (gitlabClient, err
 	return c, nil
 }
 
-//TODO make this a single function
-// CheckAPIToken will ensure we have a valid github api token
+// CheckGitlabAPIToken will ensure we have a valid github api token
 func CheckGitlabAPIToken(t string, sess *Session) string {
 
 	// check to make sure the length is proper
@@ -77,14 +78,6 @@ func CheckGitlabAPIToken(t string, sess *Session) string {
 		os.Exit(2)
 	}
 
-	// TODO gitlab access tokens can contain special character.
-	//  This needs to be fixed
-	// match only letters and numbers and ensure you match 40
-	//exp1 := regexp.MustCompile(`^[A-Za-z0-9]{20}`)
-	//if !exp1.MatchString(t) {
-	//	sess.Out.Error("Gitlab token is invalid\n")
-	//	os.Exit(2)
-	//}
 	return t
 }
 
@@ -111,22 +104,22 @@ func (c gitlabClient) GetUserOrganization(login string) (*Owner, error) {
 			Email:     gitlab.String(user.PublicEmail),
 			Bio:       gitlab.String(user.Bio),
 		}, nil
-	} else {
-		id := int64(org.ID)
-		return &Owner{
-			Login:     gitlab.String(org.Name),
-			ID:        &id,
-			Type:      gitlab.String(TargetTypeOrganization),
-			Name:      gitlab.String(org.Name),
-			AvatarURL: gitlab.String(org.AvatarURL),
-			URL:       gitlab.String(org.WebURL),
-			Company:   gitlab.String(org.FullName),
-			Blog:      emptyString,
-			Location:  emptyString,
-			Email:     emptyString,
-			Bio:       gitlab.String(org.Description),
-		}, nil
 	}
+	id := int64(org.ID)
+	return &Owner{
+		Login:     gitlab.String(org.Name),
+		ID:        &id,
+		Type:      gitlab.String(TargetTypeOrganization),
+		Name:      gitlab.String(org.Name),
+		AvatarURL: gitlab.String(org.AvatarURL),
+		URL:       gitlab.String(org.WebURL),
+		Company:   gitlab.String(org.FullName),
+		Blog:      emptyString,
+		Location:  emptyString,
+		Email:     emptyString,
+		Bio:       gitlab.String(org.Description),
+	}, nil
+
 }
 
 // GetOrganizationMembers will gather all the members of a given organization
@@ -307,4 +300,43 @@ func (c gitlabClient) getGroupProjects(target Owner) ([]*Repository, error) {
 	wg.Wait()
 
 	return allGroupProjects, nil
+}
+
+// GetRepositoriesFromOwner is used gather all the repos associated with the org owner or other user.
+// This is only used by the gitlab client. The github client use a github specific function.
+func (c githubClient) GetRepositoriesFromOwner(target Owner) ([]*Repository, error) {
+	var allRepos []*Repository
+	ctx := context.Background()
+	opt := &github.RepositoryListOptions{
+		Type: "sources",
+	}
+
+	for {
+		repos, resp, err := c.apiClient.Repositories.List(ctx, *target.Login, opt)
+		if err != nil {
+			return allRepos, err
+		}
+		for _, repo := range repos {
+			if !*repo.Fork {
+				r := Repository{
+					Owner:         repo.Owner.Login,
+					ID:            repo.ID,
+					Name:          repo.Name,
+					FullName:      repo.FullName,
+					CloneURL:      repo.CloneURL,
+					URL:           repo.HTMLURL,
+					DefaultBranch: repo.DefaultBranch,
+					Description:   repo.Description,
+					Homepage:      repo.Homepage,
+				}
+				allRepos = append(allRepos, &r)
+			}
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+
+	return allRepos, nil
 }

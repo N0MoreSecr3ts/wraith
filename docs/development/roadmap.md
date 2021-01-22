@@ -55,7 +55,6 @@
 - [ ] Expanding orgs is not working
 - [ ] Number of dirty commits is wrong, it should be more than is showing
 
-
 ### Documentation
 
 - [0] Document all flags
@@ -82,10 +81,8 @@
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [0] Go doc strings
-    - [ ] common
-    - [ ] config
-    - [ ] core
-    - [ ] version
+    - [0] core
+    - [0] version
 - [ ] Issue template
 - [ ] PR template
 - [ ] Submit story to hackernews
@@ -96,13 +93,13 @@
 ### Testing
 - [0] Code review and remove debug statements
 - [0] Ensure that an error status will exit the program, if not swap to a warning status so it does
-- [ ] Sanity check testing plan
-- [ ] Copy existing tests to the new codebase
+- [0] Sanity check testing plan
+- [0] Copy existing tests to the new codebase
 - [ ] Make sure we use https so keys are not necessary
 - [ ] Update CodeCov for Wraith
-- [ ] Golint needs to pass
+- [0] Golint needs to pass
 - [ ] Convert tests to testify
-- [ ] Review all flags to ensure they are needed
+- [0] Review all flags to ensure they are needed
 
 ### Features
 - [ ] -1 Confidence level loads all signatures

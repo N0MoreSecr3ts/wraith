@@ -1,4 +1,3 @@
-// Package matching contains specific functionality elated to scanning and detecting secrets within the given input.
 package core
 
 import (
@@ -13,7 +12,7 @@ import (
 	"strings"
 )
 
-// this are the various items that we are attempting to match against using either regex's or simple pattern matches.
+// These are the various items that we are attempting to match against using either regex's or simple pattern matches.
 const (
 	PartExtension = "extension" // file extension
 	PartFilename  = "filename"  // file name
@@ -64,9 +63,9 @@ type Signature interface {
 	Description() string
 	Enable() int
 	ExtractMatch(file MatchFile, sess *Session, change *object.Change) (bool, map[string]int)
-	MatchLevel() int
+	ConfidenceLevel() int
 	Part() string
-	Signatureid() string // TODO change id -> ID
+	SignatureID() string // TODO change id -> ID
 }
 
 // SignaturesMetaData is used by updateSignatures to determine if/how to update the signatures
@@ -78,50 +77,50 @@ type SignaturesMetaData struct {
 
 // SafeFunctionSignature holds the information about a safe function, that is used to detect and mitigate false positives
 type SafeFunctionSignature struct {
-	comment     string
-	description string
-	enable      int
-	entropy     float64
-	match       *regexp.Regexp
-	matchLevel  int
-	part        string
-	signatureid string
+	comment         string
+	description     string
+	enable          int
+	entropy         float64
+	match           *regexp.Regexp
+	confidenceLevel int
+	part            string
+	signatureid     string
 }
 
 // SimpleSignature holds the information about a simple signature which is used to match a path or filename
 type SimpleSignature struct {
-	comment     string
-	description string
-	enable      int
-	entropy     float64
-	match       string
-	matchLevel  int
-	part        string
-	signatureid string
+	comment         string
+	description     string
+	enable          int
+	entropy         float64
+	match           string
+	confidenceLevel int
+	part            string
+	signatureid     string
 }
 
 // PatternSignature holds the information about a pattern signature which is a regex used to match content within a file
 type PatternSignature struct {
-	comment     string
-	description string
-	enable      int
-	entropy     float64
-	match       *regexp.Regexp
-	matchLevel  int
-	part        string
-	signatureid string
+	comment         string
+	description     string
+	enable          int
+	entropy         float64
+	match           *regexp.Regexp
+	confidenceLevel int
+	part            string
+	signatureid     string
 }
 
 // SignatureDef maps to a signature within the yaml file
 type SignatureDef struct {
-	Comment     string  `yaml:"comment"`
-	Description string  `yaml:"description"`
-	Enable      int     `yaml:"enable"`
-	Entropy     float64 `yaml:"entropy"`
-	Match       string  `yaml:"match"`
-	MatchLevel  int     `yaml:"match-level"`
-	Part        string  `yaml:"part"`
-	Signatureid string  `yaml:"signatureid"`
+	Comment         string  `yaml:"comment"`
+	Description     string  `yaml:"description"`
+	Enable          int     `yaml:"enable"`
+	Entropy         float64 `yaml:"entropy"`
+	Match           string  `yaml:"match"`
+	ConfidenceLevel int     `yaml:"confidence-level"`
+	Part            string  `yaml:"part"`
+	SignatureID     string  `yaml:"signatureid"`
 }
 
 // SignatureConfig holds the base file structure for the signatures file
@@ -162,9 +161,9 @@ func (s SimpleSignature) Enable() int {
 	return s.enable
 }
 
-// MatchLevel sets the confidence level of the pattern
-func (s SimpleSignature) MatchLevel() int {
-	return s.matchLevel
+// ConfidenceLevel sets the confidence level of the pattern
+func (s SimpleSignature) ConfidenceLevel() int {
+	return s.confidenceLevel
 }
 
 // Part sets the part of the file/path that is matched [ filename content extension ]
@@ -177,8 +176,8 @@ func (s SimpleSignature) Description() string {
 	return s.description
 }
 
-// Sugnatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
-func (s SimpleSignature) Signatureid() string {
+// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+func (s SimpleSignature) SignatureID() string {
 	return s.signatureid
 }
 
@@ -268,33 +267,37 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 					}
 				}
 
-				content, err := GetChangeContent(change)
-				if err != nil {
-					sess.Out.Error("Error retrieving content in commit %s, change %s:  %s", "commit.String()", change.String(), err)
-				}
+				if sess.ScanType != "localPath" {
 
-				if r.Match([]byte(content)) {
-					for _, curRegexMatch := range r.FindAll([]byte(content), -1) {
-						contextMatches = append(contextMatches, string(curRegexMatch))
+					content, err := GetChangeContent(change)
+					if err != nil {
+						sess.Out.Error("Error retrieving content in commit %s, change %s:  %s\n", "commit.String()", change.String(), err)
 					}
-					if len(contextMatches) > 0 {
-						bResult = true
-						for i, curMatch := range contextMatches {
-							thisMatch := string(curMatch[:])
-							thisMatch = strings.TrimSuffix(thisMatch, "\n")
 
-							bResult = confirmEntropy(thisMatch, s.entropy)
-
-							if bResult {
-								linesOfScannedFile := strings.Split(content, "\n")
-
-								num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
-								results[strconv.Itoa(i)+"_"+thisMatch] = num
-							}
+					if r.Match([]byte(content)) {
+						for _, curRegexMatch := range r.FindAll([]byte(content), -1) {
+							contextMatches = append(contextMatches, string(curRegexMatch))
 						}
-						return bResult, results
+						if len(contextMatches) > 0 {
+							bResult = true
+							for i, curMatch := range contextMatches {
+								thisMatch := string(curMatch[:])
+								thisMatch = strings.TrimSuffix(thisMatch, "\n")
+
+								bResult = confirmEntropy(thisMatch, s.entropy)
+
+								if bResult {
+									linesOfScannedFile := strings.Split(content, "\n")
+
+									num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
+									results[strconv.Itoa(i)+"_"+thisMatch] = num
+								}
+							}
+							return bResult, results
+						}
 					}
 				}
+
 			}
 		}
 	default: // TODO We need to do something with this
@@ -328,9 +331,9 @@ func (s PatternSignature) Enable() int {
 	return s.enable
 }
 
-// MatchLevel sets the confidence level of the pattern
-func (s PatternSignature) MatchLevel() int {
-	return s.matchLevel
+// ConfidenceLevel sets the confidence level of the pattern
+func (s PatternSignature) ConfidenceLevel() int {
+	return s.confidenceLevel
 }
 
 // Part sets the part of the file/path that is matched [ filename content extension ]
@@ -343,8 +346,8 @@ func (s PatternSignature) Description() string {
 	return s.description
 }
 
-// Signatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
-func (s PatternSignature) Signatureid() string {
+// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+func (s PatternSignature) SignatureID() string {
 	return s.signatureid
 }
 
@@ -353,9 +356,9 @@ func (s SafeFunctionSignature) Enable() int {
 	return s.enable
 }
 
-// MatchLevel sets the confidence level of the pattern
-func (s SafeFunctionSignature) MatchLevel() int {
-	return s.matchLevel
+// ConfidenceLevel sets the confidence level of the pattern
+func (s SafeFunctionSignature) ConfidenceLevel() int {
+	return s.confidenceLevel
 }
 
 // Part sets the part of the file/path that is matched [ filename content extension ]
@@ -368,8 +371,8 @@ func (s SafeFunctionSignature) Description() string {
 	return s.description
 }
 
-// Signatureid sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
-func (s SafeFunctionSignature) Signatureid() string {
+// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+func (s SafeFunctionSignature) SignatureID() string {
 	return s.signatureid
 }
 
@@ -384,7 +387,7 @@ func (s SafeFunctionSignature) ExtractMatch(file MatchFile, sess *Session, chang
 func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { // TODO we don't need to bring in session here
 
 	// ensure that we have the proper home directory
-	filePath = SetHomeDir(filePath)
+	filePath = SetHomeDir(filePath, sess)
 
 	c, err := loadSignatureSet(filePath)
 	if err != nil {
@@ -404,7 +407,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 	var PatternSignatures []PatternSignature
 	for _, curSig := range c.SimpleSignatures {
 
-		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
+		if curSig.Enable > 0 && curSig.ConfidenceLevel >= mLevel {
 
 			var part string
 			switch strings.ToLower(curSig.Part) {
@@ -426,15 +429,15 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Enable,
 				curSig.Entropy,
 				curSig.Match,
-				curSig.MatchLevel,
+				curSig.ConfidenceLevel,
 				part,
-				curSig.Signatureid,
+				curSig.SignatureID,
 			})
 		}
 	}
 
 	for _, curSig := range c.PatternSignatures {
-		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
+		if curSig.Enable > 0 && curSig.ConfidenceLevel >= mLevel {
 			var part string
 			switch strings.ToLower(curSig.Part) {
 			case "partpath":
@@ -456,14 +459,14 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Enable,
 				curSig.Entropy,
 				match,
-				curSig.MatchLevel,
+				curSig.ConfidenceLevel,
 				part,
-				curSig.Signatureid,
+				curSig.SignatureID,
 			})
 		}
 	}
 	for _, curSig := range c.SafeFunctionSignatures {
-		if curSig.Enable > 0 && curSig.MatchLevel >= mLevel {
+		if curSig.Enable > 0 && curSig.ConfidenceLevel >= mLevel {
 			var part string
 			switch strings.ToLower(curSig.Part) {
 			case "partpath":
@@ -485,9 +488,9 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 				curSig.Enable,
 				curSig.Entropy,
 				match,
-				curSig.MatchLevel,
+				curSig.ConfidenceLevel,
 				part,
-				curSig.Signatureid,
+				curSig.SignatureID,
 			})
 		}
 	}

@@ -1,4 +1,3 @@
-// Package localRepo represents github specific functionality
 package core
 
 import (
@@ -15,11 +14,11 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
-// CloneRepository will create either an in memory clone of a given repository or clone to a temp dir.
+// cloneLocal will create either an in memory clone of a given repository or clone to a temp dir.
 func cloneLocal(cloneConfig *CloneConfiguration) (*git.Repository, string, error) {
 
 	cloneOptions := &git.CloneOptions{
-		URL:           *cloneConfig.Url,
+		URL:           *cloneConfig.URL,
 		Depth:         *cloneConfig.Depth,
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
 		SingleBranch:  true,
@@ -51,11 +50,11 @@ func GatherLocalRepositories(sess *Session) {
 	// This is the number of targets as we don't do forks or anything else.
 	// It will contain directorys, that will then be added to the repo count
 	// if they contain a .git directory
-	sess.Stats.Targets = len(sess.LocalDirs)
+	sess.Stats.Targets = len(sess.LocalPaths)
 	sess.Stats.Status = StatusGathering
 	sess.Out.Important("Gathering Local Repositories...\n")
 
-	for _, pth := range sess.LocalDirs {
+	for _, pth := range sess.LocalPaths {
 
 		if !PathExists(pth, sess) {
 			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)

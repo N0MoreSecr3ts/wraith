@@ -3,12 +3,7 @@
 ## Scanning
 
 ### Targets
-- [ ] Scan Github Enterprise Org Repos (needs an org)
-- [ ] Scan Github Enterprise User Repos (needs a user)
-- [ ] Scan Github Enterprise Single Repo (needs a user/org and a repo)
-- [X] ~~Scan Github.com Org Repos (needs an org)~~
-- [X] ~~Scan Github.com User Repos (needs a user)~~
-- [ ] Scan Github.com Single Repo (needs a repo and a user/org)
+
 - [ ] Scan Github [Gists][1]
 
 
@@ -25,10 +20,6 @@
 - [ ] Scan Bitbucket On-Prem User Repos
 
 
-- [X] ~~Scan Local Files~~
-- [X] ~~Scan Local Git Repos~~
-
-
 - [ ] Scan AWS Code Commit
 - [ ] Scan Azure DevOps
 
@@ -42,6 +33,7 @@
 - [ ] Scan Dropbox
 - [ ] Scan GoogleDrive
 - [ ] Scan iCloud
+- [ ] Scan S3 Buckets
 
 
 - [ ] Scan MS Office Docs
@@ -53,68 +45,25 @@
 ## Milestone 1
 
 ### Bugs
-- [X] ~~temp directories are not getting deleted~~
-- [X] ~~in-mem-clone is not working properly~~
-- [X] ~~there are no findings in a gitlab search~~
-- [X] ~~there are multiple generateID functions~~
-- [X] ~~Web Frontend For Output~~
-- [X] ~~Specific YAML Configuration File~~
-- [X] ~~Signatures in a seperate repo (signature uplift)~~
-- [X] ~~Signatures in either yaml or json format (signature uplift)~~
-- [X] ~~Finding should have an ID (Hash)~~
-- [X] ~~Ability to configure via environment variables~~
-- [X] ~~Ability to version signatures (signature uplift)~~
-- [X] ~~When running silent, no webserver is started~~
-- [X] ~~DB Code is smelly (reomved feature)~~
-- [X] ~~Web interface line in stdio is borked~~
-- [X] ~~Can only find a single target~~
-- [X] ~~Silent still displays the gitlab logo~~
-- [X] ~~Slient does not print you need to hit Ctrl-C to stop the webserver~~
-- [X] ~~gitlab scans are failing~~
-- [X] ~~not consistently finding secrets for all sources~~
-- [X] ~~web interface links are broken for local files~~
-- [X] ~~no error when rules file is not found~~
-- [X] ~~there are no findings in a local git search~~
+
+- [ ] Still have a lot of missing files when scanning (turn on debug)
+- [ ] In memory clone returns no findings (I think this has something to do with the path not being found)
+- [ ] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
 - [ ] Gitlab client does not follow redirects
-- [ ] Need to confirm if github client follows redirects
+- [ ] Github does not follow redirects
 - [ ] In gitlab you can have a project w/ no repo, this will error out
-- [ ] In github you can have a project w/ no repo, does this error out
-- [X] ~~Searching through a commit history is present but not effective~~
-- [X] ~~Secret ID's are possibly not unique~~
-- [ ] Duplicate findings are being displayed
-- [X] ~~Findings with a line number of 0 are being displayed~~
-- [ ] Review all flags to ensure they are needed
 - [ ] Expanding orgs is not working
-- [ ] Setting the number of commits to 1 does not scan anything
-- [X] ~~Number of total commits was wrong~~
-- [X] ~~Line numbers are wrong in the patches being scanned~~
 - [ ] Number of dirty commits is wrong, it should be more than is showing
-- [X] ~~**Redo github enterprise bits to clean them up**~~
-- [X] ~~**Refactor the client to follow G's method**~~
-- [ ] **Set the debug like G**
-- [ ] Set the csv and json like G
-- [X] ~~**Set orgs and repos like G**~~
-- [ ] **gitlab api endpoint**
-- [ ] **Port gitlab to match G**
-- [ ] ~/ does not work in the config file due to a missing '/'
-- [ ] yaml list does not work for github enterprise 
-- [ ] need to be able to scan all the repos for a specific user
-- [ ] need to be able to scan all the orgs a user is a member of
-- [X] ~~remove all lazy, one-off data structures and use the official ones~~
-- [ ] refactor how we do stats on commits
-- [ ] Validate the gitlab api token
-- [ ] Uplift gitlab functionality to match github
 
 ### Documentation
-- [ ] **Document all flags**
+
+- [0] Document all flags
+- [0] Document all code completely
 - [ ] Document how to add a new command or source
-- [ ] Document the tech debt using colors and a shell script
 - [ ] Document all stats
-- [X] ~~**Document the differance between targets and repos**~~
-- [ ] **Document all code completely**
 - [ ] Create a developer doc with the design and code execution flow
 - [ ] Contributing.md
-    - [ ] wraith
+    - [X] ~~wraith~~
     - [ ] wraith-tests
     - [ ] wraith-signatures
 - [ ] README.md
@@ -127,17 +76,13 @@
     - [ ] wraith-signatures
 - [ ] Initial blog post
 - [ ] Detailed documentation published on the net and with source control
-- [X] ~~Cleanup issues~~
 - [ ] Changelog.md
     - [ ] wraith
     - [ ] wraith-tests
     - [ ] wraith-signatures
-- [X] ~~Label issues for begineer and hacktoberfest~~
-- [ ] **Go doc strings**
-    - [ ] common
-    - [ ] config
-    - [ ] core
-    - [ ] version
+- [0] Go doc strings
+    - [0] core
+    - [0] version
 - [ ] Issue template
 - [ ] PR template
 - [ ] Submit story to hackernews
@@ -146,50 +91,41 @@
 - [ ] Call out individual contributers after N merges
     
 ### Testing
-- [ ] Copy existing tests to the new codebase
-- [X] ~~Confirm hide secrets~~
-- [X] ~~Update Code Climate for Wraith~~
+- [0] Code review and remove debug statements
+- [0] Ensure that an error status will exit the program, if not swap to a warning status so it does
+- [0] Sanity check testing plan
+- [0] Copy existing tests to the new codebase
+- [ ] Make sure we use https so keys are not necessary
 - [ ] Update CodeCov for Wraith
-- [ ] Golint needs to pass
+- [0] Golint needs to pass
 - [ ] Convert tests to testify
-- [ ] **Code review and remove debug statements**
-- [X] ~~Set unique secrets in the test~~
+- [0] Review all flags to ensure they are needed
 
 ### Features
+- [ ] -1 Confidence level loads all signatures
+- [0] Need to drop in the org in the realtime output
+- [0] Add the status to all functions for use in the web interface*__*
+- [0] Need to find gitlab api endpoint
+- [0] Port gitlab to match G 
+- [0] Set the debug like G 
+- [0] Remove all dead code
+- [ ] Change id -> ID
+- [ ] Refactor how we do stats on commits
+- [ ] Need to be able to scan all the orgs a user is a member of
+- [ ] Need to be able to scan all the forks of a given repo that we can reach
+- [ ] Set the csv and json like G
 - [ ] Change name from threads to go routines or make that clear
 - [ ] Refactor how threads are calculated
-- [X] ~~**Configure repos~~
-- [X] ~~**Configure Org~~
 - [ ] Created a dedicated GPG key
 - [ ] Enforce https for all connections
 - [ ] Enforce https for the site
 - [ ] Fully Instrumented with Performance Stats
-- [ ] JSON or CSV Output
-- [ ] **Exclude/Include Forks**
 - [ ] Entrophy Checks
-- [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
-- [X] ~~Change empty string defaults to nil~~
-- [X] ~~Add content to summary~~
+- [0] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
 - [ ] Cleanup issues in summary output
-- [ ] **Remove all print debugging statements**
-- [ ] **Remove all dead code**
 - [ ] Add more debuging info
-- [X] ~~Implement flag for setting the thread count manually~~
-- [X] ~~**Look at the clone configs**~~
-- [X] ~~Make a single function to create a temp dir~~
 - [ ] Need to list the flag defaults on the help screen
 - [ ] If no arg's are given for a command, then list the help screen
-- [X] ~~Make sure we clean up the temp directories~~
-- [ ] Alpha sort structs, functions, flags
-- [X] ~~Exclude files based on extension~~
-- [X] ~~Exclude Test Files~~
-- [X] ~~Ability to set commit depth of scan~~
-- [X] ~~Confidence level for regexes (signature uplift)~~
-- [X] ~~Should clone to memory, not disk~~
-- [X] ~~Exclude  paths~~
-- [X] ~~Status output of a session~~
-- [X] ~~Ability to silence the output~~
-- [X] ~~Max file size to scan~~
 - [ ] Only export the functions and variables necessary
 - [ ] Capture the error if no sig file is given and the default does not exist
 - [ ] Break out checking if a file is to be scanned into a single function
@@ -214,7 +150,7 @@
 - [ ] Scan since a given commit
 - [ ] Update Signatures command
 - [ ] Implement threading for local path scans
-- [ ] Ability to use the .gitignoe when scanning for ingoring paths and files
+- [ ] Ability to use the .gitignore when scanning for ignoring paths and files
 
 ### Testing
 - [ ] Make tech debt fail build process

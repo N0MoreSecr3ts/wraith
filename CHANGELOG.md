@@ -7,9 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-- change the file extension of the sample config to .yml
-
-## [0.0.5] - 2020-01-22
+## [0.0.6] - 2020-01-22
 ### Changed
 - rule -> signature throughout the code
 
@@ -61,7 +59,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - initial release for the new project
 
-[Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.4...HEAD
+[Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.6...HEAD
+[0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.6
+[0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.5
 [0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.4
 [0.0.3]: https://github.com/mattyjones/wraith/releases/tag/0.0.3
 [0.0.2]: https://github.com/mattyjones/gitrob/releases/tag/0.0.2

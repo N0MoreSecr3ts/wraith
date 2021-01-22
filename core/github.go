@@ -261,6 +261,7 @@ func GatherGithubRepositoriesFromOwner(sess *Session) {
 					Description:   repo.Description,
 					Homepage:      repo.Homepage,
 				}
+				allRepos = append(allRepos, &r)
 			}
 			if resp.NextPage == 0 {
 				break

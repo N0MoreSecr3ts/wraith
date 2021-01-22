@@ -56,25 +56,24 @@ var DefaultValues = map[string]interface{}{
 	"max-file-size":               10,
 	"num-threads":                 -1,
 	"local-paths":                 nil,
-	//"local-files":                 nil, // TODO remove me
-	"scan-forks":              false,
-	"scan-tests":              false,
-	"scan-type":               "",
-	"silent":                  false,
-	"confidence-level":        3,
-	"signature-file":          "$HOME/.wraith/signatures/default.yml",
-	"signature-path":          "$HOME/.wraith/signatures/",
-	"scan-dir":                nil,
-	"scan-file":               nil,
-	"hide-secrets":            false,
-	"github-url":              "https://api.github.com",
-	"gitlab-url":              "", // TODO set the default
-	"rules-url":               "",
-	"github-enterprise-orgs":  nil,
-	"github-enterprise-repos": nil,
-	"github-orgs":             nil,
-	"github-repos":            nil,
-	"github-users":            nil,
+	"scan-forks":                  false,
+	"scan-tests":                  false,
+	"scan-type":                   "",
+	"silent":                      false,
+	"confidence-level":            3,
+	"signature-file":              "$HOME/.wraith/signatures/default.yml",
+	"signature-path":              "$HOME/.wraith/signatures/",
+	"scan-dir":                    nil,
+	"scan-file":                   nil,
+	"hide-secrets":                false,
+	"github-url":                  "https://api.github.com",
+	"gitlab-url":                  "", // TODO set the default
+	"rules-url":                   "",
+	"github-enterprise-orgs":      nil,
+	"github-enterprise-repos":     nil,
+	"github-orgs":                 nil,
+	"github-repos":                nil,
+	"github-users":                nil,
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -102,30 +101,29 @@ type Session struct {
 	MaxFileSize         int64
 	Out                 *Logger `json:"-"`
 	LocalPaths          []string
-	//LocalFiles          []string // TODO remove me
-	Repositories     []*Repository
-	Router           *gin.Engine `json:"-"`
-	SignatureVersion string
-	ScanFork         bool
-	ScanTests        bool
-	ScanType         string
-	Signatures       []*Signature
-	Silent           bool
-	SkippableExt     []string
-	SkippablePath    []string
-	Stats            *Stats
-	Targets          []*Owner
-	Threads          int
-	Version          string
-	ConfidenceLevel  int
-	GithubURL        string
-	GitlabURL        string
-	UserDirtyNames   []string
-	UserDirtyOrgs    []string
-	UserDirtyRepos   []string
-	UserLogins       []string
-	UserOrgs         []string
-	UserRepos        []string
+	Repositories        []*Repository
+	Router              *gin.Engine `json:"-"`
+	SignatureVersion    string
+	ScanFork            bool
+	ScanTests           bool
+	ScanType            string
+	Signatures          []*Signature
+	Silent              bool
+	SkippableExt        []string
+	SkippablePath       []string
+	Stats               *Stats
+	Targets             []*Owner
+	Threads             int
+	Version             string
+	ConfidenceLevel     int
+	GithubURL           string
+	GitlabURL           string
+	UserDirtyNames      []string
+	UserDirtyOrgs       []string
+	UserDirtyRepos      []string
+	UserLogins          []string
+	UserOrgs            []string
+	UserRepos           []string
 }
 
 // githubRepository is the holds the necessary fields in a simpler structure

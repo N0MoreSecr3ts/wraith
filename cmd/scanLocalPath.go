@@ -24,8 +24,6 @@ var scanLocalPathCmd = &cobra.Command{
 		scanType := "localPath"
 		sess := core.NewSession(viperScanLocalPath, scanType)
 
-		//core.CheckArgs(sess.LocalFiles, sess.LocalDirs, sess)
-
 		// exclude the .git directory from local scans as it is not handled properly here
 		sess.SkippablePath = core.AppendIfMissing(sess.SkippablePath, ".git/")
 
@@ -38,40 +36,12 @@ var scanLocalPathCmd = &cobra.Command{
 			if core.PathExists(p, sess) {
 				last := p[len(p)-1:]
 				if last == "/" {
-					fmt.Println("Last: ", last) // TODO remove me
-					fmt.Println("Directory")    // TODO remove me
 					core.ScanDir(p, sess)
 				} else {
-					fmt.Println("Last: ", last) // TODO remove me
-					fmt.Println("File: ", p)    // TODO remove me
 					core.DoFileScan(p, sess)
 				}
 			}
 		}
-		// Run either a file scan directly, or if it is a directory then walk the path and gather eligible files and then run a scan against each of them
-		//for _, fl := range sess.LocalFiles {
-		//	if fl != "" {
-		//		if !core.PathExists(fl, sess) {
-		//			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", fl)
-		//		} else {
-		//			core.DoFileScan(fl, sess)
-		//		}
-		//	}
-		//}
-		//
-		//for _, pth := range sess.LocalDirs {
-		//	if pth != "" {
-		//		if !core.PathExists(pth, sess) {
-		//			sess.Out.Error("\n[*] <%s> does not exist! Quitting.\n", pth)
-		//			os.Exit(1)
-		//		} else if pth == "" {
-		//			core.ScanDir(pth, sess)
-		//		} else {
-		//			sess.Out.Error("You need to enter a path to scan\n")
-		//			os.Exit(1)
-		//		}
-		//	}
-		//}
 
 		sess.Finish()
 

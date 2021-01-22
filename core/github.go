@@ -4,8 +4,8 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
-	"github.com/spf13/viper"
 	"github.com/google/go-github/github"
+	"github.com/spf13/viper"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
@@ -183,6 +183,7 @@ func (c githubClient) GetUserOrganization(login string) (*Owner, error) {
 	}, nil
 }
 
+// TODO Do we thread this?
 // getRepositoriesFromOrganization will generate a slice of github repo objects for an org. This has only been tested on github enterprise.
 func getRepositoriesFromOrganization(login *string, client *github.Client, scanFork bool, sess *Session) ([]*Repository, error) {
 	var allRepos []*Repository
@@ -191,9 +192,6 @@ func getRepositoriesFromOrganization(login *string, client *github.Client, scanF
 	opt := &github.RepositoryListByOrgOptions{
 		Type: "sources",
 	}
-
-	var wg sync.WaitGroup
-	var mut sync.Mutex
 
 	for {
 		repos, resp, err := client.Repositories.ListByOrg(ctx, orgName, opt)

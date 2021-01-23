@@ -3,12 +3,9 @@ package core
 
 import (
 	"encoding/json"
-	//"context"
 	"fmt"
 	"github.com/google/go-github/github"
-	//"golang.org/x/oauth2"
 	"io/ioutil"
-	//"net/url"
 	"os"
 	"runtime"
 	"strings"
@@ -44,7 +41,7 @@ var DefaultValues = map[string]interface{}{
 	"commit-depth":                -1,
 	"config-file":                 "$HOME/.wraith/config.yaml",
 	"debug":                       false,
-	"add-org-members":          false,
+	"add-org-members":             false,
 	"github-enterprise-url":       "",
 	"github-api-token":            "",
 	"github-enterprise-api-token": "",

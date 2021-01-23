@@ -67,8 +67,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - initial release for the new project
 
 [Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.6...HEAD
-[0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.6
-[0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.5
+[0.0.6]: https://github.com/mattyjones/wraith/releases/tag/0.0.6
 [0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.4
 [0.0.3]: https://github.com/mattyjones/wraith/releases/tag/0.0.3
 [0.0.2]: https://github.com/mattyjones/gitrob/releases/tag/0.0.2

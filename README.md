@@ -9,7 +9,7 @@
 <h4 align="center">Finding digital secrets that were never meant to be found in all corners of the net.</h4>
 
 <p align="center">
-  <img alt="GitHub go.mod Go version (branch)" src="https://img.shields.io/github/go-mod/go-version/n0moresecr3ts/wraith?style=for-the-badge">
+  <img alt="GitHub go.mod Go version (branch)" src="https://img.shields.io/github/go-mod/go-version/n0moresecr3ts/wraith/develop?style=for-the-badge">
   <img alt="GitHub go.mod Go version (branch)" src="https://img.shields.io/github/go-mod/go-version/n0moresecr3ts/wraith/master?style=for-the-badge">
   <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/n0moresecr3ts/wraith?style=for-the-badge">
   <img alt="GitHub commits since latest release (by SemVer)" src="https://img.shields.io/github/commits-since/n0moresecr3ts/wraith/latest?style=for-the-badge">

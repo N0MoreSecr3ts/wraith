@@ -103,7 +103,7 @@ func init() {
 	scanGithubEnterpriseCmd.Flags().Bool("hide-secrets", false, "Do not print secrets to any supported output")
 	scanGithubEnterpriseCmd.Flags().StringSlice("ignore-extension", nil, "List of file extensions to ignore")
 	scanGithubEnterpriseCmd.Flags().StringSlice("ignore-path", nil, "List of file paths to ignore")
-	scanGithubEnterpriseCmd.Flags().Int("max-file-size", 10, "Max file size to scan in (MB)")
+	scanGithubEnterpriseCmd.Flags().Int("max-file-size", 10, "Max file size to scan (in MB)")
 	scanGithubEnterpriseCmd.Flags().Int("num-threads", -1, "Number of execution threads")
 	scanGithubEnterpriseCmd.Flags().Bool("scan-forks", false, "Scan repositories forked by users or orgs")
 	scanGithubEnterpriseCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")

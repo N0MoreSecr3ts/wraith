@@ -64,7 +64,7 @@ func init() {
 	scanGitlabCmd.Flags().Bool("hide-secrets", false, "Do not print secrets to any supported output")
 	scanGitlabCmd.Flags().StringSlice("ignore-extension", nil, "List of file extensions to ignore")
 	scanGitlabCmd.Flags().StringSlice("ignore-path", nil, "List of file paths to ignore")
-	scanGitlabCmd.Flags().Int("max-file-size", 10, "Max file size to scan in (MB)")
+	scanGitlabCmd.Flags().Int("max-file-size", 10, "Max file size to scan (in MB)")
 	scanGitlabCmd.Flags().Int("num-threads", -1, "Number of execution threads")
 	scanGitlabCmd.Flags().Bool("scan-forks", false, "Scan repositories forked by users or orgs")
 	scanGitlabCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")

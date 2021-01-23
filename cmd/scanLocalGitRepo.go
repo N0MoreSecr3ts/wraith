@@ -56,7 +56,7 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Bool("hide-secrets", false, "Do not print secrets to any supported output")
 	scanLocalGitRepoCmd.Flags().StringSlice("ignore-extension", nil, "List of file extensions to ignore")
 	scanLocalGitRepoCmd.Flags().StringSlice("ignore-path", nil, "List of file paths to ignore")
-	scanLocalGitRepoCmd.Flags().Int("max-file-size", 10, "Max file size to scan in (MB)")
+	scanLocalGitRepoCmd.Flags().Int("max-file-size", 10, "Max file size to scan (in MB)")
 	scanLocalGitRepoCmd.Flags().Int("num-threads", -1, "Number of execution threads")
 	scanLocalGitRepoCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanLocalGitRepoCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yaml", "file(s) containing detection signatures.")

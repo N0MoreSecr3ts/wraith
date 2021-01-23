@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - flag names were pointing to the wrong variables
 - change yml -> yaml in the documentation accross the board
 
-
+### Added
+- flag to enable/disable the webserver, default is disable
 ## [0.0.6] - 2020-01-22
 ### Changed
 - rule -> signature throughout the code

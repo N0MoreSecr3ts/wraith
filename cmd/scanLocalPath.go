@@ -47,8 +47,8 @@ var scanLocalPathCmd = &cobra.Command{
 
 		core.PrintSessionStats(sess)
 
-		if !sess.Silent {
-			sess.Out.Important("Press Ctrl+C to stop web server and exit.")
+		if !sess.Silent && sess.WebServer {
+			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
 			select {}
 		}
 
@@ -72,8 +72,9 @@ func init() {
 	scanLocalPathCmd.Flags().Bool("scan-tests", false, "Scan suspected test files")
 	scanLocalPathCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yaml", "file(s) containing detection signatures.")
 	scanLocalPathCmd.Flags().String("signature-path", "$HOME/.wraith/signatures", "path containing detection signatures.")
-	scanLocalPathCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
+	scanLocalPathCmd.Flags().Bool("silent", false, "Suppress all output. An alternative output will need to be configured")
 	scanLocalPathCmd.Flags().StringSlice("local-paths", nil, "List of local paths to scan")
+	scanLocalPathCmd.Flags().Bool("web-server", false, "Enable the web interface for scan output")
 
 	err := viperScanLocalPath.BindPFlag("bind-address", scanLocalPathCmd.Flags().Lookup("bind-address"))
 	err = viperScanLocalPath.BindPFlag("bind-port", scanLocalPathCmd.Flags().Lookup("bind-port"))
@@ -89,6 +90,7 @@ func init() {
 	err = viperScanLocalPath.BindPFlag("signature-path", scanLocalPathCmd.Flags().Lookup("signature-path"))
 	err = viperScanLocalPath.BindPFlag("local-paths", scanLocalPathCmd.Flags().Lookup("local-paths"))
 	err = viperScanLocalPath.BindPFlag("silent", scanLocalPathCmd.Flags().Lookup("silent"))
+	err = viperScanLocalPath.BindPFlag("web-server", scanLocalPathCmd.Flags().Lookup("web-server"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

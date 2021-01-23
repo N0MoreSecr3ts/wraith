@@ -35,7 +35,7 @@ var scanLocalGitRepoCmd = &cobra.Command{
 
 		core.PrintSessionStats(sess)
 
-		if !sess.Silent {
+		if !sess.Silent && sess.WebServer {
 			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
 			select {}
 		}
@@ -63,6 +63,7 @@ func init() {
 	scanLocalGitRepoCmd.Flags().String("signature-path", "$HOME/.wraith/signatures", "path containing detection signatures.")
 	scanLocalGitRepoCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
 	scanLocalGitRepoCmd.Flags().StringSlice("local-repos", nil, "List of local git repos to scan")
+	scanLocalGitRepoCmd.Flags().Bool("web-server", false, "Enable the web interface for scan output")
 
 	err := viperScanLocalGitRepo.BindPFlag("bind-address", scanLocalGitRepoCmd.Flags().Lookup("bind-address"))
 	err = viperScanLocalGitRepo.BindPFlag("bind-port", scanLocalGitRepoCmd.Flags().Lookup("bind-port"))
@@ -79,6 +80,7 @@ func init() {
 	err = viperScanLocalGitRepo.BindPFlag("signature-path", scanLocalGitRepoCmd.Flags().Lookup("signature-path"))
 	err = viperScanLocalGitRepo.BindPFlag("silent", scanLocalGitRepoCmd.Flags().Lookup("silent"))
 	err = viperScanLocalGitRepo.BindPFlag("local-repos", scanLocalGitRepoCmd.Flags().Lookup("local-repos"))
+	err = viperScanLocalGitRepo.BindPFlag("web-server", scanLocalGitRepoCmd.Flags().Lookup("web-server"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

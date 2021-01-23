@@ -71,6 +71,7 @@ var DefaultValues = map[string]interface{}{
 	"github-orgs":                 nil,
 	"github-repos":                nil,
 	"github-users":                nil,
+	"web-server":                  false,
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -121,6 +122,7 @@ type Session struct {
 	UserLogins          []string
 	UserOrgs            []string
 	UserRepos           []string
+	WebServer           bool
 }
 
 // githubRepository is the holds the necessary fields in a simpler structure
@@ -185,6 +187,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
 	s.Version = version.AppVersion()
+	s.WebServer = v.GetBool("web-server")
 
 	if s.ScanType == "localGit" {
 		s.LocalPaths = v.GetStringSlice("local-repos")
@@ -219,7 +222,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitLogger()
 	s.InitThreads()
 
-	if !s.Silent {
+	if !s.Silent && s.WebServer {
 		s.InitRouter()
 	}
 

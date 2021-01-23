@@ -78,7 +78,7 @@ var scanGithubEnterpriseCmd = &cobra.Command{
 
 		core.PrintSessionStats(sess)
 
-		if !sess.Silent {
+		if !sess.Silent && sess.WebServer {
 			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
 			select {}
 		}
@@ -110,6 +110,7 @@ func init() {
 	scanGithubEnterpriseCmd.Flags().String("signature-file", "$HOME/.wraith/signatures/default.yaml", "file(s) containing detection signatures.")
 	scanGithubEnterpriseCmd.Flags().String("signature-path", "$HOME/.wraith/signatures", "path containing detection signatures.")
 	scanGithubEnterpriseCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
+	scanGithubEnterpriseCmd.Flags().Bool("web-server", false, "Enable the web interface for scan output")
 
 	err := viperScanGithubEnterprise.BindPFlag("bind-address", scanGithubEnterpriseCmd.Flags().Lookup("bind-address"))
 	err = viperScanGithubEnterprise.BindPFlag("bind-port", scanGithubEnterpriseCmd.Flags().Lookup("bind-port"))
@@ -131,6 +132,7 @@ func init() {
 	err = viperScanGithubEnterprise.BindPFlag("github-enterprise-orgs", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-orgs"))
 	err = viperScanGithubEnterprise.BindPFlag("github-enterprise-repos", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-repos"))
 	err = viperScanGithubEnterprise.BindPFlag("github-enterprise-users", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-users"))
+	err = viperScanGithubEnterprise.BindPFlag("web-server", scanGithubEnterpriseCmd.Flags().Lookup("web-server"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

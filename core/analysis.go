@@ -263,20 +263,20 @@ func AnalyzeRepositories(sess *Session) {
 
 									// Create a new instance of a finding and set the necessary fields.
 									finding := &Finding{
-										Action:            changeAction,
-										Content:           content,
-										CommitAuthor:      commit.Author.String(),
-										CommitHash:        commit.Hash.String(),
-										CommitMessage:     strings.TrimSpace(commit.Message),
-										Description:       signature.Description(),
-										FilePath:          fPath,
-										WraithVersion:     sess.WraithVersion,
-										LineNumber:        strconv.Itoa(v),
-										RepositoryName:    *repo.Name,
-										RepositoryOwner:   *repo.Owner,
-										SignatureID:       signature.SignatureID(),
-										SignaturesVersion: sess.SignatureVersion,
-										SecretID:          generateID(),
+										Action:           changeAction,
+										Content:          content,
+										CommitAuthor:     commit.Author.String(),
+										CommitHash:       commit.Hash.String(),
+										CommitMessage:    strings.TrimSpace(commit.Message),
+										Description:      signature.Description(),
+										FilePath:         fPath,
+										WraithVersion:    sess.WraithVersion,
+										LineNumber:       strconv.Itoa(v),
+										RepositoryName:   *repo.Name,
+										RepositoryOwner:  *repo.Owner,
+										SignatureID:      signature.SignatureID(),
+										signatureVersion: sess.SignatureVersion,
+										SecretID:         generateID(),
 									}
 									// Set the urls for the finding
 									finding.Initialize(sess)

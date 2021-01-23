@@ -10,9 +10,11 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/otiai10/copy v1.4.2
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/viper v1.7.1
+	github.com/whilp/git-urls v1.0.0
 	github.com/xanzy/go-gitlab v0.42.0
 	golang.org/x/oauth2 v0.0.0-20210113205817-d3ed898aa8a3
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a

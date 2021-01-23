@@ -266,7 +266,7 @@ func SummaryOutput(sess *Session) {
 				v.FileURL,
 				v.SecretID,
 				v.WraithVersion,
-				v.SignaturesVersion,
+				v.signatureVersion,
 			}
 			err := w.Write(line)
 			if err != nil {

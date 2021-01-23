@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - flag to enable/disable the webserver, default is disable
 - add csv output format
 - add json output format
+- ability to update signatures to a given release
 
 
 ## [0.0.6] - 2020-01-22
@@ -38,7 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.0.4] - 2020-08-10
 ### Changed
-- change internal name from gitrob to wraith
+- change the internal name from gitrob to wraith
 - condense number of packages to remove cyclic dependencys. Better code organization is still needed.
 - rules are known as signatures
 - all signatures are in a single yaml file

@@ -66,14 +66,18 @@ var DefaultValues = map[string]interface{}{
 	"scan-file":                   nil,
 	"hide-secrets":                false,
 	"github-url":                  "https://api.github.com",
-	"gitlab-url":                  "", // TODO set the default
-	"rules-url":                   "",
-	"github-enterprise-orgs":      nil,
-	"github-enterprise-repos":     nil,
-	"github-orgs":                 nil,
-	"github-repos":                nil,
-	"github-users":                nil,
-	"web-server":                  false,
+	//"gitlab-url":                  "", // TODO set the default
+	"rules-url": "",
+	//"signatures-path": "$HOME/.wraith/signatures/",
+	//"signatures-url": "https://github.com/N0MoreSecr3ts/wraith-signatures",
+	//"signatures-version": "",
+	"test-signatures":         false,
+	"github-enterprise-orgs":  nil,
+	"github-enterprise-repos": nil,
+	"github-orgs":             nil,
+	"github-repos":            nil,
+	"github-users":            nil,
+	"web-server":              false,
 }
 
 // Session contains all the necessary values and parameters used during a scan

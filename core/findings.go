@@ -11,24 +11,24 @@ import (
 
 // Finding is a secret that has been discovered within a target by a discovery method
 type Finding struct {
-	Action            string
-	Content           string
-	CommitAuthor      string
-	CommitHash        string
-	CommitMessage     string
-	CommitURL         string
-	Description       string
-	FilePath          string
-	FileURL           string
-	WraithVersion     string
-	Hash              string
-	LineNumber        string
-	RepositoryName    string
-	RepositoryOwner   string
-	RepositoryURL     string
-	SignatureID       string
-	SignaturesVersion string
-	SecretID          string
+	Action           string
+	Content          string
+	CommitAuthor     string
+	CommitHash       string
+	CommitMessage    string
+	CommitURL        string
+	Description      string
+	FilePath         string
+	FileURL          string
+	WraithVersion    string
+	Hash             string
+	LineNumber       string
+	RepositoryName   string
+	RepositoryOwner  string
+	RepositoryURL    string
+	SignatureID      string
+	signatureVersion string
+	SecretID         string
 }
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data

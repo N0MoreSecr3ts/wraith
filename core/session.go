@@ -186,7 +186,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.ScanType = scanType
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
-	s.Version = version.AppVersion()
+	s.WraithVersion = version.AppVersion()
 	s.WebServer = v.GetBool("web-server")
 
 	if s.ScanType == "localGit" {

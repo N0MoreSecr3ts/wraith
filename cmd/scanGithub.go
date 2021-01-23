@@ -9,7 +9,6 @@ import (
 	"os"
 	"time"
 	"wraith/core"
-	"wraith/version"
 )
 
 var viperScanGithub *viper.Viper
@@ -33,14 +32,22 @@ var scanGithubCmd = &cobra.Command{
 		// TODO do not exit out if no token but drop a message saying only public repos will be scanned
 		sess.GithubAccessToken = core.CheckGithubAPIToken(viperScanGithub.GetString("github-api-token"), sess)
 
-		sess.Out.Warn("%s\n\n", core.ASCIIBanner)
-		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
-		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
-		sess.Out.Important("Web interface available at http://%s:%d\n", "127.0.0.1", 9393)
+		// By default we display a header to the user giving basic info about application. This will not be displayed
+		// during a silent run which is the default when using this in an automated fashion.
+		if !sess.JSONOutput && !sess.CSVOutput {
+			sess.Out.Warn("%s\n\n", core.ASCIIBanner)
+			sess.Out.Important("%s v%s started at %s\n", core.Name, sess.WraithVersion, sess.Stats.StartedAt.Format(time.RFC3339))
+			sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
+			if sess.WebServer {
+				sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
+			}
+		}
 
-		sess.Out.Debug("We have these orgs: %s\n", sess.UserOrgs)
-		sess.Out.Debug("We have these users: %s\n", sess.UserLogins)
-		sess.Out.Debug("We have these repos: %s\n", sess.UserRepos)
+		if sess.Debug {
+			sess.Out.Debug("We have these orgs: %s\n", sess.UserOrgs)
+			sess.Out.Debug("We have these users: %s\n", sess.UserLogins)
+			sess.Out.Debug("We have these repos: %s\n", sess.UserRepos)
+		}
 
 		//Create a github client to be used for the session
 		sess.InitGitClient()

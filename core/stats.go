@@ -1,6 +1,11 @@
 package core
 
 import (
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
+	"os"
+	"sort"
 	"sync"
 	"time"
 )
@@ -148,6 +153,22 @@ func (s *Session) InitStats() {
 	}
 }
 
+// PrintDebug will print a debug header at the start of the session that displays specific setting
+func PrintDebug(sess *Session) {
+	maxFileSize := sess.MaxFileSize * 1024 * 1024
+	sess.Out.Debug("\n\n")
+	sess.Out.Debug("Debug Info")
+	sess.Out.Debug("\nWraith version...........%v", sess.WraithVersion)
+	sess.Out.Debug("\nSignatures version.......%v", sess.SignatureVersion)
+	sess.Out.Debug("\nScanning tests...........%v", sess.ScanTests)
+	sess.Out.Debug("\nMax file size............%d", maxFileSize)
+	sess.Out.Debug("\nJSON output..............%v", sess.JSONOutput)
+	sess.Out.Debug("\nCSV output...............%v", sess.CSVOutput)
+	sess.Out.Debug("\nSilent output............%v", sess.Silent)
+	sess.Out.Debug("\nWeb server enabled.......%v", sess.WebServer)
+	sess.Out.Debug("\n")
+}
+
 // PrintSessionStats will print the performance and sessions stats to stdout at the conclusion of a session scan
 func PrintSessionStats(sess *Session) {
 
@@ -171,7 +192,7 @@ func PrintSessionStats(sess *Session) {
 	sess.Out.Info("Commits Dirty.......: %d\n", sess.Stats.CommitsDirty)
 	sess.Out.Important("\n")
 	sess.Out.Important("-------General-------\n")
-	sess.Out.Info("Wraith Version......: %s\n", sess.Version)
+	sess.Out.Info("Wraith Version......: %s\n", sess.WraithVersion)
 	sess.Out.Info("Signatures Version..: %s\n", sess.SignatureVersion)
 	sess.Out.Info("Elapsed Time........: %s\n\n", time.Since(sess.Stats.StartedAt))
 }

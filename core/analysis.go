@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"wraith/version"
 )
 
 // GatherTargets will enumerate git targets adding them to a running target list. This will set the targets based
@@ -271,7 +270,7 @@ func AnalyzeRepositories(sess *Session) {
 										CommitMessage:     strings.TrimSpace(commit.Message),
 										Description:       signature.Description(),
 										FilePath:          fPath,
-										WraithVersion:     version.AppVersion(),
+										WraithVersion:     sess.WraithVersion,
 										LineNumber:        strconv.Itoa(v),
 										RepositoryName:    *repo.Name,
 										RepositoryOwner:   *repo.Owner,

@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
-	"wraith/version"
 )
 
 // PathExists will check if a path exists or not and is used to validate user input
@@ -86,7 +85,7 @@ func realTimeOutput(finding *Finding, sess *Session) {
 		sess.Out.Info("  Commit Hash..........: %s\n", TruncateString(finding.CommitHash, 100))
 		sess.Out.Info("  Author...............: %s\n", finding.CommitAuthor)
 		sess.Out.Info("  SecretID.............: %v\n", finding.SecretID)
-		sess.Out.Info("  Wraith Version.......: %s\n", version.AppVersion())
+		sess.Out.Info("  Wraith Version.......: %s\n", finding.WraithVersion)
 		sess.Out.Info("  Signatures Version...: %v\n", finding.SignaturesVersion)
 		if len(finding.Content) > 0 {
 			issues := "\n\t" + finding.Content

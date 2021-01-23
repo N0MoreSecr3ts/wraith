@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/viper"
 	"time"
 	"wraith/core"
-	"wraith/version"
 
 	"github.com/spf13/cobra"
 )
@@ -27,10 +26,20 @@ var scanLocalPathCmd = &cobra.Command{
 		// exclude the .git directory from local scans as it is not handled properly here
 		sess.SkippablePath = core.AppendIfMissing(sess.SkippablePath, ".git/")
 
-		sess.Out.Warn("%s\n\n", core.ASCIIBanner)
-		sess.Out.Important("%s v%s started at %s\n", core.Name, version.AppVersion(), sess.Stats.StartedAt.Format(time.RFC3339))
-		sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
-		sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
+		if sess.Debug {
+			core.PrintDebug(sess)
+		}
+
+		// By default we display a header to the user giving basic info about application. This will not be displayed
+		// during a silent run which is the default when using this in an automated fashion.
+		if !sess.JSONOutput && !sess.CSVOutput {
+			sess.Out.Warn("%s\n\n", core.ASCIIBanner)
+			sess.Out.Important("%s v%s started at %s\n", core.Name, sess.WraithVersion, sess.Stats.StartedAt.Format(time.RFC3339))
+			sess.Out.Important("Loaded %d signatures.\n", len(core.Signatures))
+			if sess.WebServer {
+				sess.Out.Important("Web interface available at http://%s:%d\n", sess.BindAddress, sess.BindPort)
+			}
+		}
 
 		for _, p := range sess.LocalPaths {
 			if core.PathExists(p, sess) {

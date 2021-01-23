@@ -56,7 +56,7 @@ func (l *Logger) Log(level int, format string, args ...interface{}) {
 	}
 
 	if c, ok := LogColors[level]; ok {
-		c.Printf(format, args...)
+		_, _ = c.Printf(format, args...)
 	} else {
 		fmt.Printf(format, args...)
 	}

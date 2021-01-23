@@ -19,9 +19,9 @@
   <img alt="Travis (.org) branch" src="https://img.shields.io/travis/n0moresecr3ts/wraith/master?label=BUILD%20MASTER&style=for-the-badge">
   <img alt="Travis (.org) branch" src="https://img.shields.io/travis/n0moresecr3ts/wraith/develop?label=BUILD%20DEVELOP&style=for-the-badge">
 <br>
-  <img alt="Code Climate maintainability" src="https://img.shields.io/codeclimate/maintainability/n0moresecr3ts/wraith?style=for-the-badge">
-  <img alt="Code Climate technical debt" src="https://img.shields.io/codeclimate/tech-debt/n0moresecr3ts/wraith?style=for-the-badge">
-  <img alt="Code Climate issues" src="https://img.shields.io/codeclimate/issues/n0moresecr3ts/wraith?style=for-the-badge">
+  <img alt="Code Climate maintainability" src="https://img.shields.io/codeclimate/maintainability/N0MoreSecr3ts/wraith?style=for-the-badge">
+  <img alt="Code Climate technical debt" src="https://img.shields.io/codeclimate/tech-debt/N0MoreSecr3ts/wraith?style=for-the-badge">
+  <img alt="Code Climate issues" src="https://img.shields.io/codeclimate/issues/N0MoreSecr3ts/wraith?style=for-the-badge">
 <br>
   <img alt="GitHub" src="https://img.shields.io/github/license/n0moresecr3ts/wraith?color=blue&style=for-the-badge">
   <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/n0moresecr3ts/wraith/total?style=for-the-badge">

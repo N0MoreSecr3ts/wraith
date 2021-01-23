@@ -37,7 +37,7 @@ var scanLocalGitRepoCmd = &cobra.Command{
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
-		core.PrintSessionStats(sess)
+		core.SummaryOutput(sess)
 
 		if !sess.Silent && sess.WebServer {
 			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
@@ -68,6 +68,8 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
 	scanLocalGitRepoCmd.Flags().StringSlice("local-repos", nil, "List of local git repos to scan")
 	scanLocalGitRepoCmd.Flags().Bool("web-server", false, "Enable the web interface for scan output")
+	scanLocalGitRepoCmd.Flags().Bool("csv", false, "output csv format")
+	scanLocalGitRepoCmd.Flags().Bool("json", false, "output json format")
 
 	err := viperScanLocalGitRepo.BindPFlag("bind-address", scanLocalGitRepoCmd.Flags().Lookup("bind-address"))
 	err = viperScanLocalGitRepo.BindPFlag("bind-port", scanLocalGitRepoCmd.Flags().Lookup("bind-port"))
@@ -85,6 +87,8 @@ func init() {
 	err = viperScanLocalGitRepo.BindPFlag("silent", scanLocalGitRepoCmd.Flags().Lookup("silent"))
 	err = viperScanLocalGitRepo.BindPFlag("local-repos", scanLocalGitRepoCmd.Flags().Lookup("local-repos"))
 	err = viperScanLocalGitRepo.BindPFlag("web-server", scanLocalGitRepoCmd.Flags().Lookup("web-server"))
+	err = viperScanLocalGitRepo.BindPFlag("csv", scanLocalGitRepoCmd.Flags().Lookup("csv"))
+	err = viperScanLocalGitRepo.BindPFlag("json", scanLocalGitRepoCmd.Flags().Lookup("json"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

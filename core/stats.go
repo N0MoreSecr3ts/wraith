@@ -196,3 +196,86 @@ func PrintSessionStats(sess *Session) {
 	sess.Out.Info("Signatures Version..: %s\n", sess.SignatureVersion)
 	sess.Out.Info("Elapsed Time........: %s\n\n", time.Since(sess.Stats.StartedAt))
 }
+
+// SummaryOutput will spit out the results of the hunt along with performance data
+func SummaryOutput(sess *Session) {
+
+	// alpha sort the findings to make the results idempotent
+	if len(sess.Findings) > 0 {
+		sort.Slice(sess.Findings, func(i, j int) bool {
+			return sess.Findings[i].SecretID < sess.Findings[j].SecretID
+		})
+	}
+
+	if sess.JSONOutput {
+		if len(sess.Findings) > 0 {
+			b, err := json.MarshalIndent(sess.Findings, "", "    ")
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			c := string(b)
+			if c == "null" {
+				fmt.Println("{}")
+			} else {
+				fmt.Println(c)
+			}
+		} else {
+			fmt.Println("{}")
+		}
+	}
+
+	if sess.CSVOutput {
+		w := csv.NewWriter(os.Stdout)
+		defer w.Flush()
+		header := []string{
+			"FilePath",
+			"Line Number",
+			"Action",
+			"Description",
+			"SignatureID",
+			"Finding List",
+			"Repo Owner",
+			"Repo Name",
+			"Commit Hash",
+			"Commit Message",
+			"Commit Author",
+			"File URL",
+			"Secret ID",
+			"Wraith Version",
+			"Signatures Version",
+		}
+		err := w.Write(header)
+		if err != nil {
+			sess.Out.Error(err.Error())
+		}
+
+		for _, v := range sess.Findings {
+			line := []string{
+				v.FilePath,
+				v.LineNumber,
+				v.Action,
+				v.Description,
+				v.SignatureID,
+				v.Content,
+				v.RepositoryOwner,
+				v.RepositoryName,
+				v.CommitHash,
+				v.CommitMessage,
+				v.CommitAuthor,
+				v.FileURL,
+				v.SecretID,
+				v.WraithVersion,
+				v.SignaturesVersion,
+			}
+			err := w.Write(line)
+			if err != nil {
+				sess.Out.Error(err.Error())
+			}
+		}
+	}
+
+	if !sess.JSONOutput && !sess.CSVOutput {
+		PrintSessionStats(sess)
+	}
+}

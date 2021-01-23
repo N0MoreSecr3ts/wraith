@@ -48,7 +48,7 @@ var scanGitlabCmd = &cobra.Command{
 		core.AnalyzeRepositories(sess)
 		sess.Finish()
 
-		core.PrintSessionStats(sess)
+		core.SummaryOutput(sess)
 
 		if !sess.Silent && sess.WebServer {
 			sess.Out.Important("%s", core.GitLabTanuki)
@@ -82,6 +82,8 @@ func init() {
 	scanGitlabCmd.Flags().String("signature-path", "$HOME/.wraith/signatures", "path containing detection signatures.")
 	scanGitlabCmd.Flags().Bool("silent", false, "Suppress all output except for errors")
 	scanGitlabCmd.Flags().Bool("web-server", false, "Enable the web interface for scan output")
+	scanGitlabCmd.Flags().Bool("csv", false, "output csv format")
+	scanGitlabCmd.Flags().Bool("json", false, "output json format")
 
 	err := viperScanGitlab.BindPFlag("bind-address", scanGitlabCmd.Flags().Lookup("bind-address"))
 	err = viperScanGitlab.BindPFlag("bind-port", scanGitlabCmd.Flags().Lookup("bind-port"))
@@ -102,6 +104,8 @@ func init() {
 	err = viperScanGitlab.BindPFlag("silent", scanGitlabCmd.Flags().Lookup("silent"))
 	err = viperScanGitlab.BindPFlag("gitlab-projects", scanGitlabCmd.Flags().Lookup("gitlab-projects"))
 	err = viperScanGitlab.BindPFlag("web-server", scanGitlabCmd.Flags().Lookup("web-server"))
+	err = viperScanGitlab.BindPFlag("csv", scanGitlabCmd.Flags().Lookup("csv"))
+	err = viperScanGitlab.BindPFlag("json", scanGitlabCmd.Flags().Lookup("json"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

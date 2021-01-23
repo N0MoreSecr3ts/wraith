@@ -54,7 +54,7 @@ var scanLocalPathCmd = &cobra.Command{
 
 		sess.Finish()
 
-		core.PrintSessionStats(sess)
+		core.SummaryOutput(sess)
 
 		if !sess.Silent && sess.WebServer {
 			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
@@ -84,6 +84,8 @@ func init() {
 	scanLocalPathCmd.Flags().Bool("silent", false, "Suppress all output. An alternative output will need to be configured")
 	scanLocalPathCmd.Flags().StringSlice("local-paths", nil, "List of local paths to scan")
 	scanLocalPathCmd.Flags().Bool("web-server", false, "Enable the web interface for scan output")
+	scanLocalPathCmd.Flags().Bool("csv", false, "output csv format")
+	scanLocalPathCmd.Flags().Bool("json", false, "output json format")
 
 	err := viperScanLocalPath.BindPFlag("bind-address", scanLocalPathCmd.Flags().Lookup("bind-address"))
 	err = viperScanLocalPath.BindPFlag("bind-port", scanLocalPathCmd.Flags().Lookup("bind-port"))
@@ -100,6 +102,8 @@ func init() {
 	err = viperScanLocalPath.BindPFlag("local-paths", scanLocalPathCmd.Flags().Lookup("local-paths"))
 	err = viperScanLocalPath.BindPFlag("silent", scanLocalPathCmd.Flags().Lookup("silent"))
 	err = viperScanLocalPath.BindPFlag("web-server", scanLocalPathCmd.Flags().Lookup("web-server"))
+	err = viperScanLocalPath.BindPFlag("csv", scanLocalPathCmd.Flags().Lookup("csv"))
+	err = viperScanLocalPath.BindPFlag("json", scanLocalPathCmd.Flags().Lookup("json"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

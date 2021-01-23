@@ -74,7 +74,7 @@ func SetHomeDir(h string, sess *Session) string {
 
 // realTimeOutput will print out the current finding to stdout if all conditions are met
 func realTimeOutput(finding *Finding, sess *Session) {
-	if !sess.Silent {
+	if !sess.Silent && !sess.CSVOutput && !sess.JSONOutput {
 
 		sess.Out.Warn(" %s\n", strings.ToUpper(finding.Description))
 		sess.Out.Info("  SignatureID..........: %s\n", finding.SignatureID)

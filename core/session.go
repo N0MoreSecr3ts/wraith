@@ -40,6 +40,7 @@ var DefaultValues = map[string]interface{}{
 	"bind-port":                   9393,
 	"commit-depth":                -1,
 	"config-file":                 "$HOME/.wraith/config.yaml",
+	"csv":                         false,
 	"debug":                       false,
 	"add-org-members":             false,
 	"github-enterprise-url":       "",
@@ -50,6 +51,7 @@ var DefaultValues = map[string]interface{}{
 	"ignore-extension":            nil,
 	"ignore-path":                 nil,
 	"in-mem-clone":                false,
+	"json":                        false,
 	"max-file-size":               10,
 	"num-threads":                 -1,
 	"local-paths":                 nil,
@@ -82,7 +84,7 @@ type Session struct {
 	BindPort            int
 	Client              IClient `json:"-"`
 	CommitDepth         int
-	CSV                 bool
+	CSVOutput           bool
 	Debug               bool
 	ExpandOrgs          bool
 	Findings            []*Finding
@@ -95,7 +97,7 @@ type Session struct {
 	GithubUsers         []*github.User
 	HideSecrets         bool
 	InMemClone          bool
-	JSON                bool
+	JSONOutput          bool
 	MaxFileSize         int64
 	Out                 *Logger `json:"-"`
 	LocalPaths          []string
@@ -112,7 +114,7 @@ type Session struct {
 	Stats               *Stats
 	Targets             []*Owner
 	Threads             int
-	Version             string
+	WraithVersion       string
 	ConfidenceLevel     int
 	GithubURL           string
 	GitlabURL           string
@@ -171,6 +173,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.BindAddress = v.GetString("bind-address")
 	s.BindPort = v.GetInt("bind-port")
 	s.CommitDepth = setCommitDepth(v.GetFloat64("commit-depth"))
+	s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
 	s.ExpandOrgs = v.GetBool("expaand-orgs")
 	s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
@@ -179,6 +182,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
+	s.JSONOutput = v.GetBool("json")
 	s.MaxFileSize = v.GetInt64("max-file-size")
 	s.ConfidenceLevel = v.GetInt("confidence-level")
 	s.ScanFork = v.GetBool("scan-forks")

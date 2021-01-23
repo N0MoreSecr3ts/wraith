@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 - Adjust flag descriptions
+- Enhanced debug output and header
 
 ### Fixed
 - flag names were pointing to the wrong variables
@@ -15,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - flag to enable/disable the webserver, default is disable
+- add csv output format
+- add json output format
+
+
 ## [0.0.6] - 2020-01-22
 ### Changed
 - rule -> signature throughout the code

@@ -46,14 +46,14 @@
 
 ### Bugs
 
-- [ ] Still have a lot of missing files when scanning (turn on debug)
-- [ ] In memory clone returns no findings (I think this has something to do with the path not being found)
-- [ ] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
-- [ ] Gitlab client does not follow redirects
-- [ ] Github does not follow redirects
-- [ ] In gitlab you can have a project w/ no repo, this will error out
-- [ ] Expanding orgs is not working
-- [ ] Number of dirty commits is wrong, it should be more than is showing
+- [X] ~~Still have a lot of missing files when scanning (turn on debug)~~
+- [0] In memory clone returns no findings (I think this has something to do with the path not being found)
+- [0] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
+- [0] Gitlab client does not follow redirects
+- [0] Github does not follow redirects
+- [0] In gitlab you can have a project w/ no repo, this will error out
+- [0] Expanding orgs is not working
+- [0] Number of dirty commits is wrong, it should be more than is showing
 
 ### Documentation
 

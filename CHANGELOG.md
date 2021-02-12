@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Adjust flag descriptions
 - Enhanced debug output and header
+- Update sample.yml and quickstart documentation
 
 ### Fixed
 - flag names were pointing to the wrong variables

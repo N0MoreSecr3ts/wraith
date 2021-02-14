@@ -31,10 +31,11 @@ type Stats struct { // TODO alpha sort this
 	FindingsTotal       int // The total number of findings. There can be more than one finding per file and more than one finding of the same type in a file
 	Users               int // Github users
 	Targets             int // The number of dirs, people, orgs, etc on the command line or config file (what do you want wraith to enumerate on)
-	Repositories        int // This will point to Repositories Scanned
+	Repositories        int // This will point to RepositoriesScanned
 	CommitsTotal        int // This will point to commits scanned
 	Findings            int // This will point to findings total
 	Files               int // This will point to FilesScanned
+	Commits             int // This will point to CommitsScanned
 }
 
 // IncrementFilesTotal will bump the count of files that have been discovered. This does not reflect
@@ -43,7 +44,6 @@ func (s *Stats) IncrementFilesTotal() {
 	s.Lock()
 	defer s.Unlock()
 	s.FilesTotal++
-	s.Files++
 }
 
 // IncrementFilesDirty will bump the count of files that have been discovered. This does not reflect
@@ -59,6 +59,7 @@ func (s *Stats) IncrementFilesScanned() {
 	s.Lock()
 	defer s.Unlock()
 	s.FilesScanned++
+	s.Files++
 }
 
 // IncrementFilesIgnored will bump the number of files that have been ignored for various reasons.
@@ -83,7 +84,6 @@ func (s *Stats) IncrementRepositoriesTotal() {
 	s.Lock()
 	defer s.Unlock()
 	s.RepositoriesTotal++
-	s.Repositories++
 }
 
 // IncrementRepositoriesCloned will bump the number of repositories that have been cloned with errors but may be empty
@@ -98,6 +98,7 @@ func (s *Stats) IncrementRepositoriesScanned() {
 	s.Lock()
 	defer s.Unlock()
 	s.RepositoriesScanned++
+	s.Repositories++
 }
 
 // IncrementUsers will bump the total number of users that have been enumerated
@@ -113,6 +114,7 @@ func (s *Stats) IncrementCommitsScanned() {
 	s.Lock()
 	defer s.Unlock()
 	s.CommitsScanned++
+	s.Commits++
 }
 
 // IncrementOrgs will bump the number of orgs that have been gathered.

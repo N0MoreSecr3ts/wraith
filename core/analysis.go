@@ -128,7 +128,6 @@ func AnalyzeRepositories(sess *Session) {
 					sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", tid, *repo.CloneURL, err)
 					err := os.RemoveAll(path)
 					sess.Out.Error("[THREAD #%d][%s] Error removing path from disk: %s\n", tid, *repo.CloneURL, err)
-
 					continue
 				}
 

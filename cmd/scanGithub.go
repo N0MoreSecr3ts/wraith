@@ -52,10 +52,10 @@ var scanGithubCmd = &cobra.Command{
 		//Create a github client to be used for the session
 		sess.InitGitClient()
 
-		// If we have github users and no orgs or repos then we default to scan
-		// the visible repos of that user.
 		if sess.UserLogins != nil && sess.UserOrgs == nil && sess.UserRepos == nil {
 
+			// If we have github users and no orgs or repos then we default to scan
+			// the visible repos of that user.
 			core.GatherUsers(sess)
 			core.GatherGithubRepositoriesFromOwner(sess)
 

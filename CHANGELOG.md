@@ -10,16 +10,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Adjust flag descriptions
 - Enhanced debug output and header
 - Update sample.yml and quickstart documentation
+- Condensed the increment stats to provide a more streamlined approach
 
 ### Fixed
 - flag names were pointing to the wrong variables
 - change yml -> yaml in the documentation accross the board
+- the web interface now has the right stats and the progress bar works again
 
 ### Added
 - flag to enable/disable the webserver, default is disable
 - add csv output format
 - add json output format
 - ability to update signatures to a given release
+
+### Removed
+- several dead functions
 
 
 ## [0.0.6] - 2020-01-22

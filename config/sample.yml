@@ -22,14 +22,12 @@ ignore-path:
   - static/
   - docs/
 in-mem-clone: false
-local-dirs:
+local-paths:
   - ../wraith-signatures
-local-files:
-  - ../wraith-test/performance_stats.md
 match-level: 3
 num-threads: 0
 local-repos:
-   - ../wraith-signatures
+  - ../wraith-signatures
   - ../wraith
 signature-file: ~/.wraith/signatures/default.yml
 silent: false

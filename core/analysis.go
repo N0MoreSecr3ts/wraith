@@ -289,7 +289,6 @@ func AnalyzeRepositories(sess *Session) {
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
 								sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
-								//sess.Stats.UpdateProgress(sess.Stats.RepositoriesScanned, len(sess.Repositories))
 							}
 						}
 						if dirtyFile {

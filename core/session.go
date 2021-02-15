@@ -372,8 +372,8 @@ func (s *Stats) IncrementFindings() {
 
 // UpdateProgress will update the progress percentage
 func (s *Stats) UpdateProgress(current int, total int) {
-	s.Lock()
-	defer s.Unlock()
+	//s.Lock() TODO REMOVE ME
+	//defer s.Unlock() TODO REMOVE ME
 	if current >= total {
 		s.Progress = 100.0
 	} else {

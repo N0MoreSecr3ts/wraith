@@ -91,6 +91,7 @@ func (s *Stats) IncrementRepositoriesCloned() {
 	s.Lock()
 	defer s.Unlock()
 	s.RepositoriesCloned++
+	s.UpdateProgress(s.RepositoriesCloned, s.RepositoriesTotal)
 }
 
 // IncrementRepositoriesScanned will bump the total number of repositories that have been scanned and are not empty
@@ -99,6 +100,7 @@ func (s *Stats) IncrementRepositoriesScanned() {
 	defer s.Unlock()
 	s.RepositoriesScanned++
 	s.Repositories++
+	s.UpdateProgress(s.RepositoriesScanned, s.RepositoriesTotal)
 }
 
 // IncrementUsers will bump the total number of users that have been enumerated

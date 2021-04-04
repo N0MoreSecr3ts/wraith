@@ -52,11 +52,10 @@ Wraith uncovers forgotten secrets and brings them back to life, haunting securit
 ### Major Features
 
 - Exclude files, paths, and extensions
-- Web and terminal interfaces for real-time results
+- Web and terminal interfaces for real-time results (very much alpha)
 - Configurable commit depth
 - Built with [Viper][1] to manage environment variables, config files, or flags
 - Uses [Cobra][2] sub-commands for easier, more modular, functionality
-- Ability to clone a repo to memory instead of disk
 
 ## Screenshots
 <p>

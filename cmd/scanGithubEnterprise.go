@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+
 // scanGithubEnterpriseCmd represents the scanGithubEnterprise command
 var scanGithubEnterpriseCmd = &cobra.Command{
 	Use:   "scanGithubEnterprise",

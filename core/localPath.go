@@ -127,20 +127,20 @@ func DoFileScan(filename string, sess *Session) {
 
 			if bMatched {
 				newFinding := &Finding{
-					FilePath:          filename,
-					Action:            `File Scan`,
-					Description:       signature.Description(),
-					SignatureID:       signature.SignatureID(),
-					Content:           content,
-					RepositoryOwner:   `not-a-repo`,
-					RepositoryName:    `not-a-repo`,
-					CommitHash:        ``,
-					CommitMessage:     ``,
-					CommitAuthor:      ``,
-					LineNumber:        strconv.Itoa(v),
-					SecretID:          generateID(),
-					WraithVersion:     version.AppVersion(),
-					SignaturesVersion: sess.SignatureVersion,
+					FilePath:         filename,
+					Action:           `File Scan`,
+					Description:      signature.Description(),
+					SignatureID:      signature.SignatureID(),
+					Content:          content,
+					RepositoryOwner:  `not-a-repo`,
+					RepositoryName:   `not-a-repo`,
+					CommitHash:       ``,
+					CommitMessage:    ``,
+					CommitAuthor:     ``,
+					LineNumber:       strconv.Itoa(v),
+					SecretID:         generateID(),
+					WraithVersion:    version.AppVersion(),
+					signatureVersion: sess.SignatureVersion,
 				}
 
 				// Add a new finding and increment the total

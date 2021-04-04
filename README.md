@@ -66,9 +66,9 @@ Wraith uncovers forgotten secrets and brings them back to life, haunting securit
 
 ## Quickstart
 
-1. Download the latest [release][3] and either build it yourself with `make build` or you can use a prebuilt binary, currently they only exist for OSX. This project uses a branching git flow. Details are in the developer doc, surfice it to say **Master** is stable **develop** shoud be considered beta.
+1. Download the latest [release][3] and either build it yourself with `make build` or you can use a prebuilt binary, currently they only exist for OSX. This project uses a branching git flow. Details can be found in the developer doc, suffice it to say **Master** is stable **develop** shoud be considered beta.
 2. Download or clone the latest set of [signatures][4] and either copy *signatures/default.yml* to *~/.wraith/signatures/* or adjust the location in the configuration file below.
-3. Copy the below configuration to *~/.wraith/config.yml*. This will allow you to get up and running for basic scans without having to figure out the flags. Any of these values can be overwritten on the commnd line as well. You will need to generate your own api tokens for github and gitlab if you are scanning against them.
+3. Copy *config/sample.yml* or the below configuration to *~/.wraith/config.yml*. This will allow you to get up and running for basic scans without having to figure out the flags. Any of these values can be overwritten on the commnd line as well. You will need to generate your own api tokens for github and gitlab if you are scanning against them.
 4. Once you have this done, just run a scan command.
 - `wraith scanGithub`
 - `wraith scanGitlab`
@@ -79,11 +79,11 @@ Wraith uncovers forgotten secrets and brings them back to life, haunting securit
 ---
 commit-depth: 0
 debug: false
-github-api-token: <token>>
+github-api-token: <token>
 github-targets:
   - mattyjones
   - N0MoreSecr3ts
-gitlab-api-token: <token>>
+gitlab-api-token: <token>
 gitlab-targets:
   - 5034914
   - mattyjones
@@ -95,11 +95,11 @@ ignore-path:
   - static/
   - docs/
 in-mem-clone: false
-repo-paths:
+local-repos:
   - ../wraith-test
 match-level: 3
 num-threads: 0
-repo-dirs:
+local-paths:
   - relative/path/to/repo
   - absolute/path/to/repo
 signature-file: ../wraith-signatures/signatures/default.yml

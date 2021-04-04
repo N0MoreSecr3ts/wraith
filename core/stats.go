@@ -1,6 +1,11 @@
 package core
 
 import (
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
+	"os"
+	"sort"
 	"sync"
 	"time"
 )
@@ -26,10 +31,11 @@ type Stats struct { // TODO alpha sort this
 	FindingsTotal       int // The total number of findings. There can be more than one finding per file and more than one finding of the same type in a file
 	Users               int // Github users
 	Targets             int // The number of dirs, people, orgs, etc on the command line or config file (what do you want wraith to enumerate on)
-	Repositories        int // This will point to Repositories Scanned
+	Repositories        int // This will point to RepositoriesScanned
 	CommitsTotal        int // This will point to commits scanned
 	Findings            int // This will point to findings total
 	Files               int // This will point to FilesScanned
+	Commits             int // This will point to CommitsScanned
 }
 
 // IncrementFilesTotal will bump the count of files that have been discovered. This does not reflect
@@ -38,7 +44,6 @@ func (s *Stats) IncrementFilesTotal() {
 	s.Lock()
 	defer s.Unlock()
 	s.FilesTotal++
-	s.Files++
 }
 
 // IncrementFilesDirty will bump the count of files that have been discovered. This does not reflect
@@ -54,6 +59,7 @@ func (s *Stats) IncrementFilesScanned() {
 	s.Lock()
 	defer s.Unlock()
 	s.FilesScanned++
+	s.Files++
 }
 
 // IncrementFilesIgnored will bump the number of files that have been ignored for various reasons.
@@ -78,7 +84,6 @@ func (s *Stats) IncrementRepositoriesTotal() {
 	s.Lock()
 	defer s.Unlock()
 	s.RepositoriesTotal++
-	s.Repositories++
 }
 
 // IncrementRepositoriesCloned will bump the number of repositories that have been cloned with errors but may be empty
@@ -86,6 +91,7 @@ func (s *Stats) IncrementRepositoriesCloned() {
 	s.Lock()
 	defer s.Unlock()
 	s.RepositoriesCloned++
+	s.UpdateProgress(s.RepositoriesCloned, s.RepositoriesTotal)
 }
 
 // IncrementRepositoriesScanned will bump the total number of repositories that have been scanned and are not empty
@@ -93,6 +99,8 @@ func (s *Stats) IncrementRepositoriesScanned() {
 	s.Lock()
 	defer s.Unlock()
 	s.RepositoriesScanned++
+	s.Repositories++
+	s.UpdateProgress(s.RepositoriesScanned, s.RepositoriesTotal)
 }
 
 // IncrementUsers will bump the total number of users that have been enumerated
@@ -108,6 +116,7 @@ func (s *Stats) IncrementCommitsScanned() {
 	s.Lock()
 	defer s.Unlock()
 	s.CommitsScanned++
+	s.Commits++
 }
 
 // IncrementOrgs will bump the number of orgs that have been gathered.
@@ -148,6 +157,22 @@ func (s *Session) InitStats() {
 	}
 }
 
+// PrintDebug will print a debug header at the start of the session that displays specific setting
+func PrintDebug(sess *Session) {
+	maxFileSize := sess.MaxFileSize * 1024 * 1024
+	sess.Out.Debug("\n\n")
+	sess.Out.Debug("Debug Info")
+	sess.Out.Debug("\nWraith version...........%v", sess.WraithVersion)
+	sess.Out.Debug("\nSignatures version.......%v", sess.SignatureVersion)
+	sess.Out.Debug("\nScanning tests...........%v", sess.ScanTests)
+	sess.Out.Debug("\nMax file size............%d", maxFileSize)
+	sess.Out.Debug("\nJSON output..............%v", sess.JSONOutput)
+	sess.Out.Debug("\nCSV output...............%v", sess.CSVOutput)
+	sess.Out.Debug("\nSilent output............%v", sess.Silent)
+	sess.Out.Debug("\nWeb server enabled.......%v", sess.WebServer)
+	sess.Out.Debug("\n")
+}
+
 // PrintSessionStats will print the performance and sessions stats to stdout at the conclusion of a session scan
 func PrintSessionStats(sess *Session) {
 
@@ -171,7 +196,90 @@ func PrintSessionStats(sess *Session) {
 	sess.Out.Info("Commits Dirty.......: %d\n", sess.Stats.CommitsDirty)
 	sess.Out.Important("\n")
 	sess.Out.Important("-------General-------\n")
-	sess.Out.Info("Wraith Version......: %s\n", sess.Version)
+	sess.Out.Info("Wraith Version......: %s\n", sess.WraithVersion)
 	sess.Out.Info("Signatures Version..: %s\n", sess.SignatureVersion)
 	sess.Out.Info("Elapsed Time........: %s\n\n", time.Since(sess.Stats.StartedAt))
+}
+
+// SummaryOutput will spit out the results of the hunt along with performance data
+func SummaryOutput(sess *Session) {
+
+	// alpha sort the findings to make the results idempotent
+	if len(sess.Findings) > 0 {
+		sort.Slice(sess.Findings, func(i, j int) bool {
+			return sess.Findings[i].SecretID < sess.Findings[j].SecretID
+		})
+	}
+
+	if sess.JSONOutput {
+		if len(sess.Findings) > 0 {
+			b, err := json.MarshalIndent(sess.Findings, "", "    ")
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			c := string(b)
+			if c == "null" {
+				fmt.Println("{}")
+			} else {
+				fmt.Println(c)
+			}
+		} else {
+			fmt.Println("{}")
+		}
+	}
+
+	if sess.CSVOutput {
+		w := csv.NewWriter(os.Stdout)
+		defer w.Flush()
+		header := []string{
+			"FilePath",
+			"Line Number",
+			"Action",
+			"Description",
+			"SignatureID",
+			"Finding List",
+			"Repo Owner",
+			"Repo Name",
+			"Commit Hash",
+			"Commit Message",
+			"Commit Author",
+			"File URL",
+			"Secret ID",
+			"Wraith Version",
+			"Signatures Version",
+		}
+		err := w.Write(header)
+		if err != nil {
+			sess.Out.Error(err.Error())
+		}
+
+		for _, v := range sess.Findings {
+			line := []string{
+				v.FilePath,
+				v.LineNumber,
+				v.Action,
+				v.Description,
+				v.SignatureID,
+				v.Content,
+				v.RepositoryOwner,
+				v.RepositoryName,
+				v.CommitHash,
+				v.CommitMessage,
+				v.CommitAuthor,
+				v.FileURL,
+				v.SecretID,
+				v.WraithVersion,
+				v.signatureVersion,
+			}
+			err := w.Write(line)
+			if err != nil {
+				sess.Out.Error(err.Error())
+			}
+		}
+	}
+
+	if !sess.JSONOutput && !sess.CSVOutput {
+		PrintSessionStats(sess)
+	}
 }

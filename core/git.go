@@ -369,56 +369,13 @@ func cloneRepository(sess *Session, repo *Repository, threadID int) (*git.Reposi
 		case "remote repository is empty":
 			sess.Out.Error("Repository %s is empty: %s\n", *repo.CloneURL, err)
 			sess.Stats.IncrementRepositoriesCloned()
-			//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 			return nil, "", err
 		default:
 			sess.Out.Error("Error cloning repository %s: %s\n", *repo.CloneURL, err)
-			//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
 			return nil, "", err
 		}
 	}
-	//sess.Stats.IncrementRepositoriesCloned()
-	//sess.Stats.UpdateProgress(sess.Stats.RepositoriesCloned, len(sess.Repositories))
+	sess.Stats.IncrementRepositoriesCloned()
 	sess.Out.Debug("[THREAD #%d][%s] Cloned repository to: %s\n", threadID, *repo.CloneURL, path)
 	return clone, path, err
-}
-
-func getRepositoriesFromOwner(login *string, client *github.Client, scanFork bool) ([]*githubRepository, error) {
-	var allRepos []*githubRepository
-	loginVal := *login
-	ctx := context.Background()
-	opt := &github.RepositoryListOptions{
-		Type: "sources",
-	}
-
-	for {
-		repos, resp, err := client.Repositories.List(ctx, loginVal, opt)
-		if err != nil {
-			return allRepos, err
-		}
-
-		for _, repo := range repos {
-			if !scanFork && repo.GetFork() {
-				continue
-			}
-			r := githubRepository{
-				Owner:         repo.Owner.Login,
-				ID:            repo.ID,
-				Name:          repo.Name,
-				FullName:      repo.FullName,
-				CloneURL:      repo.CloneURL,
-				URL:           repo.HTMLURL,
-				DefaultBranch: repo.DefaultBranch,
-				Description:   repo.Description,
-				Homepage:      repo.Homepage,
-			}
-			allRepos = append(allRepos, &r)
-		}
-		if resp.NextPage == 0 {
-			break
-		}
-		opt.Page = resp.NextPage
-	}
-
-	return allRepos, nil
 }

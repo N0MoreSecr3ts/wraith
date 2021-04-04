@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"wraith/version"
 )
 
 // GatherTargets will enumerate git targets adding them to a running target list. This will set the targets based
@@ -129,7 +128,6 @@ func AnalyzeRepositories(sess *Session) {
 					sess.Out.Error("[THREAD #%d][%s] Error getting commit history: %s\n", tid, *repo.CloneURL, err)
 					err := os.RemoveAll(path)
 					sess.Out.Error("[THREAD #%d][%s] Error removing path from disk: %s\n", tid, *repo.CloneURL, err)
-
 					continue
 				}
 
@@ -264,20 +262,20 @@ func AnalyzeRepositories(sess *Session) {
 
 									// Create a new instance of a finding and set the necessary fields.
 									finding := &Finding{
-										Action:            changeAction,
-										Content:           content,
-										CommitAuthor:      commit.Author.String(),
-										CommitHash:        commit.Hash.String(),
-										CommitMessage:     strings.TrimSpace(commit.Message),
-										Description:       signature.Description(),
-										FilePath:          fPath,
-										WraithVersion:     version.AppVersion(),
-										LineNumber:        strconv.Itoa(v),
-										RepositoryName:    *repo.Name,
-										RepositoryOwner:   *repo.Owner,
-										SignatureID:       signature.SignatureID(),
-										SignaturesVersion: sess.SignatureVersion,
-										SecretID:          generateID(),
+										Action:           changeAction,
+										Content:          content,
+										CommitAuthor:     commit.Author.String(),
+										CommitHash:       commit.Hash.String(),
+										CommitMessage:    strings.TrimSpace(commit.Message),
+										Description:      signature.Description(),
+										FilePath:         fPath,
+										WraithVersion:    sess.WraithVersion,
+										LineNumber:       strconv.Itoa(v),
+										RepositoryName:   *repo.Name,
+										RepositoryOwner:  *repo.Owner,
+										SignatureID:      signature.SignatureID(),
+										signatureVersion: sess.SignatureVersion,
+										SecretID:         generateID(),
 									}
 									// Set the urls for the finding
 									finding.Initialize(sess)
@@ -291,7 +289,6 @@ func AnalyzeRepositories(sess *Session) {
 								}
 								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
 								sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
-								//sess.Stats.UpdateProgress(sess.Stats.RepositoriesScanned, len(sess.Repositories))
 							}
 						}
 						if dirtyFile {

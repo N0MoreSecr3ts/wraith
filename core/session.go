@@ -3,12 +3,9 @@ package core
 
 import (
 	"encoding/json"
-	//"context"
 	"fmt"
 	"github.com/google/go-github/github"
-	//"golang.org/x/oauth2"
 	"io/ioutil"
-	//"net/url"
 	"os"
 	"runtime"
 	"strings"
@@ -43,8 +40,9 @@ var DefaultValues = map[string]interface{}{
 	"bind-port":                   9393,
 	"commit-depth":                -1,
 	"config-file":                 "$HOME/.wraith/config.yaml",
+	"csv":                         false,
 	"debug":                       false,
-	"gather-org-members":          false,
+	"add-org-members":             false,
 	"github-enterprise-url":       "",
 	"github-api-token":            "",
 	"github-enterprise-api-token": "",
@@ -53,6 +51,7 @@ var DefaultValues = map[string]interface{}{
 	"ignore-extension":            nil,
 	"ignore-path":                 nil,
 	"in-mem-clone":                false,
+	"json":                        false,
 	"max-file-size":               10,
 	"num-threads":                 -1,
 	"local-paths":                 nil,
@@ -61,19 +60,24 @@ var DefaultValues = map[string]interface{}{
 	"scan-type":                   "",
 	"silent":                      false,
 	"confidence-level":            3,
-	"signature-file":              "$HOME/.wraith/signatures/default.yml",
+	"signature-file":              "$HOME/.wraith/signatures/default.yaml",
 	"signature-path":              "$HOME/.wraith/signatures/",
 	"scan-dir":                    nil,
 	"scan-file":                   nil,
 	"hide-secrets":                false,
 	"github-url":                  "https://api.github.com",
-	"gitlab-url":                  "", // TODO set the default
-	"rules-url":                   "",
-	"github-enterprise-orgs":      nil,
-	"github-enterprise-repos":     nil,
-	"github-orgs":                 nil,
-	"github-repos":                nil,
-	"github-users":                nil,
+	//"gitlab-url":                  "", // TODO set the default
+	"rules-url": "",
+	//"signatures-path": "$HOME/.wraith/signatures/",
+	//"signatures-url": "https://github.com/N0MoreSecr3ts/wraith-signatures",
+	//"signatures-version": "",
+	"test-signatures":         false,
+	"github-enterprise-orgs":  nil,
+	"github-enterprise-repos": nil,
+	"github-orgs":             nil,
+	"github-repos":            nil,
+	"github-users":            nil,
+	"web-server":              false,
 }
 
 // Session contains all the necessary values and parameters used during a scan
@@ -84,7 +88,7 @@ type Session struct {
 	BindPort            int
 	Client              IClient `json:"-"`
 	CommitDepth         int
-	CSV                 bool
+	CSVOutput           bool
 	Debug               bool
 	ExpandOrgs          bool
 	Findings            []*Finding
@@ -97,7 +101,7 @@ type Session struct {
 	GithubUsers         []*github.User
 	HideSecrets         bool
 	InMemClone          bool
-	JSON                bool
+	JSONOutput          bool
 	MaxFileSize         int64
 	Out                 *Logger `json:"-"`
 	LocalPaths          []string
@@ -114,7 +118,7 @@ type Session struct {
 	Stats               *Stats
 	Targets             []*Owner
 	Threads             int
-	Version             string
+	WraithVersion       string
 	ConfidenceLevel     int
 	GithubURL           string
 	GitlabURL           string
@@ -124,6 +128,7 @@ type Session struct {
 	UserLogins          []string
 	UserOrgs            []string
 	UserRepos           []string
+	WebServer           bool
 }
 
 // githubRepository is the holds the necessary fields in a simpler structure
@@ -172,6 +177,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.BindAddress = v.GetString("bind-address")
 	s.BindPort = v.GetInt("bind-port")
 	s.CommitDepth = setCommitDepth(v.GetFloat64("commit-depth"))
+	s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
 	s.ExpandOrgs = v.GetBool("expaand-orgs")
 	s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
@@ -180,6 +186,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
 	s.HideSecrets = v.GetBool("hide-secrets")
 	s.InMemClone = v.GetBool("in-mem-clone")
+	s.JSONOutput = v.GetBool("json")
 	s.MaxFileSize = v.GetInt64("max-file-size")
 	s.ConfidenceLevel = v.GetInt("confidence-level")
 	s.ScanFork = v.GetBool("scan-forks")
@@ -187,7 +194,8 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.ScanType = scanType
 	s.Silent = v.GetBool("silent")
 	s.Threads = v.GetInt("num-threads")
-	s.Version = version.AppVersion()
+	s.WraithVersion = version.AppVersion()
+	s.WebServer = v.GetBool("web-server")
 
 	if s.ScanType == "localGit" {
 		s.LocalPaths = v.GetStringSlice("local-repos")
@@ -222,7 +230,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.InitLogger()
 	s.InitThreads()
 
-	if !s.Silent {
+	if !s.Silent && s.WebServer {
 		s.InitRouter()
 	}
 
@@ -364,8 +372,8 @@ func (s *Stats) IncrementFindings() {
 
 // UpdateProgress will update the progress percentage
 func (s *Stats) UpdateProgress(current int, total int) {
-	s.Lock()
-	defer s.Unlock()
+	//s.Lock() TODO REMOVE ME
+	//defer s.Unlock() TODO REMOVE ME
 	if current >= total {
 		s.Progress = 100.0
 	} else {

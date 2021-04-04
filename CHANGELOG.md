@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Adjust flag descriptions
+- Enhanced debug output and header
+- Update sample.yml and quickstart documentation
+- Condensed the increment stats to provide a more streamlined approach
+
+### Fixed
+- flag names were pointing to the wrong variables
+- change yml -> yaml in the documentation accross the board
+- the web interface now has the right stats and the progress bar works again
+
+### Added
+- flag to enable/disable the webserver, default is disable
+- add csv output format
+- add json output format
+- ability to update signatures to a given release
+- add consistent flags to streamline the adding of additional functionality
+
+### Removed
+- several dead functions
+
 
 ## [0.0.6] - 2020-01-22
 ### Changed
@@ -25,7 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.0.4] - 2020-08-10
 ### Changed
-- change internal name from gitrob to wraith
+- change the internal name from gitrob to wraith
 - condense number of packages to remove cyclic dependencys. Better code organization is still needed.
 - rules are known as signatures
 - all signatures are in a single yaml file

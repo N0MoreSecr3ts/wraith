@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
-	"wraith/version"
 )
 
 // PathExists will check if a path exists or not and is used to validate user input
@@ -75,7 +74,7 @@ func SetHomeDir(h string, sess *Session) string {
 
 // realTimeOutput will print out the current finding to stdout if all conditions are met
 func realTimeOutput(finding *Finding, sess *Session) {
-	if !sess.Silent {
+	if !sess.Silent && !sess.CSVOutput && !sess.JSONOutput {
 
 		sess.Out.Warn(" %s\n", strings.ToUpper(finding.Description))
 		sess.Out.Info("  SignatureID..........: %s\n", finding.SignatureID)
@@ -86,8 +85,8 @@ func realTimeOutput(finding *Finding, sess *Session) {
 		sess.Out.Info("  Commit Hash..........: %s\n", TruncateString(finding.CommitHash, 100))
 		sess.Out.Info("  Author...............: %s\n", finding.CommitAuthor)
 		sess.Out.Info("  SecretID.............: %v\n", finding.SecretID)
-		sess.Out.Info("  Wraith Version.......: %s\n", version.AppVersion())
-		sess.Out.Info("  Signatures Version...: %v\n", finding.SignaturesVersion)
+		sess.Out.Info("  Wraith Version.......: %s\n", finding.WraithVersion)
+		sess.Out.Info("  Signatures Version...: %v\n", finding.signatureVersion)
 		if len(finding.Content) > 0 {
 			issues := "\n\t" + finding.Content
 			sess.Out.Info("  Issues..........: %s\n", issues)

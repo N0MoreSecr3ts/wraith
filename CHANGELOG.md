@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - add csv output format
 - add json output format
 - ability to update signatures to a given release
+- add consistent flags to streamline the adding of additional functionality
 
 ### Removed
 - several dead functions

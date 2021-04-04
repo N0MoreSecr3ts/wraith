@@ -9,13 +9,11 @@ import (
 
 	ot "github.com/otiai10/copy"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	whilp "github.com/whilp/git-urls"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
-var viperUpdateSignatures *viper.Viper
 var signatureVersion string
 
 // cleanInput will ensure that any user supplied git url is in the proper format
@@ -43,7 +41,7 @@ func executeTests(dir string) bool {
 func fetchSignatures(sess *core.Session) string {
 
 	// TODO if this is not set then pull from the stock place, that should be the default url set in the session
-	rURL := viperUpdateSignatures.GetString("signatures-url")
+	rURL := wraithConfig.GetString("signatures-url")
 
 	// set the remote url that we will fetch
 	// TODO need to look into this more
@@ -109,7 +107,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 	tempSignaturesDir := rRepo + "/signatures"
 
 	// final resting place for the signatures
-	rPath := viperUpdateSignatures.GetString("signatures-path")
+	rPath := wraithConfig.GetString("signatures-path")
 
 	// ensure we have the proper home directory
 	rPath = core.SetHomeDir(rPath, sess)
@@ -125,7 +123,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 
 	// if we want to test the signatures before we install them
 	// TODO need to implement something here
-	if viperUpdateSignatures.GetBool("test-signatures") {
+	if wraithConfig.GetBool("test-signatures") {
 
 		// if the tests pass then we install the signatures
 		if executeTests(rRepo) {
@@ -204,13 +202,13 @@ var updateSignaturesCmd = &cobra.Command{
 
 		scanType := "updateSignatures"
 
-		sess := core.NewSession(viperUpdateSignatures, scanType)
+		sess := core.NewSession(wraithConfig, scanType)
 
 		// get the signatures version or if blank, set it to latest
 		// TODO this should be in the default values from the session
-		if viperUpdateSignatures.GetString("signatures-path") != "" {
+		if wraithConfig.GetString("signatures-path") != "" {
 
-			signatureVersion = viperUpdateSignatures.GetString("signatures-version")
+			signatureVersion = wraithConfig.GetString("signatures-version")
 		} else {
 			signatureVersion = "latest"
 		}
@@ -221,7 +219,7 @@ var updateSignaturesCmd = &cobra.Command{
 		// install the signatures
 		if updateSignatures(rRepo, sess) {
 			// TODO set this in the session so we have a single location for everything
-			fmt.Printf("The signatures have been successfully updated at: %s\n", viperUpdateSignatures.GetString("signatures-path"))
+			fmt.Printf("The signatures have been successfully updated at: %s\n", wraithConfig.GetString("signatures-path"))
 		} else {
 			sess.Out.Warn("The signatures were not updated")
 		}
@@ -231,19 +229,15 @@ var updateSignaturesCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(updateSignaturesCmd)
 
-	viperUpdateSignatures = core.SetConfig()
-
-	updateSignaturesCmd.Flags().Bool("debug", false, "Print debugging information")
 	updateSignaturesCmd.Flags().Bool("test-signatures", false, "run any tests associated with the signatures and display the output")
 	updateSignaturesCmd.Flags().String("signatures-path", "$HOME/.wraith/signatures/", "path where the signatures will be installed")
 	updateSignaturesCmd.Flags().String("signatures-url", "https://github.com/N0MoreSecr3ts/wraith-signatures", "url where the signatures can be found")
 	updateSignaturesCmd.Flags().String("signatures-version", "", "specific version of the signatures to install")
 
-	err := viperUpdateSignatures.BindPFlag("debug", updateSignaturesCmd.Flags().Lookup("debug"))
-	err = viperUpdateSignatures.BindPFlag("test-signatures", updateSignaturesCmd.Flags().Lookup("test-signatures"))
-	err = viperUpdateSignatures.BindPFlag("signatures-path", updateSignaturesCmd.Flags().Lookup("signatures-path"))
-	err = viperUpdateSignatures.BindPFlag("signatures-url", updateSignaturesCmd.Flags().Lookup("signatures-url"))
-	err = viperUpdateSignatures.BindPFlag("signatures-version", updateSignaturesCmd.Flags().Lookup("signatures-version"))
+	err := wraithConfig.BindPFlag("test-signatures", updateSignaturesCmd.Flags().Lookup("test-signatures"))
+	err = wraithConfig.BindPFlag("signatures-path", updateSignaturesCmd.Flags().Lookup("signatures-path"))
+	err = wraithConfig.BindPFlag("signatures-url", updateSignaturesCmd.Flags().Lookup("signatures-url"))
+	err = wraithConfig.BindPFlag("signatures-version", updateSignaturesCmd.Flags().Lookup("signatures-version"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

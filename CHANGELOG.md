@@ -6,16 +6,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.0.7] - 2021-04-05
 ### Changed
 - Adjust flag descriptions
 - Enhanced debug output and header
-- Update sample.yml and quickstart documentation
+- Update sample.yaml and quickstart documentation
 - Condensed the increment stats to provide a more streamlined approach
+- Added the concept of persistent flags at the command root, to make sub-command flags more streamlined
 
 ### Fixed
 - flag names were pointing to the wrong variables
-- change yml -> yaml in the documentation accross the board
-- the web interface now has the right stats and the progress bar works again
+- change yml -> yaml in the documentation across the board
+- the web interface now has the correct stats, and the progress bar works again, threading is still an issue though
 
 ### Added
 - flag to enable/disable the webserver, default is disable
@@ -28,7 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - several dead functions
 
 
-## [0.0.6] - 2020-01-22
+## [0.0.6] - 2021-01-22
 ### Changed
 - rule -> signature throughout the code
 
@@ -80,7 +83,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - initial release for the new project
 
-[Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.6...HEAD
+[Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.7...HEAD
+[0.0.7]: https://github.com/mattyjones/wraith/releases/tag/0.0.6
 [0.0.6]: https://github.com/mattyjones/wraith/releases/tag/0.0.6
 [0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.4
 [0.0.3]: https://github.com/mattyjones/wraith/releases/tag/0.0.3

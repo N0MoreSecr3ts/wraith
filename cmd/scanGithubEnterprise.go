@@ -13,7 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 // scanGithubEnterpriseCmd represents the scanGithubEnterprise command
 var scanGithubEnterpriseCmd = &cobra.Command{
 	Use:   "scanGithubEnterprise",
@@ -30,7 +29,7 @@ var scanGithubEnterpriseCmd = &cobra.Command{
 
 		// Check for a token. If no token is present we should default to scan but give a message
 		// that no token is available so only public repos will be scanned
-		sess.GithubAccessToken = core.CheckGithubAPIToken(wraithConfig.GetString("github-api-token"), sess)
+		sess.GithubAccessToken = core.CheckGithubAPIToken(wraithConfig.GetString("github-enterprise-api-token"), sess)
 
 		// By default we display a header to the user giving basic info about application. This will not be displayed
 		// during a silent run which is the default when using this in an automated fashion.
@@ -101,12 +100,14 @@ func init() {
 	scanGithubEnterpriseCmd.Flags().String("github-enterprise-api-token", "", "API token for github access, see documentation for necessary scope")
 	scanGithubEnterpriseCmd.Flags().StringSlice("github-enterprise-orgs", nil, "List of github orgs to scan")
 	scanGithubEnterpriseCmd.Flags().StringSlice("github-enterprise-repos", nil, "List of github repositories to scan")
+	scanGithubEnterpriseCmd.Flags().String("github-enterprise-url", "", "Entperise Github instance. I.E. https://github.org.com")
 	scanGithubEnterpriseCmd.Flags().StringSlice("github-enterprise-users", nil, "List of github.com users to scan")
 
 	err := wraithConfig.BindPFlag("add-org-members", scanGithubEnterpriseCmd.Flags().Lookup("add-org-members"))
 	err = wraithConfig.BindPFlag("github-enterprise-api-token", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-api-token"))
 	err = wraithConfig.BindPFlag("github-enterprise-orgs", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-orgs"))
 	err = wraithConfig.BindPFlag("github-enterprise-repos", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-repos"))
+	err = wraithConfig.BindPFlag("github-enterprise-url", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-url"))
 	err = wraithConfig.BindPFlag("github-enterprise-users", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-users"))
 
 	if err != nil {

@@ -2,14 +2,15 @@ package core
 
 import (
 	"fmt"
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"math"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/yaml.v2"
 )
 
 // These are the various items that we are attempting to match against using either regex's or simple pattern matches.
@@ -390,6 +391,7 @@ func LoadSignatures(filePath string, mLevel int, sess *Session) []Signature { //
 	filePath = SetHomeDir(filePath, sess)
 
 	c, err := loadSignatureSet(filePath)
+
 	if err != nil {
 		sess.Out.Error("Failed to load signatures file %s: %s\n", filePath, err.Error())
 		os.Exit(2)

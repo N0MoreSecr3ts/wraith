@@ -1,12 +1,13 @@
 package core
 
 import (
-	"github.com/mitchellh/go-homedir"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"syscall"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // PathExists will check if a path exists or not and is used to validate user input

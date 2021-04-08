@@ -4,18 +4,19 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
-	"github.com/google/go-github/github"
-	"github.com/spf13/viper"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
-	"gopkg.in/src-d/go-git.v4/storage/memory"
 	"io"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
 	"sync"
+
+	"github.com/google/go-github/github"
+	"github.com/spf13/viper"
+	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
+	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
 
 // cloneGithub will set the clone config and then either do a plain clone if it is going to disk
@@ -108,10 +109,17 @@ func GatherUsers(sess *Session) {
 func (s *Session) ValidateUserInput(v *viper.Viper) {
 
 	// Raw user inputs
-	s.UserDirtyRepos = v.GetStringSlice("github-repos")
-	s.UserDirtyOrgs = v.GetStringSlice("github-orgs")
-	s.UserDirtyNames = v.GetStringSlice("github-users")
-	s.GithubAccessToken = CheckGithubAPIToken(v.GetString("github-api-token"), s)
+	if s.ScanType == "github-enterprise" {
+		s.GithubAccessToken = CheckGithubAPIToken(v.GetString("github-enterprise-api-token"), s)
+		s.UserDirtyRepos = v.GetStringSlice("github-enterprise-repos")
+		s.UserDirtyOrgs = v.GetStringSlice("github-enterprise-orgs")
+		s.UserDirtyNames = v.GetStringSlice("github-enterprise-users")
+	} else {
+		s.GithubAccessToken = CheckGithubAPIToken(v.GetString("github-api-token"), s)
+		s.UserDirtyRepos = v.GetStringSlice("github-repos")
+		s.UserDirtyOrgs = v.GetStringSlice("github-orgs")
+		s.UserDirtyNames = v.GetStringSlice("github-users")
+	}
 
 	// If no targets are given, fail fast
 	if s.UserDirtyRepos == nil && s.UserDirtyOrgs == nil && s.UserDirtyNames == nil {

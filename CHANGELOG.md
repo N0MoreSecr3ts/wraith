@@ -7,28 +7,37 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
+- Added the concept of persistent flags at the command root, to make sub-command flags more streamlined
+
+### Fixed
+
+### Added
+- Add consistent flags to streamline the adding of additional functionality
+
+### Removed
+
+## [0.0.8] - 2021-04-05
+### Changed
 - Adjust flag descriptions
 - Enhanced debug output and header
-- Update sample.yml and quickstart documentation
+- Update sample.yaml and quickstart documentation
 - Condensed the increment stats to provide a more streamlined approach
 
 ### Fixed
-- flag names were pointing to the wrong variables
-- change yml -> yaml in the documentation accross the board
-- the web interface now has the right stats and the progress bar works again
+- Flag names were pointing to the wrong variables
+- Change yml -> yaml in the documentation across the board
+- The web interface now has the correct stats, and the progress bar works again, threading is still an issue though
 
 ### Added
-- flag to enable/disable the webserver, default is disable
-- add csv output format
-- add json output format
-- ability to update signatures to a given release
-- add consistent flags to streamline the adding of additional functionality
+- Flag to enable/disable the webserver, default is disable
+- Add csv output format
+- Add json output format
+- Ability to update signatures to a given release
 
 ### Removed
-- several dead functions
+- Several dead functions
 
-
-## [0.0.6] - 2020-01-22
+## [0.0.6] - 2021-01-22
 ### Changed
 - rule -> signature throughout the code
 
@@ -80,7 +89,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - initial release for the new project
 
-[Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.6...HEAD
+[Unreleased]: https://github.com/mattyjones/wraith/compare/0.0.8...HEAD
+[0.0.8]: https://github.com/mattyjones/wraith/releases/tag/0.0.8
 [0.0.6]: https://github.com/mattyjones/wraith/releases/tag/0.0.6
 [0.0.4]: https://github.com/mattyjones/wraith/releases/tag/0.0.4
 [0.0.3]: https://github.com/mattyjones/wraith/releases/tag/0.0.3

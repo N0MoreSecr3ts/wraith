@@ -56,7 +56,6 @@
 - [0] Number of dirty commits is wrong, it should be more than is showing
 
 ### Documentation
-
 - [0] Document all flags
 - [0] Document all code completely
 - [ ] Document how to add a new command or source
@@ -103,6 +102,9 @@
 
 ### Features
 - [ ] -1 Confidence level loads all signatures
+- [ ] Tor capability
+- [ ] IP switching to hide itself
+- [ ] Ability to use multiple tokens/keys for a single service (several GH keys)
 - [0] Need to drop in the org in the realtime output
 - [0] Add the status to all functions for use in the web interface*__*
 - [0] Need to find gitlab api endpoint
@@ -184,7 +186,6 @@
 ### Testing
 
 ### Documentation
-
 - [ ] Consistent search on all platforms
 - [ ] need to update the go [git library][2] used
 - [ ] Regex's are not performant

@@ -10,11 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 ### Fixed
-- Support for the new GHE api token format #104
-- version/version.go had the wrong version number defined #106
+- Support for the new GHE api token format [#104][104]
+- version/version.go had the wrong version number defined [#106][106]
+- reset the page count when getting a list of user repos [#107]
 
 ### Added
-- Add persistent flags to the root to streamline the adding of additional functionality
+- Add persistent flags to the root to streamline the adding of additional functionality [#95][95]
 
 ### Removed
 
@@ -81,7 +82,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.0.3] - 2020-08-06
 ### Changed
-- massive rewrite and uplift of code from codeemitter and mattyjones
+- massive rewrite and uplift of code from @codeemitter and @mattyjones
 
 ## [0.0.2] - 2020-05-27
 ### Fixed
@@ -99,3 +100,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [0.0.3]: https://github.com/mattyjones/wraith/releases/tag/0.0.3
 [0.0.2]: https://github.com/mattyjones/gitrob/releases/tag/0.0.2
 [0.0.1]: https://github.com/mattyjones/gitrob/releases/tag/0.0.1
+
+[95]: https://github.com/N0MoreSecr3ts/wraith/issues/95
+[104]: https://github.com/N0MoreSecr3ts/wraith/pull/104
+[106]: https://github.com/N0MoreSecr3ts/wraith/issues/106
+[107]: https://github.com/N0MoreSecr3ts/wraith/issues/107

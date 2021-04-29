@@ -3,13 +3,15 @@ language: go
 go:
   - 1.13.x
   - 1.14.x
+  - 1.15.x
+  - 1.16.x
 
 before_script:
   - go get golang.org/x/lint
   - go get
 
 script:
-  #- go vet ./...
+  - go vet ./...
   #- golint ./...
   - go test -v ./... -race -coverprofile=coverage.txt -covermode=atomic
 

@@ -153,7 +153,7 @@ func CheckGithubAPIToken(t string, sess *Session) string {
 	}
 
 	// match only letters and numbers and ensure you match 40
-	exp1 := regexp.MustCompile(`^[A-Za-z0-9]{40}`)
+	exp1 := regexp.MustCompile(`[A-Za-z0-9\_]{40}`)
 	if !exp1.MatchString(t) {
 		sess.Out.Error("The token is invalid. Please use a valid Github token\n")
 		os.Exit(2)

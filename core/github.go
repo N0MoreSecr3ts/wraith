@@ -247,6 +247,8 @@ func GatherGithubRepositoriesFromOwner(sess *Session) {
 
 	// TODO This should be threaded
 	for _, ul := range sess.UserLogins {
+		// Reset the Page to start for every user
+		opt.Page = 1
 		for {
 			repos, resp, err := sess.GithubClient.Repositories.List(ctx, ul, opt)
 			if err != nil {

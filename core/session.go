@@ -4,7 +4,6 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/go-github/github"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -12,6 +11,8 @@ import (
 	"sync"
 	"time"
 	"wraith/version"
+
+	"github.com/google/go-github/github"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -179,7 +180,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	s.CommitDepth = setCommitDepth(v.GetFloat64("commit-depth"))
 	s.CSVOutput = v.GetBool("csv")
 	s.Debug = v.GetBool("debug")
-	s.ExpandOrgs = v.GetBool("expaand-orgs")
+	s.ExpandOrgs = v.GetBool("expand-orgs")
 	s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
 	s.GithubAccessToken = v.GetString("github-api-token")
 	s.GitlabAccessToken = v.GetString("gitlab-api-token")

@@ -8,12 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Changed
-- Added the concept of persistent flags at the command root, to make sub-command flags more streamlined
 
 ### Fixed
+- Support for the new GHE api token format #104
+- version/version.go had the wrong version number defined #106
 
 ### Added
-- Add consistent flags to streamline the adding of additional functionality
+- Add persistent flags to the root to streamline the adding of additional functionality
 
 ### Removed
 

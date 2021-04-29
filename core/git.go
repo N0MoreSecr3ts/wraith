@@ -5,15 +5,17 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+	"sync"
+
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
-	"net/http"
-	"net/url"
-	"sync"
 )
 
 // Set easier names to refer to
@@ -263,14 +265,19 @@ func (s *Session) InitGitClient() {
 		)
 		tc := oauth2.NewClient(ctx, ts)
 
+		baseUrl := ""
+		uploadUrl := ""
 		if s.GithubEnterpriseURL != "" {
 
 			_, err := url.Parse(s.GithubEnterpriseURL)
 			if err != nil {
 				s.Out.Error("Unable to parse --github-enterprise-url: <%s>", s.GithubEnterpriseURL)
+			} else {
+				baseUrl = fmt.Sprintf("%s/api/v3", s.GithubEnterpriseURL)
+				uploadUrl = fmt.Sprintf("%s/api/uploads", s.GithubEnterpriseURL)
 			}
 		}
-		s.GithubClient, _ = github.NewEnterpriseClient(s.GithubEnterpriseURL, "", tc)
+		s.GithubClient, _ = github.NewEnterpriseClient(baseUrl, uploadUrl, tc)
 	}
 
 	if s.ScanType == "github" {

@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Enhanced debug output and header
 - Update sample.yaml and quickstart documentation
 - Condensed the increment stats to provide a more streamlined approach
+- Added the concept of persistent flags at the command root, to make sub-command flags more streamlined
 
 ### Fixed
 - Flag names were pointing to the wrong variables

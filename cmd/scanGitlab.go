@@ -61,8 +61,10 @@ func init() {
 	scanGitlabCmd.Flags().Bool("add-org-members", false, "Add members to targets when processing organizations")
 	scanGitlabCmd.Flags().String("gitlab-api-token", "", "API token for access to gitlab, see doc for necessary scope")
 	scanGitlabCmd.Flags().StringSlice("gitlab-projects", nil, "List of Gitlab projects or users to scan")
+	scanGitlabCmd.Flags().Float64("commit-depth", -1, "Set the commit depth to scan")
 
-	err := wraithConfig.BindPFlag("add-org-members", scanGitlabCmd.Flags().Lookup("add-org-members"))
+	err := wraithConfig.BindPFlag("commit-depth", scanGitlabCmd.Flags().Lookup("commit-depth"))
+	err = wraithConfig.BindPFlag("add-org-members", scanGitlabCmd.Flags().Lookup("add-org-members"))
 	err = wraithConfig.BindPFlag("gitlab-api-token", scanGitlabCmd.Flags().Lookup("gitlab-api-token"))
 	err = wraithConfig.BindPFlag("gitlab-projects", scanGitlabCmd.Flags().Lookup("gitlab-projects"))
 

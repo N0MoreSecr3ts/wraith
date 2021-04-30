@@ -48,8 +48,10 @@ func init() {
 	rootCmd.AddCommand(scanLocalGitRepoCmd)
 
 	scanLocalGitRepoCmd.Flags().StringSlice("local-repos", nil, "List of local git repos to scan")
+	scanLocalGitRepoCmd.Flags().Float64("commit-depth", -1, "Set the commit depth to scan")
 
 	err := wraithConfig.BindPFlag("local-repos", scanLocalGitRepoCmd.Flags().Lookup("local-repos"))
+	err = wraithConfig.BindPFlag("commit-depth", scanLocalGitRepoCmd.Flags().Lookup("commit-depth"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

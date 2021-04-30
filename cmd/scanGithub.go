@@ -102,12 +102,14 @@ func init() {
 	scanGithubCmd.Flags().StringSlice("github-orgs", nil, "List of github orgs to scan")
 	scanGithubCmd.Flags().StringSlice("github-repos", nil, "List of github repositories to scan")
 	scanGithubCmd.Flags().StringSlice("github-users", nil, "List of github.com users to scan")
+	scanGithubCmd.Flags().Float64("commit-depth", -1, "Set the commit depth to scan")
 
 	err := wraithConfig.BindPFlag("add-org-members", scanGithubCmd.Flags().Lookup("add-org-members"))
 	err = wraithConfig.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
 	err = wraithConfig.BindPFlag("github-orgs", scanGithubCmd.Flags().Lookup("github-orgs"))
 	err = wraithConfig.BindPFlag("github-repos", scanGithubCmd.Flags().Lookup("github-repos"))
 	err = wraithConfig.BindPFlag("github-users", scanGithubCmd.Flags().Lookup("github-users"))
+	err = wraithConfig.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

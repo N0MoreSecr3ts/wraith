@@ -102,8 +102,10 @@ func init() {
 	scanGithubEnterpriseCmd.Flags().StringSlice("github-enterprise-repos", nil, "List of github repositories to scan")
 	scanGithubEnterpriseCmd.Flags().String("github-enterprise-url", "", "Entperise Github instance. I.E. https://github.org.com")
 	scanGithubEnterpriseCmd.Flags().StringSlice("github-enterprise-users", nil, "List of github.com users to scan")
+	scanGithubEnterpriseCmd.Flags().Float64("commit-depth", -1, "Set the commit depth to scan")
 
 	err := wraithConfig.BindPFlag("add-org-members", scanGithubEnterpriseCmd.Flags().Lookup("add-org-members"))
+	err = wraithConfig.BindPFlag("commit-depth", scanGithubEnterpriseCmd.Flags().Lookup("commit-depth"))
 	err = wraithConfig.BindPFlag("github-enterprise-api-token", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-api-token"))
 	err = wraithConfig.BindPFlag("github-enterprise-orgs", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-orgs"))
 	err = wraithConfig.BindPFlag("github-enterprise-repos", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-repos"))

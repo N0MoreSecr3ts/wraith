@@ -68,10 +68,10 @@ var DefaultValues = map[string]interface{}{
 	"hide-secrets":                false,
 	"github-url":                  "https://api.github.com",
 	//"gitlab-url":                  "", // TODO set the default
-	"rules-url": "",
-	//"signatures-path": "$HOME/.wraith/signatures/",
-	//"signatures-url": "https://github.com/N0MoreSecr3ts/wraith-signatures",
-	//"signatures-version": "",
+	"rules-url":               "",
+	"signatures-path":         "$HOME/.wraith/signatures/",
+	"signatures-url":          "https://github.com/N0MoreSecr3ts/wraith-signatures",
+	"signatures-version":      "",
 	"test-signatures":         false,
 	"github-enterprise-orgs":  nil,
 	"github-enterprise-repos": nil,
@@ -243,6 +243,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 		f = strings.TrimSpace(f)
 		h := SetHomeDir(f, s)
 		if PathExists(h, s) {
+			fmt.Println(h) //TODO Remove Me
 			curSig = LoadSignatures(h, s.ConfidenceLevel, s)
 			combinedSig = append(combinedSig, curSig...)
 		}
@@ -250,7 +251,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	Signatures = combinedSig
 }
 
-// setCommitDepth will set the commit depth to go to during a sess. This is an ugly way of doing it
+// setCommitDepth will set the commit depth for the current session. This is an ugly way of doing it
 // but for the moment it works fine.
 func setCommitDepth(c float64) int {
 	if c == -1 {

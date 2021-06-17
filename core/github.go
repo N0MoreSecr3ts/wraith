@@ -501,3 +501,91 @@ func GatherGithubOrgRepositories(sess *Session) {
 	close(ch)
 	wg.Wait()
 }
+
+// GatherOrgsMembersRepositories will gather all orgs members repositories
+func GatherOrgsMembersRepositories(sess *Session) {
+	var allRepos []*Repository
+
+	sess.Out.Important("Gathering users from orgs...\n")
+	ctx := context.Background()
+
+	optMember := &github.ListMembersOptions{}
+	optRepo := &github.RepositoryListOptions{}
+
+	// TODO multi thread this
+	for _, o := range sess.Organizations {
+		for {
+			members, respMember, err := sess.GithubClient.Organizations.ListMembers(ctx, *o.Login, optMember)
+
+			if err != nil {
+				sess.Out.Error("Unable to get org members: %s\n", err)
+			}
+
+			for _, member := range members {
+				sess.addUser(member)
+				sess.Stats.IncrementUsers()
+				sess.Out.Debug("Added user %s\n", *member.Login)
+
+				// Reset
+				optRepo.Page = 1
+
+				// TODO This should be threaded
+				for {
+					repos, respRepo, err := sess.GithubClient.Repositories.List(ctx, *member.Login, optRepo)
+					if err != nil {
+						sess.Out.Error("Error gathering Github repos from %s: %s\n", *member.Login, err)
+					}
+					for _, repo := range repos {
+						// If we don't want to scan forked repos, we can use a flag to set this and the
+						// loop instance will stop here and go on to the next repo
+						if !sess.ScanFork && repo.GetFork() {
+							continue
+						}
+						r := Repository{
+							Owner:         repo.Owner.Login,
+							ID:            repo.ID,
+							Name:          repo.Name,
+							FullName:      repo.FullName,
+							CloneURL:      repo.CloneURL,
+							URL:           repo.HTMLURL,
+							DefaultBranch: repo.DefaultBranch,
+							Description:   repo.Description,
+							Homepage:      repo.Homepage,
+						}
+						allRepos = append(allRepos, &r)
+					}
+					if respRepo.NextPage == 0 {
+						break
+					}
+					optRepo.Page = respRepo.NextPage
+				}
+			}
+
+			if respMember.NextPage == 0 {
+				break
+			}
+
+			optMember.Page = respMember.NextPage
+		}
+	}
+	// FIXME what happens if no repos are recovered
+
+	// If we re only looking for a subset of the repos in an org we do a comparison
+	// of the repos gathered for the org and the list of repos that we care about.
+	for _, repo := range allRepos {
+		// Increment the total number of repos found, regardless if we are cloning them
+		sess.Stats.IncrementRepositoriesTotal()
+		if sess.UserRepos != nil {
+			for _, r := range sess.UserRepos {
+				if r == *repo.Name {
+					sess.Out.Debug(" Retrieved repository %s from user %s\n", *repo.FullName, *repo.Owner)
+					sess.AddRepository(repo)
+				}
+			}
+			continue
+		} else {
+			sess.Out.Debug(" Retrieved repository %s from user %s\n", *repo.FullName, *repo.Owner)
+			sess.AddRepository(repo)
+		}
+	}
+}

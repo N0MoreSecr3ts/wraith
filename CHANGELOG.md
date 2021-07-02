@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Add persistent flags to the root to streamline the adding of additional functionality [#95][95]
+- Add ability to expand org members in github [115][115] @circleous
 
 ### Removed
 

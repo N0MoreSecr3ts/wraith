@@ -75,6 +75,9 @@ var scanGithubCmd = &cobra.Command{
 			// If we have repos and users then we are going to scan for the repo in that users account
 			core.GatherUsers(sess)
 			core.GatherGithubRepositoriesFromOwner(sess)
+		} else if sess.ExpandOrgs && sess.UserOrgs != nil {
+			// FIXME: this should be from --add-org-members
+			core.GatherOrgsMembersRepositories(sess)
 		} else {
 			// Catchall for not being able to scan any as either we have no information or
 			// we don't have the rights kinds of information

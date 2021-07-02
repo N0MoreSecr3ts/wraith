@@ -12,11 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Support for the new GHE api token format [#104][104]
 - version/version.go had the wrong version number defined [#106][106]
-- reset the page count when getting a list of user repos [#107]
+- reset the page count when getting a list of user repos [#107][107]
 
 ### Added
 - Add persistent flags to the root to streamline the adding of additional functionality [#95][95]
-- Add ability to expand org members in github [115][115] @circleous
+- Add ability to expand org members in github [#115][115] [@circleous][circleous]
 
 ### Removed
 
@@ -106,3 +106,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [104]: https://github.com/N0MoreSecr3ts/wraith/pull/104
 [106]: https://github.com/N0MoreSecr3ts/wraith/issues/106
 [107]: https://github.com/N0MoreSecr3ts/wraith/issues/107
+[115]: https://github.com/N0MoreSecr3ts/wraith/pull/115
+
+[circleous]: https://github.com/circleous

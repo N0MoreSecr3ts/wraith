@@ -53,9 +53,8 @@ var scanLocalPathCmd = &cobra.Command{
 		sess.Finish()
 
 		core.SummaryOutput(sess)
-		if !sess.JSONOutput && !sess.CSVOutput {
-			fmt.Println("Webserver: ", sess.WebServer)
-		}
+		fmt.Println("Webserver: ", sess.WebServer)
+
 		if !sess.Silent && sess.WebServer {
 			sess.Out.Important("Press Ctrl+C to stop web server and exit.\n")
 			select {}

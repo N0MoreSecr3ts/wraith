@@ -1,9 +1,11 @@
 package core_test
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
-	"wraith/core"
+
+	"github.com/N0MoreSecr3ts/wraith/core"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestFileExists(t *testing.T) {

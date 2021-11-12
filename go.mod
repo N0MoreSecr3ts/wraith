@@ -1,4 +1,4 @@
-module wraith
+module github.com/N0MoreSecr3ts/wraith/core
 
 go 1.15
 
@@ -8,7 +8,6 @@ require (
 	github.com/gin-contrib/secure v0.0.1
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.4.2

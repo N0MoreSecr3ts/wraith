@@ -4,19 +4,19 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/go-github/github"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
-	"wraith/version"
 
-	"github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
+	"github.com/N0MoreSecr3ts/wraith/version"
+	"github.com/google/go-github/github"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/viper"
 )
 
 // These are various environment variables and tool statuses used in auth and displaying messages

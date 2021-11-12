@@ -4,11 +4,13 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/N0MoreSecr3ts/wraith/core"
+	"github.com/N0MoreSecr3ts/wraith/version"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
-	"wraith/core"
-	"wraith/version"
 )
 
 var (

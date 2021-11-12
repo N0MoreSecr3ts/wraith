@@ -5,7 +5,8 @@ package cmd
 import (
 	"fmt"
 	"time"
-	"wraith/core"
+
+	"github.com/N0MoreSecr3ts/wraith/core"
 
 	"github.com/spf13/cobra"
 )

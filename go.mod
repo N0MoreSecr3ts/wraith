@@ -1,4 +1,4 @@
-module github.com/N0MoreSecr3ts/wraith/core
+module github.com/N0MoreSecr3ts/wraith
 
 go 1.15
 

@@ -15,7 +15,9 @@ import (
 
 // Search will walk the path or a given directory and append each viable path to an array
 func Search(ctx context.Context, root string, skippablePath []string, sess *Session) ([]string, error) {
-	sess.Out.Important("Enumerating Paths\n")
+	if !sess.JSONOutput && !sess.CSVOutput {
+		sess.Out.Important("Enumerating Paths\n")
+	}
 	g, ctx := errgroup.WithContext(ctx)
 	paths := make(chan string, 20)
 

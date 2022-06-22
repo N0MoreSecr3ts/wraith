@@ -8,7 +8,8 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"wraith/version"
+
+	"github.com/N0MoreSecr3ts/wraith/version"
 
 	"golang.org/x/sync/errgroup"
 )

@@ -6,7 +6,7 @@ import (
 	//"strconv"
 	"strings"
 	//"fmt"
-	//"wraith/version"
+	//"github.com/N0MoreSecr3ts/wraith/version"
 )
 
 // MatchFile holds the various parts of a file that will be matched using either regex's or simple pattern matches.

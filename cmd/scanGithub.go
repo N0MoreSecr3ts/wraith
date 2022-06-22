@@ -4,10 +4,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 	"time"
-	"wraith/core"
+
+	"github.com/N0MoreSecr3ts/wraith/core"
+
+	"github.com/spf13/cobra"
 )
 
 //var viperScanGithub *viper.Viper

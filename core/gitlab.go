@@ -194,7 +194,7 @@ func (c gitlabClient) getOrganization(login string) (*gitlab.Group, error) {
 	if err != nil {
 		return nil, err
 	}
-	org, _, err := c.apiClient.Groups.GetGroup(id)
+	org, _, err := c.apiClient.Groups.GetGroup(id, nil, nil)
 	if err != nil {
 		return nil, err
 	}

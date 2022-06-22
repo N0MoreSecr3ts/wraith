@@ -2,7 +2,7 @@
 package core
 
 import (
-	"wraith/version"
+	"github.com/N0MoreSecr3ts/wraith/version"
 )
 
 // Project name and banner

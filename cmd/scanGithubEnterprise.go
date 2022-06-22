@@ -4,11 +4,11 @@ package cmd
 
 import (
 	"fmt"
-	"time"
-	"wraith/core"
-	"wraith/version"
-
 	"os"
+	"time"
+
+	"github.com/N0MoreSecr3ts/wraith/core"
+	"github.com/N0MoreSecr3ts/wraith/version"
 
 	"github.com/spf13/cobra"
 )

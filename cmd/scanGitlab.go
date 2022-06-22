@@ -4,9 +4,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"time"
-	"wraith/core"
+
+	"github.com/N0MoreSecr3ts/wraith/core"
+
+	"github.com/spf13/cobra"
 )
 
 // scanGitlabCmd represents the scanGitlab command

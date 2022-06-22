@@ -5,7 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"wraith/core"
+
+	"github.com/N0MoreSecr3ts/wraith/core"
 
 	ot "github.com/otiai10/copy"
 	"github.com/spf13/cobra"

@@ -220,12 +220,12 @@ func SummaryOutput(sess *Session) {
 			}
 			c := string(b)
 			if c == "null" {
-				fmt.Println("{}")
+				fmt.Println("[]")
 			} else {
 				fmt.Println(c)
 			}
 		} else {
-			fmt.Println("{}")
+			fmt.Println("[]")
 		}
 	}
 

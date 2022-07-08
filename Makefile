@@ -85,5 +85,5 @@ pretty:
 
 ## test		Run tests with coverage
 test: pretty
-	@cd ./...$(pkg) && go test -cover
+	go test ./... -cover
 

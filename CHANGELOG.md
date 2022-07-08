@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.9] - 2022-07-08
 ### Changed
 
 ### Fixed
 - Support for the new GHE api token format [#104][104]
 - version/version.go had the wrong version number defined [#106][106]
 - reset the page count when getting a list of user repos [#107][107]
+- findings now work in realtime in the web ui [#126][126]
+- add help to makefile [#125][125]
 
 ### Added
 - Add persistent flags to the root to streamline the adding of additional functionality [#95][95]

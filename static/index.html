@@ -134,16 +134,16 @@
     <td class="col-path"><code>
             <a href="#"><%= this.formattedFilePath() %></a>
         </code></td>
-    <td class="col-commit"><code><a href="<%- CommitUrl %>" rel="noopener noreferer" target="_blank"><%=
+    <td class="col-commit"><code><a href="<%- CommitURL %>" rel="noopener noreferer" target="_blank"><%=
                 this.model.shortCommitHash() %></a></code></th>
-    <td class="col-repository"><a href="<%- RepositoryUrl %>" rel="noopener noreferer" target="_blank"><%-
+    <td class="col-repository"><a href="<%- RepositoryURL %>" rel="noopener noreferer" target="_blank"><%-
             RepositoryOwner %>/<%- RepositoryName %></a></th>
 </script>
 
 <script type="text/template" id="template_finding_modal">
     <div class="modal-header">
-        <h6 class="modal-title">File Signature Match: <%- FileSignatureDescription %> <br/> Content Signature Match: <%-
-            ContentSignatureDescription %></h6>
+        <h6 class="modal-title">File Signature Match: <%- Description %> <br/> Content Signature Match: <%-
+            Content %></h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -174,9 +174,9 @@
             <tr>
                 <th>ID:</th>
                 <td>
-                    <code><%- Id %></code>
+                    <code><%- SecretID %></code>
                     <button id="finding_id_clipboard" class="btn btn-outline-secondary btn-sm"
-                            data-clipboard-text="<%- Id %>"><span class="oi oi-clipboard"></span></button>
+                            data-clipboard-text="<%- SecretID %>"><span class="oi oi-clipboard"></span></button>
                 </td>
             </tr>
         </table>
@@ -193,9 +193,9 @@
     <div class="modal-footer">
         <span class="text-muted font-italic font-weight-light"><span class="oi oi-lightbulb"></span> Tip: Browse findings by using the <span
                     class="oi oi-arrow-left"></span> and <span class="oi oi-arrow-right"></span> arrow keys.</span>
-        <a id="view-file" href="<%- FileUrl %>" rel="noopener noreferrer" target="_blank" class="btn btn-primary"
+        <a id="view-file" href="<%- FileURL %>" rel="noopener noreferrer" target="_blank" class="btn btn-primary"
            role="button">View file on <span><%= this.getHostName() %></span></a>
-        <a id="view-commit" href="<%- CommitUrl %>" rel="noopener noreferrer" target="_blank" class="btn btn-secondary"
+        <a id="view-commit" href="<%- CommitURL %>" rel="noopener noreferrer" target="_blank" class="btn btn-secondary"
            role="button">View commit on <span><%= this.getHostName() %></a>
     </div>
 </script>

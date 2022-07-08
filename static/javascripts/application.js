@@ -336,7 +336,7 @@ var FindingModal = Backbone.View.extend({
         $("#modal_file_hexdump").show();
     },
     getHostName: function () {
-        if (this.model.get("CommitUrl").indexOf("github") !== -1) return "Github";
+        if (this.model.get("CommitURL").indexOf("github") !== -1) return "Github";
         return "GitLab";
     },
     truncatedCommitMessage: function () {

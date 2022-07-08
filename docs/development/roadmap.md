@@ -47,17 +47,17 @@
 ### Bugs
 
 - [X] ~~Still have a lot of missing files when scanning (turn on debug)~~
-- [0] In memory clone returns no findings (I think this has something to do with the path not being found)
-- [0] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
-- [0] Gitlab client does not follow redirects
-- [0] Github does not follow redirects
-- [0] In gitlab you can have a project w/ no repo, this will error out
-- [0] Expanding orgs is not working
-- [0] Number of dirty commits is wrong, it should be more than is showing
+- [X] ~~In memory clone returns no findings (I think this has something to do with the path not being found)~~
+- [ ] Fix how all repos are gathered (org repos is threaded and general, user repos is not threaded and github specific)
+- [ ] Gitlab client does not follow redirects
+- [ ] Github does not follow redirects
+- [ ] In gitlab you can have a project w/ no repo, this will error out
+- [ ] Expanding orgs is not working
+- [ ] Number of dirty commits is wrong, it should be more than is showing
 
 ### Documentation
-- [0] Document all flags
-- [0] Document all code completely
+- [ ] Document all flags
+- [ ] Document all code completely
 - [ ] Document how to add a new command or source
 - [ ] Document all stats
 - [ ] Create a developer doc with the design and code execution flow
@@ -76,41 +76,41 @@
 - [ ] Initial blog post
 - [ ] Detailed documentation published on the net and with source control
 - [ ] Changelog.md
-    - [ ] wraith
+    - ~~[X] wraith~~
     - [ ] wraith-tests
-    - [ ] wraith-signatures
-- [0] Go doc strings
-    - [0] core
-    - [0] version
-- [ ] Issue template
-- [ ] PR template
+    - ~~[X] wraith-signatures~~
+- [ ] Go doc strings
+    - [ ] core
+    - [ ] version
+- ~~[X] Issue template~~
+- ~~[X] PR template~~
 - [ ] Submit story to hackernews
 - [ ] Submit story to changelog.com
 - [ ] Add a built w/ section
-- [ ] Call out individual contributers after N merges
+- ~~[X] Call out individual contributers after N merges~~
     
 ### Testing
-- [0] Code review and remove debug statements
-- [0] Ensure that an error status will exit the program, if not swap to a warning status so it does
-- [0] Sanity check testing plan
-- [0] Copy existing tests to the new codebase
+- [ ] Code review and remove debug statements
+- [ ] Ensure that an error status will exit the program, if not swap to a warning status so it does
+- [ ] Sanity check testing plan
+- [ ] Copy existing tests to the new codebase
 - [ ] Make sure we use https so keys are not necessary
 - [ ] Update CodeCov for Wraith
-- [0] Golint needs to pass
+- ~~[X] Golint needs to pass~~
 - [ ] Convert tests to testify
-- [0] Review all flags to ensure they are needed
+- [ ] Review all flags to ensure they are needed
 
 ### Features
 - [ ] -1 Confidence level loads all signatures
 - [ ] Tor capability
 - [ ] IP switching to hide itself
 - [ ] Ability to use multiple tokens/keys for a single service (several GH keys)
-- [0] Need to drop in the org in the realtime output
-- [0] Add the status to all functions for use in the web interface*__*
-- [0] Need to find gitlab api endpoint
-- [0] Port gitlab to match G 
-- [0] Set the debug like G 
-- [0] Remove all dead code
+- [ ] Need to drop in the org in the realtime output
+- [ ] Add the status to all functions for use in the web interface*__*
+- [ ] Need to find gitlab api endpoint
+- [ ] Port gitlab to match G 
+- [ ] Set the debug like G 
+- [ ] Remove all dead code
 - [ ] Change id -> ID
 - [ ] Refactor how we do stats on commits
 - [ ] Need to be able to scan all the orgs a user is a member of
@@ -123,11 +123,11 @@
 - [ ] Enforce https for the site
 - [ ] Fully Instrumented with Performance Stats
 - [ ] Entrophy Checks
-- [0] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
+- [ ] If we find a .git directory in a localPath scan just ignore it and process the dir as localPath
 - [ ] Cleanup issues in summary output
 - [ ] Add more debuging info
-- [ ] Need to list the flag defaults on the help screen
-- [ ] If no arg's are given for a command, then list the help screen
+- ~~[X] Need to list the flag defaults on the help screen~~
+- ~~[X] If no arg's are given for a command, then list the help screen~~
 - [ ] Only export the functions and variables necessary
 - [ ] Capture the error if no sig file is given and the default does not exist
 - [ ] Break out checking if a file is to be scanned into a single function
@@ -150,7 +150,7 @@
 ### Features
 - [ ] Scan specific branches
 - [ ] Scan since a given commit
-- [ ] Update Signatures command
+- [ ] Update Signatures command specific features
 - [ ] Implement threading for local path scans
 - [ ] Ability to use the .gitignore when scanning for ignoring paths and files
 
@@ -182,16 +182,11 @@
 - [ ] Exclude Users or Repos in an org scan
 - [ ] Database Backend
 - [ ] Web Frontend For Configuration
-
-### Testing
-
-### Documentation
 - [ ] Consistent search on all platforms
 - [ ] need to update the go [git library][2] used
 - [ ] Regex's are not performant
 - [ ] Move the repo count per target during a run to a debug statement
 - [ ] Create stats for signatures
-- [ ] tests for all regex's
 - [ ] add additional stats to web interface
 - [ ] Create new ascii art
 - [ ] Rebuild the web interface
@@ -199,6 +194,12 @@
 - [ ] Check all urls point to the right repos (requires mucking with bindata.go)
 - [ ] Break out global vs command specific variables
 - [ ] Combine all shell scripts into Makefile
+- [ ] Need to make a flag in the Makefile to update the dependencies
+- [ ] Split out the web go code into a specific package
+- [ ] Swap to libgit2 where it makes sense for scaling
+- ~~[X] 3PP Scans~~
+- 
+### Testing
 - [ ] Test all regexes
 - [ ] Unit tests for all code
     - [ ] common
@@ -210,11 +211,10 @@
     - [ ] version
     - [ ] rules
 - [ ] Code Test Coverage
-- [ ] 3PP Scans
 - [ ] Table driven tests
-- [ ] Need to make a flag in the Makefile to update the dependencies
-- [ ] Split out the web go code into a specific package
-- [ ] Swap to libgit2 where it makes sense for scaling
+
+### Documentation
+
     
 ## Research
 - [ ] Do we want to add files,dirs,repos,etc to an ignore list when they are not found or they error out

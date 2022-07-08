@@ -265,19 +265,19 @@ func (s *Session) InitGitClient() {
 		)
 		tc := oauth2.NewClient(ctx, ts)
 
-		baseUrl := ""
-		uploadUrl := ""
+		baseURL := ""
+		uploadURL := ""
 		if s.GithubEnterpriseURL != "" {
 
 			_, err := url.Parse(s.GithubEnterpriseURL)
 			if err != nil {
 				s.Out.Error("Unable to parse --github-enterprise-url: <%s>", s.GithubEnterpriseURL)
 			} else {
-				baseUrl = fmt.Sprintf("%s/api/v3", s.GithubEnterpriseURL)
-				uploadUrl = fmt.Sprintf("%s/api/uploads", s.GithubEnterpriseURL)
+				baseURL = fmt.Sprintf("%s/api/v3", s.GithubEnterpriseURL)
+				uploadURL = fmt.Sprintf("%s/api/uploads", s.GithubEnterpriseURL)
 			}
 		}
-		s.GithubClient, _ = github.NewEnterpriseClient(baseUrl, uploadUrl, tc)
+		s.GithubClient, _ = github.NewEnterpriseClient(baseURL, uploadURL, tc)
 	}
 
 	if s.ScanType == "github" {

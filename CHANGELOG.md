@@ -111,6 +111,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [106]: https://github.com/N0MoreSecr3ts/wraith/issues/106
 [107]: https://github.com/N0MoreSecr3ts/wraith/issues/107
 [115]: https://github.com/N0MoreSecr3ts/wraith/pull/115
-[104]: https://github.com/N0MoreSecr3ts/wraith/pull/125
-[104]: https://github.com/N0MoreSecr3ts/wraith/pull/126
+[125]: https://github.com/N0MoreSecr3ts/wraith/pull/125
+[126]: https://github.com/N0MoreSecr3ts/wraith/pull/126
 [circleous]: https://github.com/circleous

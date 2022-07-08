@@ -68,7 +68,7 @@ Wraith uncovers forgotten secrets and brings them back to life, haunting securit
 
 1. Download the latest [release][3] and either build it yourself with `make build` or you can use a prebuilt binary, currently they only exist for OSX. This project uses a branching git flow. Details can be found in the developer doc, suffice it to say **Master** is stable **develop** shoud be considered beta.
 2. Download or clone the latest set of [signatures][4] and either copy *signatures/default.yaml* to *~/.wraith/signatures/* or adjust the location in your configuration file. A sample is shown below
-3. Copy *config/sample.yaml* or the below configuration to *~/.wraith/config.yaml*. This will allow you to get up and running for basic scans without having to figure out the flags. Any of these values can be overwritten on the commnd line as well. You will need to generate your own api tokens for github and gitlab if you are scanning against them.
+3. Copy the below configuration to *~/.wraith/config.yaml*. This will allow you to get up and running for basic scans without having to figure out the flags. Any of these values can be overwritten on the commnd line as well. You will need to generate your own api tokens for github and gitlab if you are scanning against them.
 4. Once you have this done, just run a scan command.
 - `wraith scanGithub`
 - `wraith scanGitlab`

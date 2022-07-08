@@ -59,7 +59,7 @@ func fetchSignatures(sess *core.Session) string {
 	// TODO be able to pass in a commit or version string
 	repo, err := git.PlainClone(dir, false, &git.CloneOptions{
 		URL:           remoteURL,
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", "master")),
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", "stable")),
 		SingleBranch:  true,
 		Tags:          git.AllTags,
 	})

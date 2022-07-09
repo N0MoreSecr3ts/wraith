@@ -23,6 +23,16 @@ var scanGithubCmd = &cobra.Command{
 
 		// Set the scan type and start a new session
 		scanType := "github"
+		enableTor := core.InitilizeTor(true)
+
+		if enableTor {
+			fmt.Println("Tor is enabled")
+			os.Exit(0)
+		} else {
+			fmt.Println("Tor is not running")
+			os.Exit(666)
+		}
+
 		sess := core.NewSession(wraithConfig, scanType)
 
 		// Ensure user input exists and validate it

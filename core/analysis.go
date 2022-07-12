@@ -83,12 +83,14 @@ func AnalyzeRepositories(sess *Session) {
 	var ch = make(chan *Repository, len(sess.Repositories))
 	var wg sync.WaitGroup
 
-	// Calculate the number of threads based on the flag and the number of repos
+	// Calculate the number of threads based on the flag and the number of repos. If the number of repos
+	// being scanned is less than the number of threads the user requested, then the thread count is the
+	// number of repos.
 	var threadNum int
 	if len(sess.Repositories) <= 1 {
 		threadNum = 1
 	} else if len(sess.Repositories) <= sess.Threads {
-		threadNum = len(sess.Repositories) - 1
+		threadNum = len(sess.Repositories)
 	} else {
 		threadNum = sess.Threads
 	}

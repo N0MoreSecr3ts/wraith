@@ -13,11 +13,14 @@ import (
 
 	"github.com/N0MoreSecr3ts/wraith/version"
 	"github.com/google/go-github/github"
+	"github.com/mitchellh/go-homedir"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
+
+// WraithConfig holds the configuration data the commands
+var WraithConfig *viper.Viper
 
 // These are various environment variables and tool statuses used in auth and displaying messages
 const (
@@ -145,62 +148,65 @@ type githubRepository struct {
 }
 
 // SetConfig will set the defaults, and load a config file and environment variables if they are present
-func SetConfig() *viper.Viper {
-
-	v := viper.New()
-
+func SetConfig() {
 	for key, value := range DefaultValues {
-		v.SetDefault(key, value)
+		viper.SetDefault(key, value)
 	}
 
-	home, err := homedir.Dir()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	configFile := viper.GetString("config-file")
+
+	if configFile != DefaultValues["config-file"] {
+		viper.SetConfigFile(configFile)
+	} else {
+		home, err := homedir.Dir()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		viper.AddConfigPath(home + "/.wraith/")
+		viper.SetConfigName("config")
+		viper.SetConfigType("yaml")
 	}
 
-	v.AddConfigPath(home + "/.wraith/")
-	v.SetConfigName("config")
-	v.SetConfigType("yaml")
-
-	if err := v.ReadInConfig(); err == nil {
+	if err := viper.ReadInConfig(); err != nil {
 	}
 
-	v.AutomaticEnv()
+	viper.AutomaticEnv()
 
-	return v
+	WraithConfig = viper.GetViper()
 }
 
 // Initialize will set the initial values and options used during a scan session
-func (s *Session) Initialize(v *viper.Viper, scanType string) {
+func (s *Session) Initialize(scanType string) {
 
-	s.BindAddress = v.GetString("bind-address")
-	s.BindPort = v.GetInt("bind-port")
-	s.CommitDepth = setCommitDepth(v.GetFloat64("commit-depth"))
-	s.CSVOutput = v.GetBool("csv")
-	s.Debug = v.GetBool("debug")
-	s.ExpandOrgs = v.GetBool("expand-orgs")
-	s.GithubEnterpriseURL = v.GetString("github-enterprise-url")
-	s.GithubAccessToken = v.GetString("github-api-token")
-	s.GitlabAccessToken = v.GetString("gitlab-api-token")
-	s.GitlabTargets = v.GetStringSlice("gitlab-targets")
-	s.HideSecrets = v.GetBool("hide-secrets")
-	s.InMemClone = v.GetBool("in-mem-clone")
-	s.JSONOutput = v.GetBool("json")
-	s.MaxFileSize = v.GetInt64("max-file-size")
-	s.ConfidenceLevel = v.GetInt("confidence-level")
-	s.ScanFork = v.GetBool("scan-forks")
-	s.ScanTests = v.GetBool("scan-tests")
+	s.BindAddress = WraithConfig.GetString("bind-address")
+	s.BindPort = WraithConfig.GetInt("bind-port")
+	s.CommitDepth = setCommitDepth(WraithConfig.GetFloat64("commit-depth"))
+	s.CSVOutput = WraithConfig.GetBool("csv")
+	s.Debug = WraithConfig.GetBool("debug")
+	s.ExpandOrgs = WraithConfig.GetBool("expand-orgs")
+	s.GithubEnterpriseURL = WraithConfig.GetString("github-enterprise-url")
+	s.GithubAccessToken = WraithConfig.GetString("github-api-token")
+	s.GitlabAccessToken = WraithConfig.GetString("gitlab-api-token")
+	s.GitlabTargets = WraithConfig.GetStringSlice("gitlab-targets")
+	s.HideSecrets = WraithConfig.GetBool("hide-secrets")
+	s.InMemClone = WraithConfig.GetBool("in-mem-clone")
+	s.JSONOutput = WraithConfig.GetBool("json")
+	s.MaxFileSize = WraithConfig.GetInt64("max-file-size")
+	s.ConfidenceLevel = WraithConfig.GetInt("confidence-level")
+	s.ScanFork = WraithConfig.GetBool("scan-forks")
+	s.ScanTests = WraithConfig.GetBool("scan-tests")
 	s.ScanType = scanType
-	s.Silent = v.GetBool("silent")
-	s.Threads = v.GetInt("num-threads")
+	s.Silent = WraithConfig.GetBool("silent")
+	s.Threads = WraithConfig.GetInt("num-threads")
 	s.WraithVersion = version.AppVersion()
-	s.WebServer = v.GetBool("web-server")
+	s.WebServer = WraithConfig.GetBool("web-server")
 
 	if s.ScanType == "localGit" {
-		s.LocalPaths = v.GetStringSlice("local-repos")
+		s.LocalPaths = WraithConfig.GetStringSlice("local-repos")
 	} else if s.ScanType == "localPath" {
-		s.LocalPaths = v.GetStringSlice("local-paths")
+		s.LocalPaths = WraithConfig.GetStringSlice("local-paths")
 	}
 
 	// Add the default directories to the sess if they don't already exist
@@ -210,7 +216,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	}
 
 	// add any additional paths the user requested to exclude to the pre-defined slice
-	for _, e := range v.GetStringSlice("ignore-path") {
+	for _, e := range WraithConfig.GetStringSlice("ignore-path") {
 		e = strings.TrimSpace(e)
 		s.SkippablePath = AppendIfMissing(s.SkippablePath, e)
 	}
@@ -221,7 +227,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	}
 
 	// add any additional extensions the user requested to ignore
-	for _, f := range v.GetStringSlice("ignore-extension") {
+	for _, f := range WraithConfig.GetStringSlice("ignore-extension") {
 		f = strings.TrimSpace(f)
 		s.SkippableExt = AppendIfMissing(s.SkippableExt, f)
 	}
@@ -238,7 +244,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 	var combinedSig []Signature
 
 	// TODO need to catch this error here
-	for _, f := range v.GetStringSlice("signature-file") {
+	for _, f := range WraithConfig.GetStringSlice("signature-file") {
 		f = strings.TrimSpace(f)
 		h := SetHomeDir(f, s)
 		if PathExists(h, s) {
@@ -383,10 +389,10 @@ func (s *Stats) UpdateProgress(current int, total int) {
 }
 
 // NewSession  is the entry point for starting a new scan session
-func NewSession(v *viper.Viper, scanType string) *Session {
+func NewSession(scanType string) *Session {
 	var session Session
 
-	session.Initialize(v, scanType)
+	session.Initialize(scanType)
 
 	return &session
 }

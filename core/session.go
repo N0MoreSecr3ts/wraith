@@ -248,7 +248,6 @@ func (s *Session) Initialize(scanType string) {
 		f = strings.TrimSpace(f)
 		h := SetHomeDir(f, s)
 		if PathExists(h, s) {
-			fmt.Println(h) //TODO Remove Me
 			curSig = LoadSignatures(h, s.ConfidenceLevel, s)
 			combinedSig = append(combinedSig, curSig...)
 		}

@@ -9,6 +9,7 @@ import (
 	"github.com/N0MoreSecr3ts/wraith/core"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // scanLocalPathCmd represents the scanLocalFiles command
@@ -20,7 +21,7 @@ var scanLocalPathCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		scanType := "localPath"
-		sess := core.NewSession(wraithConfig, scanType)
+		sess := core.NewSession(scanType)
 
 		// exclude the .git directory from local scans as it is not handled properly here
 		sess.SkippablePath = core.AppendIfMissing(sess.SkippablePath, ".git/")
@@ -69,7 +70,7 @@ func init() {
 
 	scanLocalPathCmd.Flags().StringSlice("local-paths", nil, "List of local paths to scan")
 
-	err := wraithConfig.BindPFlag("local-paths", scanLocalPathCmd.Flags().Lookup("local-paths"))
+	err := viper.BindPFlag("local-paths", scanLocalPathCmd.Flags().Lookup("local-paths"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

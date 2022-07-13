@@ -9,6 +9,7 @@ import (
 	"github.com/N0MoreSecr3ts/wraith/core"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // scanLocalGitRepoCmd represents the scanLocalGitRepo command
@@ -19,7 +20,7 @@ var scanLocalGitRepoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		scanType := "localGit"
-		sess := core.NewSession(wraithConfig, scanType)
+		sess := core.NewSession(scanType)
 
 		// By default we display a header to the user giving basic info about application. This will not be displayed
 		// during a silent run which is the default when using this in an automated fashion.
@@ -52,8 +53,8 @@ func init() {
 	scanLocalGitRepoCmd.Flags().StringSlice("local-repos", nil, "List of local git repos to scan")
 	scanLocalGitRepoCmd.Flags().Float64("commit-depth", -1, "Set the commit depth to scan")
 
-	err := wraithConfig.BindPFlag("local-repos", scanLocalGitRepoCmd.Flags().Lookup("local-repos"))
-	err = wraithConfig.BindPFlag("commit-depth", scanLocalGitRepoCmd.Flags().Lookup("commit-depth"))
+	err := viper.BindPFlag("local-repos", scanLocalGitRepoCmd.Flags().Lookup("local-repos"))
+	err = viper.BindPFlag("commit-depth", scanLocalGitRepoCmd.Flags().Lookup("commit-depth"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

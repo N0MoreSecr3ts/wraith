@@ -26,10 +26,10 @@
 package core
 
 import (
+	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"
@@ -275,7 +275,7 @@ func staticIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/index.html", size: 9396, mode: os.FileMode(436), modTime: time.Unix(1657253153, 0)}
+	info := bindataFileInfo{name: "static/index.html", size: 9396, mode: os.FileMode(436), modTime: time.Unix(1657482398, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -295,7 +295,7 @@ func staticJavascriptsApplicationJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/javascripts/application.js", size: 15433, mode: os.FileMode(436), modTime: time.Unix(1657083882, 0)}
+	info := bindataFileInfo{name: "static/javascripts/application.js", size: 15433, mode: os.FileMode(436), modTime: time.Unix(1657482398, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

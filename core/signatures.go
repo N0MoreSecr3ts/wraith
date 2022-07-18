@@ -177,7 +177,8 @@ func (s SimpleSignature) Description() string {
 	return s.description
 }
 
-// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+// SignatureID sets the id used to identify the signature. This id is immutable and generated from a
+// has of the signature and is changed with every update to a signature.
 func (s SimpleSignature) SignatureID() string {
 	return s.signatureid
 }
@@ -347,7 +348,8 @@ func (s PatternSignature) Description() string {
 	return s.description
 }
 
-// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the
+// signature and is changed with every update to a signature.
 func (s PatternSignature) SignatureID() string {
 	return s.signatureid
 }
@@ -372,7 +374,8 @@ func (s SafeFunctionSignature) Description() string {
 	return s.description
 }
 
-// SignatureID sets the id used to identify the signature. This id is immutable and generated from a has of the signature and is changed with every update to a signature.
+// SignatureID sets the id used to identify the signature. This id is immutable and generated
+// from a has of the signature and is changed with every update to a signature.
 func (s SafeFunctionSignature) SignatureID() string {
 	return s.signatureid
 }

@@ -66,7 +66,7 @@ var DefaultValues = map[string]interface{}{
 	"scan-file":                   nil,
 	"hide-secrets":                false,
 	"github-url":                  "https://api.github.com",
-	//"gitlab-url":                  "", // TODO set the default
+	//"gitlab-url":                 "", // TODO set the default
 	"rules-url":               "",
 	"signatures-path":         "$HOME/.wraith/signatures/",
 	"signatures-url":          "https://github.com/N0MoreSecr3ts/wraith-signatures",
@@ -88,23 +88,26 @@ type Session struct {
 	BindPort            int
 	Client              IClient `json:"-"`
 	CommitDepth         int
+	ConfidenceLevel     int
 	CSVOutput           bool
 	Debug               bool
 	ExpandOrgs          bool
 	Findings            []*Finding
 	GithubAccessToken   string
-	Organizations       []*github.Organization
 	GithubClient        *github.Client `json:"-"`
 	GithubEnterpriseURL string
+	GithubURL           string
 	GitlabAccessToken   string
 	GitlabTargets       []string
+	GitlabURL           string
 	GithubUsers         []*github.User
 	HideSecrets         bool
 	InMemClone          bool
 	JSONOutput          bool
-	MaxFileSize         int64
-	Out                 *Logger `json:"-"`
 	LocalPaths          []string
+	MaxFileSize         int64
+	Organizations       []*github.Organization
+	Out                 *Logger `json:"-"`
 	Repositories        []*Repository
 	Router              *gin.Engine `json:"-"`
 	SignatureVersion    string
@@ -118,10 +121,6 @@ type Session struct {
 	Stats               *Stats
 	Targets             []*Owner
 	Threads             int
-	WraithVersion       string
-	ConfidenceLevel     int
-	GithubURL           string
-	GitlabURL           string
 	UserDirtyNames      []string
 	UserDirtyOrgs       []string
 	UserDirtyRepos      []string
@@ -129,6 +128,7 @@ type Session struct {
 	UserOrgs            []string
 	UserRepos           []string
 	WebServer           bool
+	WraithVersion       string
 }
 
 // githubRepository is the holds the necessary fields in a simpler structure
@@ -252,6 +252,7 @@ func (s *Session) Initialize(v *viper.Viper, scanType string) {
 
 // setCommitDepth will set the commit depth for the current session. This is an ugly way of doing it
 // but for the moment it works fine.
+// TODO dynamically acquire the commit depth of a given repo
 func setCommitDepth(c float64) int {
 	if c == -1 {
 		return 9999999999

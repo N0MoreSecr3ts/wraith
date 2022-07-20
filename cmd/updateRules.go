@@ -230,15 +230,15 @@ var updateSignaturesCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(updateSignaturesCmd)
 
-	updateSignaturesCmd.Flags().Bool("test-signatures", false, "run any tests associated with the signatures and display the output")
 	updateSignaturesCmd.Flags().String("signatures-path", "$HOME/.wraith/signatures/", "path where the signatures will be installed")
 	updateSignaturesCmd.Flags().String("signatures-url", "https://github.com/N0MoreSecr3ts/wraith-signatures", "url where the signatures can be found")
 	updateSignaturesCmd.Flags().String("signatures-version", "", "specific version of the signatures to install")
+	updateSignaturesCmd.Flags().Bool("test-signatures", false, "run any tests associated with the signatures and display the output")
 
-	err := wraithConfig.BindPFlag("test-signatures", updateSignaturesCmd.Flags().Lookup("test-signatures"))
-	err = wraithConfig.BindPFlag("signatures-path", updateSignaturesCmd.Flags().Lookup("signatures-path"))
+	err := wraithConfig.BindPFlag("signatures-path", updateSignaturesCmd.Flags().Lookup("signatures-path"))
 	err = wraithConfig.BindPFlag("signatures-url", updateSignaturesCmd.Flags().Lookup("signatures-url"))
 	err = wraithConfig.BindPFlag("signatures-version", updateSignaturesCmd.Flags().Lookup("signatures-version"))
+	err = wraithConfig.BindPFlag("test-signatures", updateSignaturesCmd.Flags().Lookup("test-signatures"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

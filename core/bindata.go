@@ -26,10 +26,10 @@
 package core
 
 import (
-	"github.com/elazarl/go-bindata-assetfs"
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	"github.com/elazarl/go-bindata-assetfs"
 	"io"
 	"io/ioutil"
 	"os"

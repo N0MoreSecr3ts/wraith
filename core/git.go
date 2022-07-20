@@ -170,9 +170,8 @@ func GetChangePath(change *object.Change) string {
 
 	if action == merkletrie.Delete {
 		return change.From.Name
-	} else {
-		return change.To.Name
 	}
+	return change.To.Name
 
 }
 

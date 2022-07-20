@@ -10,6 +10,7 @@ import (
 	"github.com/N0MoreSecr3ts/wraith/core"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 //var viperScanGithub *viper.Viper
@@ -23,15 +24,15 @@ var scanGithubCmd = &cobra.Command{
 
 		// Set the scan type and start a new session
 		scanType := "github"
-		sess := core.NewSession(wraithConfig, scanType)
+		sess := core.NewSession(scanType)
 
 		// Ensure user input exists and validate it
-		sess.ValidateUserInput(wraithConfig)
+		sess.ValidateUserInput()
 
 		// Check for a token. If no token is present we should default to scan but give a message
 		// that no token is available so only public repos will be scanned
 		// TODO do not exit out if no token but drop a message saying only public repos will be scanned
-		sess.GithubAccessToken = core.CheckGithubAPIToken(wraithConfig.GetString("github-api-token"), sess)
+		sess.GithubAccessToken = core.CheckGithubAPIToken(viper.GetString("github-api-token"), sess)
 
 		// By default we display a header to the user giving basic info about application. This will not be displayed
 		// during a silent run which is the default when using this in an automated fashion.
@@ -109,12 +110,12 @@ func init() {
 	scanGithubCmd.Flags().StringSlice("github-repos", nil, "List of github repositories to scan")
 	scanGithubCmd.Flags().StringSlice("github-users", nil, "List of github.com users to scan")
 
-	err := wraithConfig.BindPFlag("add-org-members", scanGithubCmd.Flags().Lookup("add-org-members"))
-	err = wraithConfig.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
-	err = wraithConfig.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
-	err = wraithConfig.BindPFlag("github-orgs", scanGithubCmd.Flags().Lookup("github-orgs"))
-	err = wraithConfig.BindPFlag("github-repos", scanGithubCmd.Flags().Lookup("github-repos"))
-	err = wraithConfig.BindPFlag("github-users", scanGithubCmd.Flags().Lookup("github-users"))
+	err := viper.BindPFlag("add-org-members", scanGithubCmd.Flags().Lookup("add-org-members"))
+	err = viper.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
+	err = viper.BindPFlag("github-orgs", scanGithubCmd.Flags().Lookup("github-orgs"))
+	err = viper.BindPFlag("github-repos", scanGithubCmd.Flags().Lookup("github-repos"))
+	err = viper.BindPFlag("github-users", scanGithubCmd.Flags().Lookup("github-users"))
+	err = viper.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

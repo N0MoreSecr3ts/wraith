@@ -10,6 +10,7 @@ import (
 
 	ot "github.com/otiai10/copy"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	whilp "github.com/whilp/git-urls"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
@@ -42,7 +43,7 @@ func executeTests(dir string) bool {
 func fetchSignatures(sess *core.Session) string {
 
 	// TODO if this is not set then pull from the stock place, that should be the default url set in the session
-	rURL := wraithConfig.GetString("signatures-url")
+	rURL := viper.GetString("signatures-url")
 
 	// set the remote url that we will fetch
 	// TODO need to look into this more
@@ -108,7 +109,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 	tempSignaturesDir := rRepo + "/signatures"
 
 	// final resting place for the signatures
-	rPath := wraithConfig.GetString("signatures-path")
+	rPath := viper.GetString("signatures-path")
 
 	// ensure we have the proper home directory
 	rPath = core.SetHomeDir(rPath, sess)
@@ -124,7 +125,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 
 	// if we want to test the signatures before we install them
 	// TODO need to implement something here
-	if wraithConfig.GetBool("test-signatures") {
+	if viper.GetBool("test-signatures") {
 
 		// if the tests pass then we install the signatures
 		if executeTests(rRepo) {
@@ -203,13 +204,13 @@ var updateSignaturesCmd = &cobra.Command{
 
 		scanType := "updateSignatures"
 
-		sess := core.NewSession(wraithConfig, scanType)
+		sess := core.NewSession(scanType)
 
 		// get the signatures version or if blank, set it to latest
 		// TODO this should be in the default values from the session
-		if wraithConfig.GetString("signatures-path") != "" {
+		if viper.GetString("signatures-path") != "" {
 
-			signatureVersion = wraithConfig.GetString("signatures-version")
+			signatureVersion = viper.GetString("signatures-version")
 		} else {
 			signatureVersion = "latest"
 		}
@@ -220,7 +221,7 @@ var updateSignaturesCmd = &cobra.Command{
 		// install the signatures
 		if updateSignatures(rRepo, sess) {
 			// TODO set this in the session so we have a single location for everything
-			fmt.Printf("The signatures have been successfully updated at: %s\n", wraithConfig.GetString("signatures-path"))
+			fmt.Printf("The signatures have been successfully updated at: %s\n", viper.GetString("signatures-path"))
 		} else {
 			sess.Out.Warn("The signatures were not updated")
 		}
@@ -235,10 +236,10 @@ func init() {
 	updateSignaturesCmd.Flags().String("signatures-version", "", "specific version of the signatures to install")
 	updateSignaturesCmd.Flags().Bool("test-signatures", false, "run any tests associated with the signatures and display the output")
 
-	err := wraithConfig.BindPFlag("signatures-path", updateSignaturesCmd.Flags().Lookup("signatures-path"))
-	err = wraithConfig.BindPFlag("signatures-url", updateSignaturesCmd.Flags().Lookup("signatures-url"))
-	err = wraithConfig.BindPFlag("signatures-version", updateSignaturesCmd.Flags().Lookup("signatures-version"))
-	err = wraithConfig.BindPFlag("test-signatures", updateSignaturesCmd.Flags().Lookup("test-signatures"))
+	err := viper.BindPFlag("signatures-path", updateSignaturesCmd.Flags().Lookup("signatures-path"))
+	err = viper.BindPFlag("signatures-url", updateSignaturesCmd.Flags().Lookup("signatures-url"))
+	err = viper.BindPFlag("signatures-version", updateSignaturesCmd.Flags().Lookup("signatures-version"))
+	err = viper.BindPFlag("test-signatures", updateSignaturesCmd.Flags().Lookup("test-signatures"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

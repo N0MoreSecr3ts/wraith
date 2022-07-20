@@ -11,6 +11,7 @@ import (
 	"github.com/N0MoreSecr3ts/wraith/version"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // scanGithubEnterpriseCmd represents the scanGithubEnterprise command
@@ -22,14 +23,14 @@ var scanGithubEnterpriseCmd = &cobra.Command{
 
 		// Set the scan type and start a new session
 		scanType := "github-enterprise"
-		sess := core.NewSession(wraithConfig, scanType)
+		sess := core.NewSession(scanType)
 
 		// Ensure user input exists and validate it
-		sess.ValidateUserInput(wraithConfig)
+		sess.ValidateUserInput()
 
 		// Check for a token. If no token is present we should default to scan but give a message
 		// that no token is available so only public repos will be scanned
-		sess.GithubAccessToken = core.CheckGithubAPIToken(wraithConfig.GetString("github-enterprise-api-token"), sess)
+		sess.GithubAccessToken = core.CheckGithubAPIToken(viper.GetString("github-enterprise-api-token"), sess)
 
 		// By default we display a header to the user giving basic info about application. This will not be displayed
 		// during a silent run which is the default when using this in an automated fashion.
@@ -104,13 +105,13 @@ func init() {
 	scanGithubEnterpriseCmd.Flags().String("github-enterprise-url", "", "Entperise Github instance. I.E. https://github.org.com")
 	scanGithubEnterpriseCmd.Flags().StringSlice("github-enterprise-users", nil, "List of github.com users to scan")
 
-	err := wraithConfig.BindPFlag("add-org-members", scanGithubEnterpriseCmd.Flags().Lookup("add-org-members"))
-	err = wraithConfig.BindPFlag("commit-depth", scanGithubEnterpriseCmd.Flags().Lookup("commit-depth"))
-	err = wraithConfig.BindPFlag("github-enterprise-api-token", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-api-token"))
-	err = wraithConfig.BindPFlag("github-enterprise-orgs", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-orgs"))
-	err = wraithConfig.BindPFlag("github-enterprise-repos", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-repos"))
-	err = wraithConfig.BindPFlag("github-enterprise-url", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-url"))
-	err = wraithConfig.BindPFlag("github-enterprise-users", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-users"))
+	err := viper.BindPFlag("add-org-members", scanGithubEnterpriseCmd.Flags().Lookup("add-org-members"))
+	err = viper.BindPFlag("commit-depth", scanGithubEnterpriseCmd.Flags().Lookup("commit-depth"))
+	err = viper.BindPFlag("github-enterprise-api-token", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-api-token"))
+	err = viper.BindPFlag("github-enterprise-orgs", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-orgs"))
+	err = viper.BindPFlag("github-enterprise-repos", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-repos"))
+	err = viper.BindPFlag("github-enterprise-url", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-url"))
+	err = viper.BindPFlag("github-enterprise-users", scanGithubEnterpriseCmd.Flags().Lookup("github-enterprise-users"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

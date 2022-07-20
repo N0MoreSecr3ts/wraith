@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	"github.com/google/go-github/github"
-	"github.com/spf13/viper"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
@@ -106,19 +105,19 @@ func GatherUsers(sess *Session) {
 
 // ValidateUserInput will check for special characters in the strings and make sure we
 // have at least one usr/repo/org to scan
-func (s *Session) ValidateUserInput(v *viper.Viper) {
+func (s *Session) ValidateUserInput() {
 
 	// Raw user inputs
 	if s.ScanType == "github-enterprise" {
-		s.GithubAccessToken = CheckGithubAPIToken(v.GetString("github-enterprise-api-token"), s)
-		s.UserDirtyRepos = v.GetStringSlice("github-enterprise-repos")
-		s.UserDirtyOrgs = v.GetStringSlice("github-enterprise-orgs")
-		s.UserDirtyNames = v.GetStringSlice("github-enterprise-users")
+		s.GithubAccessToken = CheckGithubAPIToken(WraithConfig.GetString("github-enterprise-api-token"), s)
+		s.UserDirtyRepos = WraithConfig.GetStringSlice("github-enterprise-repos")
+		s.UserDirtyOrgs = WraithConfig.GetStringSlice("github-enterprise-orgs")
+		s.UserDirtyNames = WraithConfig.GetStringSlice("github-enterprise-users")
 	} else {
-		s.GithubAccessToken = CheckGithubAPIToken(v.GetString("github-api-token"), s)
-		s.UserDirtyRepos = v.GetStringSlice("github-repos")
-		s.UserDirtyOrgs = v.GetStringSlice("github-orgs")
-		s.UserDirtyNames = v.GetStringSlice("github-users")
+		s.GithubAccessToken = CheckGithubAPIToken(WraithConfig.GetString("github-api-token"), s)
+		s.UserDirtyRepos = WraithConfig.GetStringSlice("github-repos")
+		s.UserDirtyOrgs = WraithConfig.GetStringSlice("github-orgs")
+		s.UserDirtyNames = WraithConfig.GetStringSlice("github-users")
 	}
 
 	// If no targets are given, fail fast

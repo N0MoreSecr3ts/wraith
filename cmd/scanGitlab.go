@@ -9,6 +9,7 @@ import (
 	"github.com/N0MoreSecr3ts/wraith/core"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // scanGitlabCmd represents the scanGitlab command
@@ -19,7 +20,7 @@ var scanGitlabCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		scanType := "gitlab"
-		sess := core.NewSession(wraithConfig, scanType)
+		sess := core.NewSession(scanType)
 
 		// By default we display a header to the user giving basic info about application. This will not be displayed
 		// during a silent run which is the default when using this in an automated fashion.
@@ -38,7 +39,7 @@ var scanGitlabCmd = &cobra.Command{
 			sess.Out.Debug("We have these repos: %s\n", sess.UserRepos)
 		}
 
-		sess.GitlabAccessToken = wraithConfig.GetString("gitlab-api-token")
+		sess.GitlabAccessToken = viper.GetString("gitlab-api-token")
 
 		sess.InitGitClient()
 
@@ -65,10 +66,10 @@ func init() {
 	scanGitlabCmd.Flags().StringSlice("gitlab-projects", nil, "List of Gitlab projects or users to scan")
 	scanGitlabCmd.Flags().Float64("commit-depth", -1, "Set the commit depth to scan")
 
-	err := wraithConfig.BindPFlag("commit-depth", scanGitlabCmd.Flags().Lookup("commit-depth"))
-	err = wraithConfig.BindPFlag("add-org-members", scanGitlabCmd.Flags().Lookup("add-org-members"))
-	err = wraithConfig.BindPFlag("gitlab-api-token", scanGitlabCmd.Flags().Lookup("gitlab-api-token"))
-	err = wraithConfig.BindPFlag("gitlab-projects", scanGitlabCmd.Flags().Lookup("gitlab-projects"))
+	err := viper.BindPFlag("commit-depth", scanGitlabCmd.Flags().Lookup("commit-depth"))
+	err = viper.BindPFlag("add-org-members", scanGitlabCmd.Flags().Lookup("add-org-members"))
+	err = viper.BindPFlag("gitlab-api-token", scanGitlabCmd.Flags().Lookup("gitlab-api-token"))
+	err = viper.BindPFlag("gitlab-projects", scanGitlabCmd.Flags().Lookup("gitlab-projects"))
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

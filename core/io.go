@@ -103,7 +103,7 @@ func IsMaxFileSize(filename string, sess *Session) (bool, string) {
 	fi, err := os.Stat(filename)
 
 	if err != nil {
-		return true, "does not exist"
+		return false, "does not exist"
 	}
 
 	fileSize := fi.Size()

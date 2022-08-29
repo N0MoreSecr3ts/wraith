@@ -83,10 +83,10 @@ func checkTorConnection(address string, port int) (string, string) {
 	}
 	defer resp.Body.Close()
 
-	// return statment for tor connection
+	// return statement for tor connection
 	var stmt string
 
-	// scrape the tor page to check if the connection is being proxyed
+	// scrape the tor page to check if the connection is being sent over the proxy
 	secure, ipAddr := checkTorResponse(resp)
 	if secure {
 		stmt = "Secure"

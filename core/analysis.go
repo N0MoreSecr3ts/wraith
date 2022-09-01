@@ -289,8 +289,6 @@ func AnalyzeRepositories(sess *Session) {
 									// Print realtime data to stdout
 									realTimeOutput(finding, sess)
 								}
-								sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
-								sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
 							}
 						}
 						if dirtyFile {
@@ -303,6 +301,9 @@ func AnalyzeRepositories(sess *Session) {
 						sess.Stats.IncrementCommitsDirty()
 					}
 				}
+
+				sess.Out.Debug("[THREAD #%d][%s] Done analyzing commits\n", tid, *repo.CloneURL)
+				sess.Out.Debug("[THREAD #%d][%s] Deleted %s\n", tid, *repo.CloneURL, path)
 
 				err = os.RemoveAll(path)
 				if err != nil {

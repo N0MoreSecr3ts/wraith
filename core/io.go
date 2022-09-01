@@ -102,8 +102,18 @@ func IsMaxFileSize(filename string, sess *Session) (bool, string) {
 
 	fi, err := os.Stat(filename)
 
-	if err != nil {
-		return true, "does not exist"
+	// This error occurs when the file is not found.
+	// The source of truth for files traversed comes from:
+	// 		git - the commit history (or)
+	// 		filepath - walking the filepath.
+	//
+	// In the case of filepath, it can be safely assumed that the file will always exist because we only check
+	// the files that were walked.
+	//
+	// In the case of git, it can be assumed that the file will exist somewhere in the commit history.
+	// Thereforce, we assume that the file size is within the limit and return false.
+	if _, ok := err.(*os.PathError); ok {
+		return false, "does not exist"
 	}
 
 	fileSize := fi.Size()

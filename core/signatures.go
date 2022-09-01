@@ -227,7 +227,12 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 		haystack = &file.Extension
 		bResult = s.match.MatchString(*haystack)
 	case PartContent:
+		var contextMatches []string
+
 		haystack := &file.Path
+		// The regex that we are going to try and match against
+		r := s.match
+
 		if PathExists(*haystack, sess) {
 			if _, err := os.Stat(*haystack); err == nil {
 				data, err := ioutil.ReadFile(*haystack)
@@ -236,11 +241,6 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 					results[sErrAppend] = 0 // set to zero due to error, we never have a line 0 so we can always ignore that or error on it
 					return false, results
 				}
-
-				// The regex that we are going to try and match against
-				r := s.match
-
-				var contextMatches []string
 
 				// Check to see if there is a match in the data and if so switch to a Findall that
 				// will get a slice of all the individual matches. Doing this ahead of time saves us
@@ -268,40 +268,39 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 						return bResult, results
 					}
 				}
-
-				if sess.ScanType != "localPath" {
-
-					content, err := GetChangeContent(change)
-					if err != nil {
-						sess.Out.Error("Error retrieving content in commit %s, change %s:  %s\n", "commit.String()", change.String(), err)
-					}
-
-					if r.Match([]byte(content)) {
-						for _, curRegexMatch := range r.FindAll([]byte(content), -1) {
-							contextMatches = append(contextMatches, string(curRegexMatch))
-						}
-						if len(contextMatches) > 0 {
-							bResult = true
-							for i, curMatch := range contextMatches {
-								thisMatch := string(curMatch[:])
-								thisMatch = strings.TrimSuffix(thisMatch, "\n")
-
-								bResult = confirmEntropy(thisMatch, s.entropy)
-
-								if bResult {
-									linesOfScannedFile := strings.Split(content, "\n")
-
-									num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
-									results[strconv.Itoa(i)+"_"+thisMatch] = num
-								}
-							}
-							return bResult, results
-						}
-					}
-				}
-
 			}
 		}
+
+		if sess.ScanType != "localPath" {
+			content, err := GetChangeContent(change)
+			if err != nil {
+				sess.Out.Error("Error retrieving content in commit %s, change %s:  %s\n", "commit.String()", change.String(), err)
+			}
+
+			if r.Match([]byte(content)) {
+				for _, curRegexMatch := range r.FindAll([]byte(content), -1) {
+					contextMatches = append(contextMatches, string(curRegexMatch))
+				}
+				if len(contextMatches) > 0 {
+					bResult = true
+					for i, curMatch := range contextMatches {
+						thisMatch := string(curMatch[:])
+						thisMatch = strings.TrimSuffix(thisMatch, "\n")
+
+						bResult = confirmEntropy(thisMatch, s.entropy)
+
+						if bResult {
+							linesOfScannedFile := strings.Split(content, "\n")
+
+							num := fetchLineNumber(&linesOfScannedFile, thisMatch, i)
+							results[strconv.Itoa(i)+"_"+thisMatch] = num
+						}
+					}
+					return bResult, results
+				}
+			}
+		}
+
 	default: // TODO We need to do something with this
 		return bResult, results
 	}

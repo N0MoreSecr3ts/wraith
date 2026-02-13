@@ -251,7 +251,7 @@ func SummaryOutput(sess *Session) {
 		}
 		err := w.Write(header)
 		if err != nil {
-			sess.Out.Error(err.Error())
+			sess.Out.Error("%v", err)
 		}
 
 		for _, v := range sess.Findings {
@@ -274,7 +274,7 @@ func SummaryOutput(sess *Session) {
 			}
 			err := w.Write(line)
 			if err != nil {
-				sess.Out.Error(err.Error())
+				sess.Out.Error("%v", err)
 			}
 		}
 	}

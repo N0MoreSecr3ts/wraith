@@ -67,10 +67,10 @@ func fetchSignatures(sess *core.Session) string {
 	if err != nil {
 		err1 := os.RemoveAll(dir) // TODO fix this error thing
 		if err1 != nil {
-			sess.Out.Error(err1.Error())
+			sess.Out.Error("%v", err1)
 		}
 
-		sess.Out.Error(err.Error())
+		sess.Out.Error("%v", err)
 	}
 
 	// TODO give a valid error if the version is not REMOVE ME
@@ -80,7 +80,7 @@ func fetchSignatures(sess *core.Session) string {
 		// TODO figure this out REMOVE ME
 		tree, err := repo.Worktree()
 		if err != nil {
-			sess.Out.Error(err.Error())
+			sess.Out.Error("%v", err)
 		}
 
 		// Set the tag to the signatures version that we want to use
@@ -115,12 +115,12 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 	rPath = core.SetHomeDir(rPath, sess)
 
 	// if the signatures path does not exist then we create it
-	if !core.PathExists(rPath, sess) {
+		if !core.PathExists(rPath, sess) {
 
-		err := os.MkdirAll(rPath, 0700)
-		if err != nil {
-			sess.Out.Error(err.Error())
-		}
+			err := os.MkdirAll(rPath, 0700)
+			if err != nil {
+				sess.Out.Error("%v", err)
+			}
 	}
 
 	// if we want to test the signatures before we install them
@@ -131,35 +131,35 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 		if executeTests(rRepo) {
 
 			// copy the files from the temp directory to the signatures directory
-			if err := ot.Copy(tempSignaturesDir, rPath); err != nil {
-				sess.Out.Error(err.Error())
+				if err := ot.Copy(tempSignaturesDir, rPath); err != nil {
+					sess.Out.Error("%v", err)
 				return false
 			}
 
 			// get all the files in the signatures directory
 			files, err := ioutil.ReadDir(rPath)
 			if err != nil {
-				sess.Out.Error(err.Error())
+				sess.Out.Error("%v", err)
 				return false
 			}
 
 			// set them to the current user and the proper permissions
 			for _, f := range files {
 				if err := os.Chmod(rPath+"/"+f.Name(), 0644); err != nil {
-					sess.Out.Error(err.Error())
+					sess.Out.Error("%v", err)
 					return false
 				}
 			}
 			err = os.RemoveAll(rRepo)
 			if err != nil {
-				sess.Out.Error(err.Error())
+				sess.Out.Error("%v", err)
 			}
 			return true
 
 		}
 		err := os.RemoveAll(rRepo)
 		if err != nil {
-			sess.Out.Error(err.Error())
+			sess.Out.Error("%v", err)
 		}
 		return false
 
@@ -167,14 +167,14 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 
 	// copy the files from the temp directory to the signatures directory
 	if err := ot.Copy(tempSignaturesDir, rPath); err != nil {
-		sess.Out.Error(err.Error())
+		sess.Out.Error("%v", err)
 		return false
 	}
 
 	// get all the files in the signatures directory
 	files, err := ioutil.ReadDir(rPath)
 	if err != nil {
-		sess.Out.Error(err.Error())
+		sess.Out.Error("%v", err)
 		return false
 	}
 
@@ -184,7 +184,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 		sFileExt := filepath.Ext(rPath + "/" + f.Name())
 		if sFileExt == "yml" || sFileExt == "yaml" {
 			if err := os.Chmod(rPath+"/"+f.Name(), 0644); err != nil {
-				sess.Out.Error(err.Error())
+				sess.Out.Error("%v", err)
 				return false
 			}
 		}

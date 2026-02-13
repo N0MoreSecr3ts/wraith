@@ -8,18 +8,32 @@ import (
 
 	"github.com/N0MoreSecr3ts/wraith/core"
 
+	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	ot "github.com/otiai10/copy"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	whilp "github.com/whilp/git-urls"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 var signatureVersion string
 
-// cleanInput will ensure that any user supplied git url is in the proper format
+// cleanInput will ensure that any user supplied git url is in the proper format.
+// To mitigate the ReDoS risk in github.com/whilp/git-urls, we reject
+// unreasonably long URLs before passing them to the regex-heavy parser.
 func cleanInput(u string) string {
+	const maxURLLength = 2048
+
+	if len(u) == 0 {
+		fmt.Println("empty URL is not allowed")
+		os.Exit(2)
+	}
+
+	if len(u) > maxURLLength {
+		fmt.Printf("provided URL is too long (>%d chars) and may be unsafe to parse\n", maxURLLength)
+		os.Exit(2)
+	}
+
 	_, err := whilp.Parse(u)
 
 	if err != nil {

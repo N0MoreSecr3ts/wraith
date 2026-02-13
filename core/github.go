@@ -11,11 +11,11 @@ import (
 	"strconv"
 	"sync"
 
+	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
+	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/google/go-github/github"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
-	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
 
 // cloneGithub will set the clone config and then either do a plain clone if it is going to disk
@@ -28,7 +28,7 @@ func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, erro
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", *cloneConfig.Branch)),
 		SingleBranch:  true,
 		Tags:          git.NoTags,
-		Auth: &http.BasicAuth{
+		Auth: &githttp.BasicAuth{
 			Username: "doesn't matter",
 			Password: *cloneConfig.Token,
 		},

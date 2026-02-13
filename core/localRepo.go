@@ -3,15 +3,15 @@ package core
 import (
 	"crypto/sha1"
 	"fmt"
-	"gopkg.in/src-d/go-git.v4/storage/memory"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
+	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/storage/memory"
 )
 
 // cloneLocal will create either an in memory clone of a given repository or clone to a temp dir.

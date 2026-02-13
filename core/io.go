@@ -55,7 +55,7 @@ func SetHomeDir(h string, sess *Session) string {
 	if strings.Contains(h, "$HOME") {
 		home, err := homedir.Dir()
 		if err != nil {
-			sess.Out.Error(err.Error())
+			sess.Out.Error("%v", err)
 			os.Exit(2)
 		}
 
@@ -65,7 +65,7 @@ func SetHomeDir(h string, sess *Session) string {
 	if strings.Contains(h, "~") {
 		home, err := homedir.Dir()
 		if err != nil {
-			sess.Out.Error(err.Error())
+			sess.Out.Error("%v", err)
 			os.Exit(2)
 		}
 		h = strings.Replace(h, "~", home, -1)

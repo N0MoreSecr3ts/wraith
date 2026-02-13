@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-//AppVersionMajor is the major revision number
+// AppVersionMajor is the major revision number
 const AppVersionMajor = "0"
 
 // AppVersionMinor is the minor revision number

@@ -70,10 +70,11 @@ func GatherTargets(sess *Session) {
 }
 
 // AnalyzeRepositories will clone the repos, grab their history for analysis of files and content.
-//  Before the analysis is done we also check various conditions that can be thought of as filters and
-//  are controlled by flags. If a directory, file, or the content pass through all of the filters then
-//  it is scanned once per each signature which may lead to a specific secret matching multiple rules
-//  and then generating multiple findings.
+//
+//	Before the analysis is done we also check various conditions that can be thought of as filters and
+//	are controlled by flags. If a directory, file, or the content pass through all of the filters then
+//	it is scanned once per each signature which may lead to a specific secret matching multiple rules
+//	and then generating multiple findings.
 func AnalyzeRepositories(sess *Session) {
 	sess.Stats.Status = StatusAnalyzing
 	if len(sess.Repositories) == 0 {

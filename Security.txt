@@ -1,0 +1,37 @@
+If the issues is non-critical then open an issue on Github with
+ * a full explanation of the issue
+ * what versions it applies to
+ * any third-party libraries it may effect
+
+ If the matter is critical send any details to urlugalATgmail using the following key if necessary
+
+ -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+ mQENBF8fi7oBCADl862/KBPZFRb1A4t8b38BDY7juQ4Xj/gEgPSQ2GcqOvnBa+mX
+ tCsKimanAGNiS8c2TtSDCejgggBWqKF7GgR1XP5a8a60PDWpsXZn2duzABeEOYhc
+ qWHmmJTTgi3K7+gd+VSDK3rfXmWf6oSQIE/q03/fQJGphVTaQQfdXvfp+m3rwl9U
+ A6EtIaNLyIn7LC6oBXGKGZnFx4MeZCfrPOF5GHvMq0bt0LQ4N46hkMK0oo+9eFb5
+ LEvvOWbDQthpUBA12a/3Sw+XwlbowqnT5vxiCMDsehrEgENeZZ8zS8tY+YBtrt+R
+ J+DZg4EtxS4cGDYlopntlXXMvmbCfYGBaOMXABEBAAG0Hk1hdHQgSm9uZXMgPHVy
+ bHVnYWxAZ21haWwuY29tPokBTgQTAQgAOBYhBDJRM9sNhtVxJYvvU+2gu2mdq3WU
+ BQJfH4u6AhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEO2gu2mdq3WUsHAH
+ /1BvzYOkOUdd3WIN9XaUlOctqzhGn4r6Wcj+K6zpZBrbnf6lemNvK4czdBhyl7KK
+ YWNR5Lv3h2CHzxZPswcud+BjrAlDq77ZGjp3lqWyysJXKit5bEMxWqKMU6JSpD3j
+ vO4j3oDard9qTcbApG87iGGQalHjk/IqeicChp/WwGb0GFm7brZDMlRO8JZ5yWHH
+ KpMP8IAO/wQhZ9VFn1Zw02JVViHrBB83Cwbf1c3RFb61gs5V1Z+9t0v9Hto8IChD
+ 2xsBt2nqnpqOPagSwSdkYO8oPTBQUK632URzH57ZhNJhWhDTcrWlNK/uh5fwTyRA
+ AjM94uyesiFAtmHLq7sM6GW5AQ0EXx+LugEIALoSoKrx+VJFWPSCyGpOS7oRqkF1
+ CbanZYOaUWAXlyPI8NdoA+1kiEQyuz2sz0Q4Vpiuc0KkH3rK8fOT5s6KwYIC0o+L
+ +EszoBckS5OMNOUrYtoJdp+TkDCVvOflsqdp8BXqDRzDDxQcK51qxRWrWEvQ7eau
+ KTsXd1wWgFssuujd3kpqHD7fl6LNaPSYOt+vyV/pBSay+HhTjdOTV2G2c6lQEgm/
+ TtUFse95SyWnNdmOpiN8pLUlm+yKiO34ks2ODJ9HRmI7DoofE8yskRavWYTn94Gw
+ ZusltWCV0onCj8l0WJkpahZY7E/3rxXJEhreWNre45sFyxm1E4Y8VJmvG+EAEQEA
+ AYkBNgQYAQgAIBYhBDJRM9sNhtVxJYvvU+2gu2mdq3WUBQJfH4u6AhsMAAoJEO2g
+ u2mdq3WUvZsIAN5qFoCBH1SbITMfvzDRdKj7WOOKGj7PFz9UfTK0kyoI34iktX6B
+ j5g6Yi4NtbnuWPG1GblR3nrHQcOtS8mw3D63AsgOMTsaCcro0K7wy3bTEbaFeYFw
+ EuXJ+/FtjWAR/EhrMp7CunDS2l56oiu4lbP6vAroHQurgEiIdm5Sma5IEraGJOFo
+ xL+aGT5m3QSkn+5xz4w+KrCx+QkYnV8OafSCwGU8ubvqFbnKSZavrUt4a/MB5FiA
+ 9LzdQW9eTLF4BJBFZrNaZ77aNGQS4k9bzFTCJXoXTY4UrLXs6MsYanEgMnU8YFIm
+ pQXV3D9FRG+vp2yFdhvOfOp5qFwwKxaNP4U=
+ =bQRW
+ -----END PGP PUBLIC KEY BLOCK-----

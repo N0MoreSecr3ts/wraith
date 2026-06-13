@@ -95,11 +95,11 @@ type Session struct {
 	Debug               bool
 	ExpandOrgs          bool
 	Findings            []*Finding
-	GithubAccessToken   string
+	GithubAccessToken   string         `json:"-"`
 	GithubClient        *github.Client `json:"-"`
 	GithubEnterpriseURL string
 	GithubURL           string
-	GitlabAccessToken   string
+	GitlabAccessToken   string `json:"-"`
 	GitlabTargets       []string
 	GitlabURL           string
 	GithubUsers         []*github.User
@@ -334,7 +334,7 @@ func (s *Session) SaveToFile(location string) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(location, sessionJSON, 0644)
+	err = os.WriteFile(location, sessionJSON, 0600)
 	if err != nil {
 		return err
 	}

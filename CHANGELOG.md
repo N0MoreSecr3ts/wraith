@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Replace deprecated `io/ioutil` calls with `os`/`io` equivalents and modernize `interface{}` to `any`
 - Simplify membership checks with `slices.Contains` and goroutine fan-out with `sync.WaitGroup.Go`
 
+### Security
+- Exclude GitHub and GitLab API tokens from the serialized session file and restrict its permissions to 0600
+
 ## [0.0.9] - 2022-07-08
 ### Changed
 

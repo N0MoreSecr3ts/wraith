@@ -8,7 +8,7 @@
 #
  SHELL = /bin/bash
 
-.PHONY: all build clean coverage help install package pretty test
+.PHONY: all build clean coverage help install lint package pretty test vulncheck
 .DEFAULT_GOAL := help
 
 # The name of the binary to build
@@ -43,8 +43,8 @@ ifndef target_arch
 	target_arch = amd64
 endif
 
-## all		Run lint tools, clean and build
-all: pretty clean build
+## all		Run lint tools, vulncheck, clean and build
+all: pretty vulncheck clean build
 
 ## build		Download dependencies and build
 build: prep
@@ -77,13 +77,21 @@ package: test clean build
 prep:
 	@go get
 
-## pretty		Run golint, go fmt and go vet
+## lint		Run golangci-lint
+lint:
+	@golangci-lint run
+
+## pretty		Run go fmt, go vet and golangci-lint
 pretty:
-	@golint ./...
 	@go fmt ./...
 	@go vet ./...
+	@golangci-lint run
+	@golangci-lint fmt
 
 ## test		Run tests with coverage
 test: pretty
 	go test ./... -cover
 
+## vulncheck	Run govulncheck
+vulncheck:
+	@govulncheck ./...

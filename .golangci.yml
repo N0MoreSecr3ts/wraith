@@ -1,0 +1,72 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: standard
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - revive
+    - gosec
+    - bodyclose
+    - misspell
+    - unconvert
+    - unparam
+  settings:
+    revive:
+      rules:
+        - name: exported
+          disabled: false
+    staticcheck:
+      checks:
+        - all
+  exclusions:
+    generated: lax
+    rules:
+      # G304: loadSignatureSet reads a signature file from a user-supplied
+      # path by design (--signature-file/--signature-path).
+      - path: core/signatures.go
+        linters:
+          - gosec
+        text: "G304"
+      # G401/G404/G501/G505: SHA1/MD5/math-rand are used only to build
+      # non-cryptographic dedup/ID hashes (findings, orgs, users, repos),
+      # never for security purposes.
+      - path: core/findings.go
+        linters:
+          - gosec
+        text: "G401|G404|G505"
+      - path: core/github.go
+        linters:
+          - gosec
+        text: "G401|G501"
+      - path: core/localRepo.go
+        linters:
+          - gosec
+        text: "G401|G505"
+      # G107: fetchFile builds its request URL from fixed base URLs
+      # (GithubBaseURI/GitLabBaseURL) plus sanitized path parameters; this
+      # is the core of the web UI's file-fetch feature.
+      - path: core/router.go
+        linters:
+          - gosec
+        text: "G107"
+      # SA1019: migrating off the deprecated xanzy/go-gitlab client to
+      # gitlab.com/gitlab-org/api/client-go is out of scope for this pass.
+      - path: core/gitlab.go
+        linters:
+          - staticcheck
+        text: "SA1019"
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    gofmt:
+      simplify: true

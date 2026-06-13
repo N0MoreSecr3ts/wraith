@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- Add `.golangci.yml` (golangci-lint v2 config) and wire `golangci-lint`/`govulncheck` into the Makefile via new `lint` and `vulncheck` targets
+
 ### Changed
 - Default branch to pull signatures from is now stable
 - Bump minimum Go version to 1.26.0 and refresh the module graph for the go1.26.4 toolchain

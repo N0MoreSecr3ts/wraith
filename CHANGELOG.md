@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 - Exclude GitHub and GitLab API tokens from the serialized session file and restrict its permissions to 0600
+- Stop disabling TLS certificate verification for plain github.com clients; `InsecureSkipVerify` is now scoped to `github-enterprise` only, for instances with self-signed certificates
 
 ## [0.0.9] - 2022-07-08
 ### Changed

@@ -253,7 +253,7 @@ func (s *Session) InitGitClient() {
 	if s.ScanType == "github-enterprise" {
 
 		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //nolint:gosec // G402: some GitHub Enterprise instances use self-signed certs
 		}
 		sslcli := &http.Client{Transport: tr}
 
@@ -282,18 +282,10 @@ func (s *Session) InitGitClient() {
 
 	if s.ScanType == "github" {
 
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		sslcli := &http.Client{Transport: tr}
-
-		ctx := context.Background()
-		ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
-
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: s.GithubAccessToken},
 		)
-		tc := oauth2.NewClient(ctx, ts)
+		tc := oauth2.NewClient(context.Background(), ts)
 
 		if s.GithubURL != "" {
 			_, err := url.Parse(s.GithubURL)

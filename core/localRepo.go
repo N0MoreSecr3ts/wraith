@@ -3,7 +3,6 @@ package core
 import (
 	"crypto/sha1"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -29,7 +28,7 @@ func cloneLocal(cloneConfig *CloneConfiguration) (*git.Repository, string, error
 	var err error
 	var dir string
 	if !*cloneConfig.InMemClone {
-		dir, err = ioutil.TempDir("", "wraith")
+		dir, err = os.MkdirTemp("", "wraith")
 		if err != nil {
 			return nil, "", err
 		}

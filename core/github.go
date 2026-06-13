@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
@@ -39,7 +38,7 @@ func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, erro
 	var dir string
 
 	if !*cloneConfig.InMemClone {
-		dir, err = ioutil.TempDir("", "wraith")
+		dir, err = os.MkdirTemp("", "wraith")
 		if err != nil {
 			return nil, "", err
 		}
@@ -320,16 +319,13 @@ func (c githubClient) GetOrganizationMembers(target Owner) ([]*Owner, error) {
 			return allMembers, err
 		}
 
-		wg.Add(1)
-
-		go func() {
+		wg.Go(func() {
 			for _, member := range members {
 				mut.Lock()
 				allMembers = append(allMembers, &Owner{Login: member.Login, ID: member.ID, Type: member.Type})
 				mut.Unlock()
 			}
-			wg.Done()
-		}()
+		})
 
 		if resp.NextPage == 0 {
 			break

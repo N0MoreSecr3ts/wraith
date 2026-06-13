@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math"
 	"os"
 	"regexp"
@@ -29,7 +28,7 @@ var SafeFunctionSignatures []SafeFunctionSignature
 
 // loadSignatureSet will read in the defined signatures from an external source
 func loadSignatureSet(filename string) (SignatureConfig, error) {
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return SignatureConfig{}, err
 	}
@@ -235,7 +234,7 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 
 		if PathExists(*haystack, sess) {
 			if _, err := os.Stat(*haystack); err == nil {
-				data, err := ioutil.ReadFile(*haystack)
+				data, err := os.ReadFile(*haystack)
 				if err != nil {
 					sErrAppend := fmt.Sprintf("ERROR --- Unable to open file for scanning: <%s> \nError Message: <%s>", *haystack, err)
 					results[sErrAppend] = 0 // set to zero due to error, we never have a line 0 so we can always ignore that or error on it

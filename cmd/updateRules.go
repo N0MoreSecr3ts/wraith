@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -64,7 +63,7 @@ func fetchSignatures(sess *core.Session) string {
 	remoteURL := cleanInput(rURL)
 
 	// TODO document this
-	dir, err := ioutil.TempDir("", "wraith")
+	dir, err := os.MkdirTemp("", "wraith")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(2)
@@ -151,7 +150,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 			}
 
 			// get all the files in the signatures directory
-			files, err := ioutil.ReadDir(rPath)
+			files, err := os.ReadDir(rPath)
 			if err != nil {
 				sess.Out.Error("%v", err)
 				return false
@@ -186,7 +185,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 	}
 
 	// get all the files in the signatures directory
-	files, err := ioutil.ReadDir(rPath)
+	files, err := os.ReadDir(rPath)
 	if err != nil {
 		sess.Out.Error("%v", err)
 		return false

@@ -46,7 +46,7 @@ func (l *Logger) SetDebug(d bool) {
 }
 
 // Log is a generic printer for sending data to stdout. It does not do traditional syslog logging
-func (l *Logger) Log(level int, format string, args ...interface{}) {
+func (l *Logger) Log(level int, format string, args ...any) {
 	l.Lock()
 	defer l.Unlock()
 	if level == DEBUG && l.debug == false {
@@ -67,32 +67,32 @@ func (l *Logger) Log(level int, format string, args ...interface{}) {
 }
 
 // Fatal prints a fatal level log message to stdout
-func (l *Logger) Fatal(format string, args ...interface{}) {
+func (l *Logger) Fatal(format string, args ...any) {
 	l.Log(FATAL, format, args...)
 }
 
 // Error prints an error level log message to stdout
-func (l *Logger) Error(format string, args ...interface{}) {
+func (l *Logger) Error(format string, args ...any) {
 	l.Log(ERROR, format, args...)
 }
 
 // Warn prints a warn level log message to stdout
-func (l *Logger) Warn(format string, args ...interface{}) {
+func (l *Logger) Warn(format string, args ...any) {
 	l.Log(WARN, format, args...)
 }
 
 // Important prints an important level log message to stdout
-func (l *Logger) Important(format string, args ...interface{}) {
+func (l *Logger) Important(format string, args ...any) {
 	l.Log(IMPORTANT, format, args...)
 }
 
 // Info prints an info level log message to stdout
-func (l *Logger) Info(format string, args ...interface{}) {
+func (l *Logger) Info(format string, args ...any) {
 	l.Log(INFO, format, args...)
 }
 
 // Debug prints a debug level log message to stdout
-func (l *Logger) Debug(format string, args ...interface{}) {
+func (l *Logger) Debug(format string, args ...any) {
 	l.Log(DEBUG, format, args...)
 }
 

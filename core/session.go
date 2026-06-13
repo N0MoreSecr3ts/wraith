@@ -4,7 +4,6 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -38,7 +37,7 @@ var defaultIgnoreExtensions = []string{".jpg", ".jpeg", ".png", ".gif", ".bmp", 
 var defaultIgnorePaths = []string{"node_modules/", "vendor/bundle", "vendor/cache", "/proc/"}
 
 // DefaultValues is a map of all flag default values and other mutable variables
-var DefaultValues = map[string]interface{}{
+var DefaultValues = map[string]any{
 	"bind-address":                "127.0.0.1",
 	"bind-port":                   9393,
 	"commit-depth":                -1,
@@ -335,7 +334,7 @@ func (s *Session) SaveToFile(location string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(location, sessionJSON, 0644)
+	err = os.WriteFile(location, sessionJSON, 0644)
 	if err != nil {
 		return err
 	}

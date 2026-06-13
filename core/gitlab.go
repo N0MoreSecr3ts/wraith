@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -36,7 +35,7 @@ func cloneGitlab(cloneConfig *CloneConfiguration) (*git.Repository, string, erro
 	var err error
 	var dir string
 	if !*cloneConfig.InMemClone {
-		dir, err = ioutil.TempDir("", "wraith")
+		dir, err = os.MkdirTemp("", "wraith")
 		if err != nil {
 			return nil, "", err
 		}
@@ -215,9 +214,7 @@ func (c gitlabClient) getUserProjects(id int) ([]*Repository, error) {
 			return nil, err
 		}
 
-		wg.Add(1)
-
-		go func() {
+		wg.Go(func() {
 			for _, project := range projects {
 				//don't capture forks
 				if project.ForkedFromProject == nil {
@@ -238,8 +235,7 @@ func (c gitlabClient) getUserProjects(id int) ([]*Repository, error) {
 					mut.Unlock()
 				}
 			}
-			wg.Done()
-		}()
+		})
 
 		if response.NextPage == 0 {
 			break
@@ -266,9 +262,7 @@ func (c gitlabClient) getGroupProjects(target Owner) ([]*Repository, error) {
 			return nil, err
 		}
 
-		wg.Add(1)
-
-		go func() {
+		wg.Go(func() {
 			for _, project := range projects {
 				//don't capture forks
 				if project.ForkedFromProject == nil {
@@ -289,8 +283,7 @@ func (c gitlabClient) getGroupProjects(target Owner) ([]*Repository, error) {
 					mut.Unlock()
 				}
 			}
-			wg.Done()
-		}()
+		})
 
 		if response.NextPage == 0 {
 			break

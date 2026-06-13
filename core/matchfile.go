@@ -3,6 +3,7 @@ package core
 import (
 	//"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"path/filepath"
+	"slices"
 	//"strconv"
 	"strings"
 	//"fmt"
@@ -31,10 +32,8 @@ func newMatchFile(path string) MatchFile {
 func (f *MatchFile) isSkippable(sess *Session) bool {
 	ext := strings.ToLower(f.Extension)
 	path := strings.ToLower(f.Path)
-	for _, skippableExt := range sess.SkippableExt {
-		if ext == skippableExt {
-			return true
-		}
+	if slices.Contains(sess.SkippableExt, ext) {
+		return true
 	}
 	for _, skippablePath := range sess.SkippablePath {
 		if strings.Contains(path, skippablePath) {

@@ -12,4 +12,3 @@ func TestAppVersion(t *testing.T) {
 		t.Fatalf("AppVersion() = %q, want %q", got, want)
 	}
 }
-

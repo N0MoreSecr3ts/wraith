@@ -55,4 +55,3 @@ func TestFindingSetupUrlsGitlab(t *testing.T) {
 		})
 	})
 }
-

@@ -60,4 +60,3 @@ func TestMatchFileIsSkippable(t *testing.T) {
 		})
 	})
 }
-

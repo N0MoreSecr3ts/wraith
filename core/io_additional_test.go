@@ -64,4 +64,3 @@ func TestIsMaxFileSize(t *testing.T) {
 		})
 	})
 }
-

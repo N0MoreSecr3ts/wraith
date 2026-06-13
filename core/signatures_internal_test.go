@@ -86,4 +86,3 @@ func TestConfirmEntropyRespectsThresholdAndSafeText(t *testing.T) {
 		})
 	})
 }
-

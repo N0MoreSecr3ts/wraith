@@ -129,12 +129,12 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 	rPath = core.SetHomeDir(rPath, sess)
 
 	// if the signatures path does not exist then we create it
-		if !core.PathExists(rPath, sess) {
+	if !core.PathExists(rPath, sess) {
 
-			err := os.MkdirAll(rPath, 0700)
-			if err != nil {
-				sess.Out.Error("%v", err)
-			}
+		err := os.MkdirAll(rPath, 0700)
+		if err != nil {
+			sess.Out.Error("%v", err)
+		}
 	}
 
 	// if we want to test the signatures before we install them
@@ -145,8 +145,8 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 		if executeTests(rRepo) {
 
 			// copy the files from the temp directory to the signatures directory
-				if err := ot.Copy(tempSignaturesDir, rPath); err != nil {
-					sess.Out.Error("%v", err)
+			if err := ot.Copy(tempSignaturesDir, rPath); err != nil {
+				sess.Out.Error("%v", err)
 				return false
 			}
 

@@ -14,7 +14,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/storage/memory"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v69/github"
 )
 
 // cloneGithub will set the clone config and then either do a plain clone if it is going to disk
@@ -214,14 +214,14 @@ func GatherGithubRepositoriesFromOwner(sess *Session) {
 	// The defaults should be fine for a tool like this but if you want to customize
 	// settings like repo type (public, private, etc) or the amount of results returned
 	// per page this is where you do it.
-	opt := &github.RepositoryListOptions{}
+	opt := &github.RepositoryListByUserOptions{}
 
 	// TODO This should be threaded
 	for _, ul := range sess.UserLogins {
 		// Reset the Page to start for every user
 		opt.Page = 1
 		for {
-			repos, resp, err := sess.GithubClient.Repositories.List(ctx, ul, opt)
+			repos, resp, err := sess.GithubClient.Repositories.ListByUser(ctx, ul, opt)
 			if err != nil {
 				sess.Out.Error("Error gathering Github repos from %s: %s\n", ul, err)
 			}
@@ -455,7 +455,7 @@ func GatherOrgsMembersRepositories(sess *Session) {
 	ctx := context.Background()
 
 	optMember := &github.ListMembersOptions{}
-	optRepo := &github.RepositoryListOptions{}
+	optRepo := &github.RepositoryListByUserOptions{}
 
 	// TODO multi thread this
 	for _, o := range sess.Organizations {
@@ -476,7 +476,7 @@ func GatherOrgsMembersRepositories(sess *Session) {
 
 				// TODO This should be threaded
 				for {
-					repos, respRepo, err := sess.GithubClient.Repositories.List(ctx, *member.Login, optRepo)
+					repos, respRepo, err := sess.GithubClient.Repositories.ListByUser(ctx, *member.Login, optRepo)
 					if err != nil {
 						sess.Out.Error("Error gathering Github repos from %s: %s\n", *member.Login, err)
 					}

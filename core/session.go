@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/N0MoreSecr3ts/wraith/version"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v69/github"
 	"github.com/mitchellh/go-homedir"
 
 	"github.com/gin-gonic/gin"

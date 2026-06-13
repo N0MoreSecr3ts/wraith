@@ -14,7 +14,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v69/github"
 	"golang.org/x/oauth2"
 )
 
@@ -277,7 +277,11 @@ func (s *Session) InitGitClient() {
 				uploadURL = fmt.Sprintf("%s/api/uploads", s.GithubEnterpriseURL)
 			}
 		}
-		s.GithubClient, _ = github.NewEnterpriseClient(baseURL, uploadURL, tc)
+		var err error
+		s.GithubClient, err = github.NewClient(tc).WithEnterpriseURLs(baseURL, uploadURL)
+		if err != nil {
+			s.Out.Error("Unable to create GitHub Enterprise client: %s", err)
+		}
 	}
 
 	if s.ScanType == "github" {

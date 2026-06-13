@@ -9,7 +9,7 @@ require (
 	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-git/go-git/v5 v5.17.1
-	github.com/google/go-github v17.0.0+incompatible
+	github.com/google/go-github/v69 v69.2.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.14.1
 	github.com/smartystreets/goconvey v1.7.2

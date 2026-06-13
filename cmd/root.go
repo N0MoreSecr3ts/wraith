@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -52,23 +53,25 @@ func init() {
 	rootCmd.PersistentFlags().Bool("silent", false, "Suppress all output. An alternative output will need to be configured")
 	rootCmd.PersistentFlags().Bool("web-server", false, "Enable the web interface for scan output")
 
-	err := viper.BindPFlag("bind-address", rootCmd.PersistentFlags().Lookup("bind-address"))
-	err = viper.BindPFlag("bind-port", rootCmd.PersistentFlags().Lookup("bind-port"))
-	err = viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
-	err = viper.BindPFlag("confidence-level", rootCmd.PersistentFlags().Lookup("confidence-level"))
-	err = viper.BindPFlag("config-file", rootCmd.PersistentFlags().Lookup("config-file"))
-	err = viper.BindPFlag("csv", rootCmd.PersistentFlags().Lookup("csv"))
-	err = viper.BindPFlag("hide-secrets", rootCmd.PersistentFlags().Lookup("hide-secrets"))
-	err = viper.BindPFlag("ignore-extension", rootCmd.PersistentFlags().Lookup("ignore-extension"))
-	err = viper.BindPFlag("ignore-path", rootCmd.PersistentFlags().Lookup("ignore-path"))
-	err = viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json"))
-	err = viper.BindPFlag("max-file-size", rootCmd.PersistentFlags().Lookup("max-file-size"))
-	err = viper.BindPFlag("num-threads", rootCmd.PersistentFlags().Lookup("num-threads"))
-	err = viper.BindPFlag("scan-tests", rootCmd.PersistentFlags().Lookup("scan-tests"))
-	err = viper.BindPFlag("signature-file", rootCmd.PersistentFlags().Lookup("signature-file"))
-	err = viper.BindPFlag("signature-path", rootCmd.PersistentFlags().Lookup("signature-path"))
-	err = viper.BindPFlag("silent", rootCmd.PersistentFlags().Lookup("silent"))
-	err = viper.BindPFlag("web-server", rootCmd.PersistentFlags().Lookup("web-server"))
+	err := errors.Join(
+		viper.BindPFlag("bind-address", rootCmd.PersistentFlags().Lookup("bind-address")),
+		viper.BindPFlag("bind-port", rootCmd.PersistentFlags().Lookup("bind-port")),
+		viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug")),
+		viper.BindPFlag("confidence-level", rootCmd.PersistentFlags().Lookup("confidence-level")),
+		viper.BindPFlag("config-file", rootCmd.PersistentFlags().Lookup("config-file")),
+		viper.BindPFlag("csv", rootCmd.PersistentFlags().Lookup("csv")),
+		viper.BindPFlag("hide-secrets", rootCmd.PersistentFlags().Lookup("hide-secrets")),
+		viper.BindPFlag("ignore-extension", rootCmd.PersistentFlags().Lookup("ignore-extension")),
+		viper.BindPFlag("ignore-path", rootCmd.PersistentFlags().Lookup("ignore-path")),
+		viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json")),
+		viper.BindPFlag("max-file-size", rootCmd.PersistentFlags().Lookup("max-file-size")),
+		viper.BindPFlag("num-threads", rootCmd.PersistentFlags().Lookup("num-threads")),
+		viper.BindPFlag("scan-tests", rootCmd.PersistentFlags().Lookup("scan-tests")),
+		viper.BindPFlag("signature-file", rootCmd.PersistentFlags().Lookup("signature-file")),
+		viper.BindPFlag("signature-path", rootCmd.PersistentFlags().Lookup("signature-path")),
+		viper.BindPFlag("silent", rootCmd.PersistentFlags().Lookup("silent")),
+		viper.BindPFlag("web-server", rootCmd.PersistentFlags().Lookup("web-server")),
+	)
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

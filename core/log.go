@@ -49,9 +49,9 @@ func (l *Logger) SetDebug(d bool) {
 func (l *Logger) Log(level int, format string, args ...any) {
 	l.Lock()
 	defer l.Unlock()
-	if level == DEBUG && l.debug == false {
+	if level == DEBUG && !l.debug {
 		return
-	} else if level < ERROR && l.silent == true {
+	} else if level < ERROR && l.silent {
 		return
 	}
 

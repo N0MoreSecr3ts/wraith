@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Replace deprecated `io/ioutil` calls with `os`/`io` equivalents and modernize `interface{}` to `any`
 - Simplify membership checks with `slices.Contains` and goroutine fan-out with `sync.WaitGroup.Go`
 
+### Removed
+- Remove unused `githubClient` type and its `GetUserOrganization`, `GetOrganizationMembers`, and `GetRepositoriesFromOwner` methods, and the unused `githubRepository` struct and `MaxStrLen` constant
+
+### Fixed
+- Close the response body from the web UI file-fetch handler's `HEAD` request, and check the error from closing the final response body
+- Fix a large batch of golangci-lint findings (misspellings, ineffectual assignments, redundant conversions, dead branches, and simplifiable conditionals) across `cmd` and `core`
+
 ### Security
 - Exclude GitHub and GitLab API tokens from the serialized session file and restrict its permissions to 0600
 

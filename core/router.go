@@ -60,7 +60,7 @@ func NewRouter(s *Session) *gin.Engine {
 		isGithub = true
 	}
 
-	if s.Debug == true {
+	if s.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
@@ -112,6 +112,7 @@ func fetchFile(c *gin.Context) {
 		})
 		return
 	}
+	_ = resp.Body.Close()
 
 	if resp.StatusCode == http.StatusNotFound {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -135,7 +136,9 @@ func fetchFile(c *gin.Context) {
 		return
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

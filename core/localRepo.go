@@ -47,7 +47,7 @@ func cloneLocal(cloneConfig *CloneConfiguration) (*git.Repository, string, error
 func GatherLocalRepositories(sess *Session) {
 
 	// This is the number of targets as we don't do forks or anything else.
-	// It will contain directorys, that will then be added to the repo count
+	// It will contain directories, that will then be added to the repo count
 	// if they contain a .git directory
 	sess.Stats.Targets = len(sess.LocalPaths)
 	sess.Stats.Status = StatusGathering
@@ -91,7 +91,7 @@ func GatherLocalRepositories(sess *Session) {
 
 					// Get the name of the branch we are working on
 					s := ref.Strings()
-					branchPath := fmt.Sprintf("%s", s[0])
+					branchPath := s[0]
 					branchPathParts := strings.Split(branchPath, string("refs/heads/"))
 					branchName := branchPathParts[len(branchPathParts)-1]
 					pBranchName := &branchName
@@ -105,8 +105,7 @@ func GatherLocalRepositories(sess *Session) {
 					repoID := fmt.Sprintf("%x", h.Sum(commitHash))
 
 					intRepoID, _ := strconv.ParseInt(repoID, 10, 64)
-					var pRepoID *int64
-					pRepoID = &intRepoID
+					pRepoID := &intRepoID
 
 					// Set the url to the relative path of the repo based on the execution path of wraith
 					pRepoURL := &parent
@@ -137,6 +136,7 @@ func GatherLocalRepositories(sess *Session) {
 			return nil
 		})
 		if err0 != nil {
+			sess.Out.Error("Failed to walk the path: %s\n", err0.Error())
 		}
 	}
 }

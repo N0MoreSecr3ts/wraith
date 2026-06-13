@@ -58,7 +58,7 @@ func SetHomeDir(h string, sess *Session) string {
 			os.Exit(2)
 		}
 
-		h = strings.Replace(h, "$HOME", home, -1)
+		h = strings.ReplaceAll(h, "$HOME", home)
 	}
 
 	if strings.Contains(h, "~") {
@@ -67,7 +67,7 @@ func SetHomeDir(h string, sess *Session) string {
 			sess.Out.Error("%v", err)
 			os.Exit(2)
 		}
-		h = strings.Replace(h, "~", home, -1)
+		h = strings.ReplaceAll(h, "~", home)
 	}
 	return h
 }
@@ -116,8 +116,7 @@ func IsMaxFileSize(filename string, sess *Session) (bool, string) {
 	}
 
 	fileSize := fi.Size()
-	var maxFileSize int64
-	maxFileSize = sess.MaxFileSize * 1024 * 1024
+	maxFileSize := sess.MaxFileSize * 1024 * 1024
 
 	if fileSize > maxFileSize {
 		return true, "is too large"
@@ -170,9 +169,5 @@ func isTestFileOrPath(fullPath string) bool {
 	// If the pattern _test_ is in the string
 	// Ex. foo_test_baz
 	r = regexp.MustCompile(`(?i)_test?_`)
-	if r.MatchString(fName) {
-		return true
-	}
-
-	return false
+	return r.MatchString(fName)
 }

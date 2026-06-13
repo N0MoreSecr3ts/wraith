@@ -16,8 +16,8 @@ import (
 var scanLocalPathCmd = &cobra.Command{
 	TraverseChildren: true,
 	Use:              "scanLocalPath",
-	Short:            "Scan local files and directorys",
-	Long:             "Scan local files and directorys",
+	Short:            "Scan local files and directories",
+	Long:             "Scan local files and directories",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		scanType := "localPath"

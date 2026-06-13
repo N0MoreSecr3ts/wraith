@@ -1,13 +1,9 @@
 package core
 
 import (
-	//"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"path/filepath"
 	"slices"
-	//"strconv"
 	"strings"
-	//"fmt"
-	//"github.com/N0MoreSecr3ts/wraith/version"
 )
 
 // MatchFile holds the various parts of a file that will be matched using either regex's or simple pattern matches.

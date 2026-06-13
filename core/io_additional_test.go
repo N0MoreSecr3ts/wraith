@@ -38,7 +38,7 @@ func TestIsMaxFileSize(t *testing.T) {
 		file := filepath.Join(dir, "small.txt")
 
 		// create a small file
-		err := os.WriteFile(file, []byte("small"), 0o644)
+		err := os.WriteFile(file, []byte("small"), 0o600)
 		So(err, ShouldBeNil)
 
 		sess := &core.Session{

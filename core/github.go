@@ -52,11 +52,6 @@ func cloneGithub(cloneConfig *CloneConfiguration) (*git.Repository, string, erro
 	return repository, dir, nil
 }
 
-// Client holds a github api client instance
-type githubClient struct {
-	apiClient *github.Client
-}
-
 // addUser will add a new user to the sess for further scanning and analyzing
 func (s *Session) addUser(user *github.User) {
 	s.Lock()
@@ -167,31 +162,9 @@ func CheckGithubAPIToken(t string, sess *Session) string {
 	return t
 }
 
-// GetUserOrganization is used to enumerate the owner in a given org
-func (c githubClient) GetUserOrganization(login string) (*Owner, error) {
-	ctx := context.Background()
-	user, _, err := c.apiClient.Users.Get(ctx, login)
-	if err != nil {
-		return nil, err
-	}
-	return &Owner{
-		Login:     user.Login,
-		ID:        user.ID,
-		Type:      user.Type,
-		Name:      user.Name,
-		AvatarURL: user.AvatarURL,
-		URL:       user.HTMLURL,
-		Company:   user.Company,
-		Blog:      user.Blog,
-		Location:  user.Location,
-		Email:     user.Email,
-		Bio:       user.Bio,
-	}, nil
-}
-
 // TODO Do we thread this?
 // getRepositoriesFromOrganization will generate a slice of github repo objects for an org. This has only been tested on github enterprise.
-func getRepositoriesFromOrganization(login *string, client *github.Client, scanFork bool, sess *Session) ([]*Repository, error) {
+func getRepositoriesFromOrganization(login *string, client *github.Client, sess *Session) ([]*Repository, error) {
 	var allRepos []*Repository
 	orgName := *login
 	ctx := context.Background()
@@ -304,39 +277,6 @@ func GatherGithubRepositoriesFromOwner(sess *Session) {
 	}
 }
 
-// GetOrganizationMembers will gather all the members of a given organization
-func (c githubClient) GetOrganizationMembers(target Owner) ([]*Owner, error) {
-	var allMembers []*Owner
-	ctx := context.Background()
-	opt := &github.ListMembersOptions{}
-
-	var wg sync.WaitGroup
-	var mut sync.Mutex
-
-	for {
-		members, resp, err := c.apiClient.Organizations.ListMembers(ctx, *target.Login, opt)
-		if err != nil {
-			return allMembers, err
-		}
-
-		wg.Go(func() {
-			for _, member := range members {
-				mut.Lock()
-				allMembers = append(allMembers, &Owner{Login: member.Login, ID: member.ID, Type: member.Type})
-				mut.Unlock()
-			}
-		})
-
-		if resp.NextPage == 0 {
-			break
-		}
-		opt.Page = resp.NextPage
-	}
-	wg.Wait()
-
-	return allMembers, nil
-}
-
 // GatherOrgs will use a client to generate a list of all orgs that the client can see. By default this will include
 // orgs that contain both public and private repos
 func GatherOrgs(sess *Session) {
@@ -410,7 +350,7 @@ func (s *Session) addOrganization(organization *github.Organization) {
 	s.Lock()
 	defer s.Unlock()
 	h := md5.New()
-	_, _ = io.WriteString(h, *organization.Login) // TODO handle these errors instead of ignoring them explictly
+	_, _ = io.WriteString(h, *organization.Login) // TODO handle these errors instead of ignoring them explicitly
 	_, _ = io.WriteString(h, strconv.FormatInt(*organization.ID, 10))
 	orgMD5 := fmt.Sprintf("%x", h.Sum(nil))
 
@@ -460,7 +400,7 @@ func GatherGithubOrgRepositories(sess *Session) {
 					return
 				}
 				// Retrieve all the repos in an org regardless of public/private
-				repos, err = getRepositoriesFromOrganization(org.Login, sess.GithubClient, sess.ScanFork, sess)
+				repos, err = getRepositoriesFromOrganization(org.Login, sess.GithubClient, sess)
 
 				if err != nil {
 					sess.Out.Error(" Failed to retrieve repositories from %s: %s\n", *org.Login, err)

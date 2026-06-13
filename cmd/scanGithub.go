@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -110,12 +111,14 @@ func init() {
 	scanGithubCmd.Flags().StringSlice("github-repos", nil, "List of github repositories to scan")
 	scanGithubCmd.Flags().StringSlice("github-users", nil, "List of github.com users to scan")
 
-	err := viper.BindPFlag("add-org-members", scanGithubCmd.Flags().Lookup("add-org-members"))
-	err = viper.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token"))
-	err = viper.BindPFlag("github-orgs", scanGithubCmd.Flags().Lookup("github-orgs"))
-	err = viper.BindPFlag("github-repos", scanGithubCmd.Flags().Lookup("github-repos"))
-	err = viper.BindPFlag("github-users", scanGithubCmd.Flags().Lookup("github-users"))
-	err = viper.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth"))
+	err := errors.Join(
+		viper.BindPFlag("add-org-members", scanGithubCmd.Flags().Lookup("add-org-members")),
+		viper.BindPFlag("github-api-token", scanGithubCmd.Flags().Lookup("github-api-token")),
+		viper.BindPFlag("github-orgs", scanGithubCmd.Flags().Lookup("github-orgs")),
+		viper.BindPFlag("github-repos", scanGithubCmd.Flags().Lookup("github-repos")),
+		viper.BindPFlag("github-users", scanGithubCmd.Flags().Lookup("github-users")),
+		viper.BindPFlag("commit-depth", scanGithubCmd.Flags().Lookup("commit-depth")),
+	)
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

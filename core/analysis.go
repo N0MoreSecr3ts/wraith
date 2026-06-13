@@ -14,15 +14,13 @@ func GatherTargets(sess *Session) {
 	sess.Stats.Status = StatusGathering
 	sess.Out.Important("Gathering targets...\n")
 
-	var targets []string
-
 	// Based on the type of scan, set in the cmd package, we set a generic
 	// variable to the specific targets
 	//switch sess.ScanType {
 	//case "github":
 	//	targets = sess.GithubTargets
 	//case "gitlab":
-	targets = sess.GitlabTargets
+	targets := sess.GitlabTargets
 	//}
 
 	//var target *Owner
@@ -52,7 +50,7 @@ func GatherTargets(sess *Session) {
 		sess.Out.Debug("%s (ID: %d) type: %s\n", *target.Login, *target.ID, *target.Type)
 		sess.AddTarget(target)
 		// If forking is false AND the target type is an Organization as set above in GetUserOrganization
-		if sess.ExpandOrgs == true && *target.Type == TargetTypeOrganization {
+		if sess.ExpandOrgs && *target.Type == TargetTypeOrganization {
 			sess.Out.Debug("Gathering members of %s (ID: %d)...\n", *target.Login, *target.ID)
 			members, err := sess.Client.GetOrganizationMembers(*target)
 			if err != nil {

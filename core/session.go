@@ -133,19 +133,6 @@ type Session struct {
 	WraithVersion       string
 }
 
-// githubRepository is the holds the necessary fields in a simpler structure
-type githubRepository struct {
-	Owner         *string
-	ID            *int64
-	Name          *string
-	FullName      *string
-	CloneURL      *string
-	URL           *string
-	DefaultBranch *string
-	Description   *string
-	Homepage      *string
-}
-
 // SetConfig will set the defaults, and load a config file and environment variables if they are present
 func SetConfig() {
 	for key, value := range DefaultValues {
@@ -169,6 +156,7 @@ func SetConfig() {
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Unable to read config file: %s\n", err.Error())
 	}
 
 	viper.AutomaticEnv()
@@ -202,9 +190,10 @@ func (s *Session) Initialize(scanType string) {
 	s.WraithVersion = version.AppVersion()
 	s.WebServer = WraithConfig.GetBool("web-server")
 
-	if s.ScanType == "localGit" {
+	switch s.ScanType {
+	case "localGit":
 		s.LocalPaths = WraithConfig.GetStringSlice("local-repos")
-	} else if s.ScanType == "localPath" {
+	case "localPath":
 		s.LocalPaths = WraithConfig.GetStringSlice("local-paths")
 	}
 
@@ -303,7 +292,6 @@ func (s *Session) AddRepository(repository *Repository) {
 func (s *Session) AddFinding(finding *Finding) {
 	s.Lock()
 	defer s.Unlock()
-	const MaxStrLen = 100
 	s.Findings = append(s.Findings, finding)
 	s.Stats.IncrementFindingsTotal()
 }

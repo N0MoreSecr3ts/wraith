@@ -42,7 +42,7 @@ func loadSignatureSet(filename string) (SignatureConfig, error) {
 	return c, nil
 }
 
-// get EntropyInt will calculate the entrophy based upon Shannon Entropy
+// get EntropyInt will calculate the entropy based upon Shannon Entropy
 func getEntropyInt(s string) float64 {
 	//Shannon Entropy calculation
 	m := map[rune]float64{}
@@ -142,13 +142,10 @@ func (s SimpleSignature) ExtractMatch(file MatchFile, sess *Session, change *obj
 	switch s.part {
 	case PartPath:
 		haystack = &file.Path
-		bResult = true
 	case PartFilename:
 		haystack = &file.Filename
-		bResult = true
 	case PartExtension:
 		haystack = &file.Extension
-		bResult = true
 	default:
 		return bResult, results
 	}
@@ -193,7 +190,7 @@ func IsSafeText(sMatchString *string) bool {
 	return bResult
 }
 
-// confirmEntropy will determine correct entrophy of the string and decide if we move forward with the match
+// confirmEntropy will determine correct entropy of the string and decide if we move forward with the match
 func confirmEntropy(thisMatch string, iSessionEntropy float64) bool {
 	bResult := false
 
@@ -252,8 +249,7 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 						bResult = true
 						for i, curMatch := range contextMatches {
 
-							thisMatch := string(curMatch[:])
-							thisMatch = strings.TrimSuffix(thisMatch, "\n")
+							thisMatch := strings.TrimSuffix(curMatch, "\n")
 
 							bResult = confirmEntropy(thisMatch, s.entropy)
 
@@ -283,8 +279,7 @@ func (s PatternSignature) ExtractMatch(file MatchFile, sess *Session, change *ob
 				if len(contextMatches) > 0 {
 					bResult = true
 					for i, curMatch := range contextMatches {
-						thisMatch := string(curMatch[:])
-						thisMatch = strings.TrimSuffix(thisMatch, "\n")
+						thisMatch := strings.TrimSuffix(curMatch, "\n")
 
 						bResult = confirmEntropy(thisMatch, s.entropy)
 

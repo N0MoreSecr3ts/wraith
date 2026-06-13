@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -98,7 +99,7 @@ func fetchSignatures(sess *core.Session) string {
 
 		// Set the tag to the signatures version that we want to use
 		// TODO fix this REMOVE ME
-		tagName := string(signatureVersion)
+		tagName := signatureVersion
 
 		// Checkout our tag
 		// TODO way are we using a tag here is we only checkout master
@@ -158,7 +159,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 
 			// set them to the current user and the proper permissions
 			for _, f := range files {
-				if err := os.Chmod(rPath+"/"+f.Name(), 0644); err != nil {
+				if err := os.Chmod(rPath+"/"+f.Name(), 0600); err != nil {
 					sess.Out.Error("%v", err)
 					return false
 				}
@@ -196,7 +197,7 @@ func updateSignatures(rRepo string, sess *core.Session) bool {
 	for _, f := range files {
 		sFileExt := filepath.Ext(rPath + "/" + f.Name())
 		if sFileExt == "yml" || sFileExt == "yaml" {
-			if err := os.Chmod(rPath+"/"+f.Name(), 0644); err != nil {
+			if err := os.Chmod(rPath+"/"+f.Name(), 0600); err != nil {
 				sess.Out.Error("%v", err)
 				return false
 			}
@@ -249,10 +250,12 @@ func init() {
 	updateSignaturesCmd.Flags().String("signatures-version", "", "specific version of the signatures to install")
 	updateSignaturesCmd.Flags().Bool("test-signatures", false, "run any tests associated with the signatures and display the output")
 
-	err := viper.BindPFlag("signatures-path", updateSignaturesCmd.Flags().Lookup("signatures-path"))
-	err = viper.BindPFlag("signatures-url", updateSignaturesCmd.Flags().Lookup("signatures-url"))
-	err = viper.BindPFlag("signatures-version", updateSignaturesCmd.Flags().Lookup("signatures-version"))
-	err = viper.BindPFlag("test-signatures", updateSignaturesCmd.Flags().Lookup("test-signatures"))
+	err := errors.Join(
+		viper.BindPFlag("signatures-path", updateSignaturesCmd.Flags().Lookup("signatures-path")),
+		viper.BindPFlag("signatures-url", updateSignaturesCmd.Flags().Lookup("signatures-url")),
+		viper.BindPFlag("signatures-version", updateSignaturesCmd.Flags().Lookup("signatures-version")),
+		viper.BindPFlag("test-signatures", updateSignaturesCmd.Flags().Lookup("test-signatures")),
+	)
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

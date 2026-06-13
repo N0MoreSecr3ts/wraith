@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -53,8 +54,10 @@ func init() {
 	scanLocalGitRepoCmd.Flags().Float64("commit-depth", -1, "Set the commit depth to scan")
 	scanLocalGitRepoCmd.Flags().StringSlice("local-repos", nil, "List of local git repos to scan")
 
-	err := viper.BindPFlag("commit-depth", scanLocalGitRepoCmd.Flags().Lookup("commit-depth"))
-	err = viper.BindPFlag("local-repos", scanLocalGitRepoCmd.Flags().Lookup("local-repos"))
+	err := errors.Join(
+		viper.BindPFlag("commit-depth", scanLocalGitRepoCmd.Flags().Lookup("commit-depth")),
+		viper.BindPFlag("local-repos", scanLocalGitRepoCmd.Flags().Lookup("local-repos")),
+	)
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

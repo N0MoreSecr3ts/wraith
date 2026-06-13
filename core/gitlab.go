@@ -1,7 +1,6 @@
 package core
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -12,7 +11,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/storage/memory"
-	"github.com/google/go-github/github"
 	"github.com/xanzy/go-gitlab"
 )
 
@@ -156,17 +154,13 @@ func (c gitlabClient) GetRepositoriesFromOwner(target Owner) ([]*Repository, err
 		if err != nil {
 			return nil, err
 		}
-		for _, project := range userProjects {
-			allProjects = append(allProjects, project)
-		}
+		allProjects = append(allProjects, userProjects...)
 	} else {
 		groupProjects, err := c.getGroupProjects(target)
 		if err != nil {
 			return nil, err
 		}
-		for _, project := range groupProjects {
-			allProjects = append(allProjects, project)
-		}
+		allProjects = append(allProjects, groupProjects...)
 	}
 	return allProjects, nil
 }
@@ -178,8 +172,8 @@ func (c gitlabClient) getUser(login string) (*gitlab.User, error) {
 		return nil, err
 	}
 	if len(users) == 0 {
-		return nil, fmt.Errorf("No GitLab %s or %s %s was found.  If you are targeting a GitLab group, be sure to"+
-			" use an ID in place of a name.",
+		return nil, fmt.Errorf("no GitLab %s or %s %s was found, if you are targeting a GitLab group, be sure to"+
+			" use an ID in place of a name",
 			strings.ToLower(TargetTypeUser),
 			strings.ToLower(TargetTypeOrganization),
 			login)
@@ -293,43 +287,4 @@ func (c gitlabClient) getGroupProjects(target Owner) ([]*Repository, error) {
 	wg.Wait()
 
 	return allGroupProjects, nil
-}
-
-// GetRepositoriesFromOwner is used gather all the repos associated with the org owner or other user.
-// This is only used by the gitlab client. The github client use a github specific function.
-func (c githubClient) GetRepositoriesFromOwner(target Owner) ([]*Repository, error) {
-	var allRepos []*Repository
-	ctx := context.Background()
-	opt := &github.RepositoryListOptions{
-		Type: "sources",
-	}
-
-	for {
-		repos, resp, err := c.apiClient.Repositories.List(ctx, *target.Login, opt)
-		if err != nil {
-			return allRepos, err
-		}
-		for _, repo := range repos {
-			if !*repo.Fork {
-				r := Repository{
-					Owner:         repo.Owner.Login,
-					ID:            repo.ID,
-					Name:          repo.Name,
-					FullName:      repo.FullName,
-					CloneURL:      repo.CloneURL,
-					URL:           repo.HTMLURL,
-					DefaultBranch: repo.DefaultBranch,
-					Description:   repo.Description,
-					Homepage:      repo.Homepage,
-				}
-				allRepos = append(allRepos, &r)
-			}
-		}
-		if resp.NextPage == 0 {
-			break
-		}
-		opt.Page = resp.NextPage
-	}
-
-	return allRepos, nil
 }

@@ -33,12 +33,13 @@ type Finding struct {
 
 // setupUrls will set the urls used to search through either github or gitlab for inclusion in the finding data
 func (f *Finding) setupUrls(sess *Session) {
-	baseURL := ""
-	if sess.ScanType == "github-enterprise" {
+	var baseURL string
+	switch sess.ScanType {
+	case "github-enterprise":
 		baseURL = sess.GithubEnterpriseURL
-	} else if sess.ScanType == "github" {
+	case "github":
 		baseURL = "https://github.com"
-	} else {
+	default:
 		baseURL = "https://gitlab.com"
 	}
 	switch sess.ScanType {

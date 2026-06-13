@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -66,10 +67,12 @@ func init() {
 	scanGitlabCmd.Flags().String("gitlab-api-token", "", "API token for access to gitlab, see doc for necessary scope")
 	scanGitlabCmd.Flags().StringSlice("gitlab-projects", nil, "List of Gitlab projects or users to scan")
 
-	err := viper.BindPFlag("add-org-members", scanGitlabCmd.Flags().Lookup("add-org-members"))
-	err = viper.BindPFlag("commit-depth", scanGitlabCmd.Flags().Lookup("commit-depth"))
-	err = viper.BindPFlag("gitlab-api-token", scanGitlabCmd.Flags().Lookup("gitlab-api-token"))
-	err = viper.BindPFlag("gitlab-projects", scanGitlabCmd.Flags().Lookup("gitlab-projects"))
+	err := errors.Join(
+		viper.BindPFlag("add-org-members", scanGitlabCmd.Flags().Lookup("add-org-members")),
+		viper.BindPFlag("commit-depth", scanGitlabCmd.Flags().Lookup("commit-depth")),
+		viper.BindPFlag("gitlab-api-token", scanGitlabCmd.Flags().Lookup("gitlab-api-token")),
+		viper.BindPFlag("gitlab-projects", scanGitlabCmd.Flags().Lookup("gitlab-projects")),
+	)
 
 	if err != nil {
 		fmt.Printf("There was an error binding a flag: %s\n", err.Error())

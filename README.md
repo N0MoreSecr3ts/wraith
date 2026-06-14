@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-    <img src="./static/images/gopher_full.png" alt="wraith" width="200"/>
+    <img src="./core/static/images/gopher_full.png" alt="wraith" width="200"/>
   <br>
   Wraith
   <br>

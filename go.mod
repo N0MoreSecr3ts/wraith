@@ -3,7 +3,6 @@ module github.com/N0MoreSecr3ts/wraith
 go 1.26.0
 
 require (
-	github.com/elazarl/go-bindata-assetfs v1.0.1
 	github.com/fatih/color v1.18.0
 	github.com/gin-contrib/secure v1.1.2
 	github.com/gin-contrib/static v1.1.5

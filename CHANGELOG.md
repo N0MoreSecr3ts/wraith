@@ -17,9 +17,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Replace deprecated `io/ioutil` calls with `os`/`io` equivalents and modernize `interface{}` to `any`
 - Simplify membership checks with `slices.Contains` and goroutine fan-out with `sync.WaitGroup.Go`
 - Upgrade `github.com/google/go-github` from v17 (incompatible) to v69.2.0; replace the deprecated `NewEnterpriseClient` and `Repositories.List` with `Client.WithEnterpriseURLs` and `Repositories.ListByUser`
+- Move the embedded web UI assets from `/static` to `/core/static` and serve them with Go `go:embed` via `gin-contrib/static`'s `EmbedFolder`, replacing the generated `core/bindata.go`
 
 ### Removed
 - Remove unused `githubClient` type and its `GetUserOrganization`, `GetOrganizationMembers`, and `GetRepositoriesFromOwner` methods, and the unused `githubRepository` struct and `MaxStrLen` constant
+- Remove the generated `core/bindata.go`, the `github.com/elazarl/go-bindata-assetfs` dependency, and `scripts/build-static.sh`
 
 ### Fixed
 - Close the response body from the web UI file-fetch handler's `HEAD` request, and check the error from closing the final response body

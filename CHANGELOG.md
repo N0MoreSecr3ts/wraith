@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add `.golangci.yml` (golangci-lint v2 config) and wire `golangci-lint`/`govulncheck` into the Makefile via new `lint` and `vulncheck` targets
 - Add a GitHub Actions CI workflow (`.github/workflows/ci.yml`) that builds, vets, lints, runs `govulncheck`, and runs race-enabled tests with Codecov upload on pushes to `develop`/`stable` and on pull requests
+- Add baseline unit tests for the `cmd` package: `cleanInput`'s URL validation (including its `os.Exit(2)` paths) and the root command's persistent flag bindings and defaults
 
 ### Changed
 - Default branch to pull signatures from is now stable

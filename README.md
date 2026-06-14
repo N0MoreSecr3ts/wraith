@@ -16,8 +16,9 @@
 <br>
   <img alt="GitHub issues by-label" src="https://img.shields.io/github/issues-raw/n0moresecr3ts/wraith/Bug?color=RED&label=BUGS&style=for-the-badge">
   <img alt="GitHub issues by-label" src="https://img.shields.io/github/issues-raw/n0moresecr3ts/wraith/Feature%20Request?color=38BED3&label=FEATURE%20REQUESTS&style=for-the-badge">
-  <img alt="Travis (.org) branch" src="https://img.shields.io/travis/n0moresecr3ts/wraith/master?label=BUILD%20MASTER&style=for-the-badge">
-  <img alt="Travis (.org) branch" src="https://img.shields.io/travis/n0moresecr3ts/wraith/develop?label=BUILD%20DEVELOP&style=for-the-badge">
+  <img alt="GitHub Actions workflow status (develop)" src="https://img.shields.io/github/actions/workflow/status/N0MoreSecr3ts/wraith/ci.yml?branch=develop&label=BUILD%20DEVELOP&style=for-the-badge">
+  <img alt="GitHub Actions workflow status (stable)" src="https://img.shields.io/github/actions/workflow/status/N0MoreSecr3ts/wraith/ci.yml?branch=stable&label=BUILD%20STABLE&style=for-the-badge">
+  <img alt="Codecov" src="https://img.shields.io/codecov/c/github/N0MoreSecr3ts/wraith?style=for-the-badge">
 <br>
   <img alt="Code Climate maintainability" src="https://img.shields.io/codeclimate/maintainability/N0MoreSecr3ts/wraith?style=for-the-badge">
   <img alt="Code Climate technical debt" src="https://img.shields.io/codeclimate/tech-debt/N0MoreSecr3ts/wraith?style=for-the-badge">
